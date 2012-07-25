@@ -1,0 +1,2 @@
+GET /sample/users 1
+GET /sample/users/{id} 2
