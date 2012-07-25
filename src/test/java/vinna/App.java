@@ -1,5 +1,7 @@
 package vinna;
 
+import vinna.route.Router;
+
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;

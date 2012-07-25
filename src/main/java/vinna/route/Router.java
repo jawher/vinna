@@ -1,4 +1,4 @@
-package vinna;
+package vinna.route;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -9,27 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Router {
-    public static class Route {
-        public final String verb;
-        public final Pattern pathPattern;
-        public final Map<String, Pattern> args;
-        public final Collection<String> variableNames;
-        public final String action;
-        //TODO: add action
-
-        public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, String action) {
-            this.verb = verb;
-            this.pathPattern = pathPattern;
-            this.args = args;
-            this.variableNames = variableNames;
-            this.action = action;
-        }
-
-        @Override
-        public String toString() {
-            return "Route{" + verb + " " + pathPattern + "?" + args + " => " + action;
-        }
-    }
 
     private final List<Route> routes = new ArrayList<>();
 
@@ -51,6 +30,7 @@ public class Router {
                     if (!rm.matches()) {
                         throw new RuntimeException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
                     } else {
+                        // TODO method for creating the pathPattern, the queryMap and variablesNames. Needed by RouteBuilder
                         String verb = rm.group("verb");
                         String path = rm.group("path");
                         String action = rm.group("action");
@@ -111,7 +91,11 @@ public class Router {
                         System.out.println(pathPattern);
                         System.out.println(queryMap);
 
-                        routes.add(new Route(verb, Pattern.compile(pathPattern.toString()), queryMap, variablesNames, action));
+                        try {
+                            this.addRoute(new Route(verb, Pattern.compile(pathPattern.toString()), queryMap, variablesNames, action));
+                        } catch (ClassNotFoundException e) {
+                            System.err.println("Cannot add route: " + pathPattern);
+                        }
 
                         //log how vitta sees this route, as matcher.find is too forgiving
                     }
@@ -122,17 +106,14 @@ public class Router {
         }
     }
 
-    public Route match(HttpServletRequest r) {
-        for (Router.Route route : routes) {
+    public Route.RouteResolution match(HttpServletRequest request) {
+        System.out.println("Try to match " + request.getServletPath());
+        for (Route route : routes) {
             System.out.println("checking against " + route);
-            if (r.getMethod().equalsIgnoreCase(route.verb)) {
-                Matcher m = route.pathPattern.matcher(r.getServletPath());
-                if (m.matches()) {
-                    System.out.println("Got match for " + route.action);
-                    for (String variableName : route.variableNames) {
-                        System.out.println("\t" + variableName + "=" + m.group(variableName));
-                    }
-                    return route;
+            if (route.hasVerb(request.getMethod())) {
+                Route.RouteResolution routeResolution = route.match(request.getServletPath());
+                if (routeResolution != null) {
+                    return routeResolution;
                 }
             }
         }
