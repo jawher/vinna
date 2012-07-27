@@ -5,7 +5,6 @@ import java.util.Map;
 
 /**
  * @author lpereira
- *
  */
 public interface Request {
 
@@ -13,5 +12,6 @@ public interface Request {
 
     String getPath();
 
-    Map<String, String> getParams();
+    // FIXME: What about multivalued params ?
+    String getParam(String name);
 }

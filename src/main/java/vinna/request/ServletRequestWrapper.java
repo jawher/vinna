@@ -7,11 +7,11 @@ import java.util.Map;
 /**
  * @author lpereira
  */
-public class ServletRequest implements Request {
+public class ServletRequestWrapper implements Request {
 
     private final HttpServletRequest servletRequest;
 
-    public ServletRequest(HttpServletRequest servletRequest) {
+    public ServletRequestWrapper(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
 
@@ -26,7 +26,7 @@ public class ServletRequest implements Request {
     }
 
     @Override
-    public Map<String, String> getParams() {
-        return Collections.<String, String> unmodifiableMap(servletRequest.getParameterMap());
+    public String getParam(String name) {
+        return servletRequest.getParameter(name);
     }
 }
