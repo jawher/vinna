@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 public class App {
     public static void main(String[] args) throws UnsupportedEncodingException {
         //parsePath();
-        new Router().loadFrom(new InputStreamReader(App.class.getResourceAsStream("sample.routes"), "utf-8"));
-        //parseAction();
+        //new Router().loadFrom(new InputStreamReader(App.class.getResourceAsStream("sample.routes"), "utf-8"));
+        parseAction();
     }
 
     private static void parseAction() {

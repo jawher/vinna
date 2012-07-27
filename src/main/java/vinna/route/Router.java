@@ -1,12 +1,8 @@
 package vinna.route;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Router {
 
@@ -16,12 +12,12 @@ public class Router {
         routes.add(route);
     }
 
-    public Route.RouteResolution match(HttpServletRequest request) {
+    public RouteResolution match(HttpServletRequest request) {
         System.out.println("Try to match " + request.getServletPath());
         for (Route route : routes) {
             System.out.println("checking against " + route);
             if (route.hasVerb(request.getMethod())) {
-                Route.RouteResolution routeResolution = route.match(request.getServletPath());
+                RouteResolution routeResolution = route.match(request.getServletPath());
                 if (routeResolution != null) {
                     return routeResolution;
                 }
