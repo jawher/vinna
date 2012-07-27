@@ -13,13 +13,13 @@ public final class RouteBuilder {
     private final String path;
     private final String verb;
     private final Vinna context;
-    private final List<Parameters> parameters;
+    private final List<ActionArgument> parameters;
 
     private Class controller;
     private Method method;
     private String controllerId;//FIXME: expose a way to set this
 
-    public RouteBuilder(String verb, String path, Vinna context, List<Parameters> parameters) {
+    public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> parameters) {
         this.path = path;
         this.context = context;
         this.verb = verb;

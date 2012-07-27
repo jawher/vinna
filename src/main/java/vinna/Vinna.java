@@ -11,7 +11,7 @@ import java.util.List;
 public class Vinna {
 
     private final Router router;
-    private List<Parameters> routeParameters;
+    private List<ActionArgument> routeParameters;
 
     public Vinna(String routesPath) throws UnsupportedEncodingException {
         this();
@@ -37,14 +37,14 @@ public class Vinna {
         return new RouteBuilder("GET", path, this, routeParameters);
     }
 
-    protected final Parameters param(String name) {
-        Parameters param = new Parameters(Parameters.Type.VARIABLE, name);
+    protected final ActionArgument param(String name) {
+        ActionArgument param = new ActionArgument(ActionArgument.Type.VARIABLE, name);
         routeParameters.add(param);
         return param;
     }
 
-    protected final Parameters constant(String value) {
-        Parameters param = new Parameters(Parameters.Type.CONSTANT, value);
+    protected final ActionArgument constant(String value) {
+        ActionArgument param = new ActionArgument(ActionArgument.Type.CONSTANT, value);
         routeParameters.add(param);
         return param;
     }

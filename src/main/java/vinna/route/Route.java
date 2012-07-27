@@ -16,9 +16,9 @@ public class Route {
         public final Class<?> controllerClass;
         public final String methodName;
         public final Method method;
-        public final List<Parameters> parameters;
+        public final List<ActionArgument> parameters;
 
-        public Action(String controllerId, String methodName, List<Parameters> parameters) {
+        public Action(String controllerId, String methodName, List<ActionArgument> parameters) {
             this.controllerId = controllerId;
             this.controllerClass = null;
             this.methodName = methodName;
@@ -26,7 +26,7 @@ public class Route {
             this.parameters = parameters;
         }
 
-        public Action(String controllerId, Class<?> controllerClass, Method method, List<Parameters> parameters) {
+        public Action(String controllerId, Class<?> controllerClass, Method method, List<ActionArgument> parameters) {
             this.controllerId = controllerId;
             this.controllerClass = controllerClass;
             this.methodName = null;
@@ -61,18 +61,18 @@ public class Route {
             System.out.println("Got match for " + toString());
             Map<String, String> variablesNames = new HashMap<>();
 
-            for (Parameters parameters : action.parameters) {
-                switch (parameters.type) {
+            for (ActionArgument actionArgument : action.parameters) {
+                switch (actionArgument.type) {
                     case VARIABLE:
-                        String variableValue = m.group(parameters.value);
-                        variablesNames.put(parameters.value, variableValue);
+                        String variableValue = m.group(actionArgument.value);
+                        variablesNames.put(actionArgument.value, variableValue);
 
-                        System.out.println("\t" + parameters.value + "=" + variableValue);
+                        System.out.println("\t" + actionArgument.value + "=" + variableValue);
                         break;
                     case CONSTANT:
-                        variablesNames.put(parameters.value, parameters.value);
+                        variablesNames.put(actionArgument.value, actionArgument.value);
 
-                        System.out.println("\t" + parameters.value + "=" + parameters.value);
+                        System.out.println("\t" + actionArgument.value + "=" + actionArgument.value);
                         break;
                 }
             }

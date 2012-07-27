@@ -1,22 +1,22 @@
 package vinna.route;
 
-public class Parameters {
+public class ActionArgument {
     public enum Type {VARIABLE, CONSTANT}
 
     public final Type type;
     public final String value;
 
-    public Parameters(Type type, String value) {
+    public ActionArgument(Type type, String value) {
         this.type = type;
         this.value = value;
     }
 
     public final int toInt() {
-        return 0;
+        return 42;
     }
 
     public final String toString() {
-        return "";
+        return "42";
     }
 
     public final boolean toBoolean() {
