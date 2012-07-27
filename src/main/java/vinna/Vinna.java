@@ -20,7 +20,6 @@ public class Vinna {
         this();
         List<Route> routes = new RoutesParser().loadFrom(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"));
         router.addRoutes(routes);
-
     }
 
     public Vinna() {
@@ -31,9 +30,6 @@ public class Vinna {
         return router.match(request);
     }
 
-    public Collection<Route> getRoutes() {
-        return Collections.unmodifiableCollection(router.getRoutes());
-    }
 
     public void addRoute(Route route) {
         this.router.addRoute(route);
