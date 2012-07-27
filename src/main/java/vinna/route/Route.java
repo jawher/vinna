@@ -1,77 +1,37 @@
 package vinna.route;
 
-import vinna.outcome.Outcome;
-
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Route {
 
-
-    public class RouteResolution {
-        private LinkedList<String> paramValues;
-
-        public RouteResolution(LinkedList<String> paramValues) {
-            this.paramValues = paramValues;
-        }
-
-        public Outcome callAction() throws IllegalAccessException, InstantiationException, InvocationTargetException {
-            // TODO objectFactory
-            Class<?> controllerClz = action.controllerClass;
-            if (controllerClz == null) {
-                try {
-                    controllerClz = Class.forName(action.controllerId);
-                } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("Invalid controllerId class " + action.controllerId);
-                }
-            }
-            Method toCall = action.method;
-            if (toCall == null) {
-                for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
-                    if (controllerMethod.getName().equals(action.methodName)) {
-                        toCall = controllerMethod;
-                        break;
-                    }
-                }
-                if (toCall == null) {
-                    throw new IllegalArgumentException("no methodName " + action.methodName + " in " + action.controllerId);
-                }
-            }
-
-
-            Object controllerInstance = controllerClz.newInstance();
-
-            List<Object> castedParams = new ArrayList<>();
-            for (Class clazz : toCall.getParameterTypes()) {
-                castedParams.add(clazz.cast(paramValues.removeFirst()));
-            }
-
-            // throw exception or return an ErrorOutcome ?
-            return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
-        }
-    }
-
-    public static final class Action {
+	// TODO multiple action per route
+    static final class Action {
         public final String controllerId;
         public final Class<?> controllerClass;
         public final String methodName;
         public final Method method;
+		public final List<String> arguments;
 
-        public Action(String controllerId, String methodName) {
+        public Action(String controllerId, String methodName, List<String> arguments) {
             this.controllerId = controllerId;
             this.controllerClass = null;
             this.methodName = methodName;
             this.method = null;
+			this.arguments = arguments;
         }
 
-        public Action(String controllerId, Class<?> controllerClass, Method method) {
+        public Action(String controllerId, Class<?> controllerClass, Method method, List<String> arguments) {
             this.controllerId = controllerId;
             this.controllerClass = controllerClass;
             this.methodName = null;
             this.method = method;
+			this.arguments = arguments;
         }
 
         @Override
@@ -99,11 +59,14 @@ public class Route {
         Matcher m = pathPattern.matcher(path);
         if (m.matches()) {
             System.out.println("Got match for " + toString());
+			Map<String, String> variablesNames = new HashMap<>();
             for (String variableName : variableNames) {
-                // TODO LinkedList
-                System.out.println("\t" + variableName + "=" + m.group(variableName));
+				String variableValue = m.group(variableName);
+				variablesNames.put(variableName, variableValue);
+
+				System.out.println("\t" + variableName + "=" + variableValue);
             }
-            return new RouteResolution(new LinkedList<String>());
+            return new RouteResolution(action, variablesNames);
         }
         return null;
     }

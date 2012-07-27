@@ -1,20 +1,16 @@
 package vinna;
 
-import vinna.route.Route;
-import vinna.route.RouteBuilder;
-import vinna.route.Router;
-import vinna.route.RoutesParser;
+import vinna.route.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class Vinna {
 
     private final Router router;
+	private RouteBuilder currentBuilder;
 
     public Vinna(String routesPath) throws UnsupportedEncodingException {
         this();
@@ -26,10 +22,9 @@ public class Vinna {
         this.router = new Router();
     }
 
-    public Route.RouteResolution match(HttpServletRequest request) {
+    public RouteResolution match(HttpServletRequest request) {
         return router.match(request);
     }
-
 
     public void addRoute(Route route) {
         this.router.addRoute(route);
@@ -37,11 +32,22 @@ public class Vinna {
 
     protected final RouteBuilder get(String path) {
         // TODO exception
-        return new RouteBuilder("GET", path, this);
+		currentBuilder = new RouteBuilder("GET", path, this);
+        return currentBuilder;
     }
 
     protected final int getInt(String name) {
-        // TODO
+		currentBuilder.addArgument(name);
         return 0;
     }
+
+	protected final String getString(String name) {
+		currentBuilder.addArgument(name);
+		return "";
+	}
+
+	protected final boolean getBoolean(String name) {
+		currentBuilder.addArgument(name);
+		return false;
+	}
 }
