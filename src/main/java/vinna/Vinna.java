@@ -37,15 +37,15 @@ public class Vinna {
         return new RouteBuilder("GET", path, this, routeParameters);
     }
 
-    protected final ActionArgument param(String name) {
-        ActionArgument param = new ActionArgument(ActionArgument.Type.VARIABLE, name);
+    protected final ActionArgument.Variable param(String name) {
+        ActionArgument.Variable param = new ActionArgument.Variable(name);
         routeParameters.add(param);
         return param;
     }
 
-    protected final ActionArgument constant(String value) {
-        ActionArgument param = new ActionArgument(ActionArgument.Type.CONSTANT, value);
+    protected final <T> T constant(T value) {
+        ActionArgument param = new ActionArgument.Const<>(value);
         routeParameters.add(param);
-        return param;
+        return value;
     }
 }

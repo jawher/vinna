@@ -59,24 +59,13 @@ public class Route {
         Matcher m = pathPattern.matcher(path);
         if (m.matches()) {
             System.out.println("Got match for " + toString());
-            Map<String, String> variablesNames = new HashMap<>();
+            Map<String, String> paramValues = new HashMap<>();
 
-            for (ActionArgument actionArgument : action.parameters) {
-                switch (actionArgument.type) {
-                    case VARIABLE:
-                        String variableValue = m.group(actionArgument.value);
-                        variablesNames.put(actionArgument.value, variableValue);
-
-                        System.out.println("\t" + actionArgument.value + "=" + variableValue);
-                        break;
-                    case CONSTANT:
-                        variablesNames.put(actionArgument.value, actionArgument.value);
-
-                        System.out.println("\t" + actionArgument.value + "=" + actionArgument.value);
-                        break;
-                }
+            for (String variablesName : variableNames) {
+                //FIXME: check that the variable exists, or else that it is optional
+                paramValues.put(variablesName, m.group(variablesName));
             }
-            return new RouteResolution(action, variablesNames);
+            return new RouteResolution(action, paramValues);
         }
         return null;
     }
@@ -88,6 +77,5 @@ public class Route {
     @Override
     public String toString() {
         return "Route{" + verb + " " + pathPattern + " " + action + " }";
-        //return "Route{" + verb + " " + pathPattern + "?" + queryMap + " => ";
     }
 }
