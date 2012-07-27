@@ -36,7 +36,8 @@ public class RouteBuilder {
     }
 
     private Route createRoute() {
-        return new Route(verb, Pattern.compile(path),new HashMap<String, Pattern>(), new ArrayList<String>(), controller, method);
+        RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
+        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, controller, method);
         // TODO
     }
 
@@ -51,7 +52,7 @@ public class RouteBuilder {
                     method = thisMethod;
                     context.addRoute(createRoute());
                 } else {
-                    throw new Exception("Sorry, witchery is only available at Poutlard");
+                    throw new Exception("Sorry, witchery is only available at Poudlard");
                 }
             }
             return null;
