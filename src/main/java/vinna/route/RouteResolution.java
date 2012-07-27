@@ -47,18 +47,19 @@ public class RouteResolution {
 		Class[]classes = toCall.getParameterTypes();
 		for (int i = 0; i < classes.length; i++) {
 			System.err.println(classes[i]);
+            String value = action.parameters.get(i).value;
 			switch (classes[i].getName()) {
 				case "int":
 				case "java.lang.Integer":
-					castedParams.add(Integer.parseInt(paramValues.get(action.arguments.get(i))));
+                    castedParams.add(Integer.parseInt(paramValues.get(value)));
 					break;
 				case "java.lang.String":
-					castedParams.add(paramValues.get(action.arguments.get(i)));
+					castedParams.add(paramValues.get(value));
 					break;
 				case "boolean":
 				case "java.lang.Boolean":
 					// TODO convert 0 and 1 to false and true ?
-					castedParams.add(Boolean.parseBoolean(paramValues.get(action.arguments.get(i))));
+					castedParams.add(Boolean.parseBoolean(paramValues.get(value)));
 					break;
 
 			}
