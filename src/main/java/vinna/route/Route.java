@@ -10,28 +10,28 @@ import java.util.regex.Pattern;
 
 public class Route {
 
-	// TODO multiple action per route
+    // TODO multiple action per route
     static final class Action {
         public final String controllerId;
         public final Class<?> controllerClass;
         public final String methodName;
         public final Method method;
-		public final List<String> arguments;
+        public final List<Parameters> parameters;
 
-        public Action(String controllerId, String methodName, List<String> arguments) {
+        public Action(String controllerId, String methodName, List<Parameters> parameters) {
             this.controllerId = controllerId;
             this.controllerClass = null;
             this.methodName = methodName;
             this.method = null;
-			this.arguments = arguments;
+            this.parameters = parameters;
         }
 
-        public Action(String controllerId, Class<?> controllerClass, Method method, List<String> arguments) {
+        public Action(String controllerId, Class<?> controllerClass, Method method, List<Parameters> parameters) {
             this.controllerId = controllerId;
             this.controllerClass = controllerClass;
             this.methodName = null;
             this.method = method;
-			this.arguments = arguments;
+            this.parameters = parameters;
         }
 
         @Override
@@ -59,12 +59,22 @@ public class Route {
         Matcher m = pathPattern.matcher(path);
         if (m.matches()) {
             System.out.println("Got match for " + toString());
-			Map<String, String> variablesNames = new HashMap<>();
-            for (String variableName : variableNames) {
-				String variableValue = m.group(variableName);
-				variablesNames.put(variableName, variableValue);
+            Map<String, String> variablesNames = new HashMap<>();
 
-				System.out.println("\t" + variableName + "=" + variableValue);
+            for (Parameters parameters : action.parameters) {
+                switch (parameters.type) {
+                    case VARIABLE:
+                        String variableValue = m.group(parameters.value);
+                        variablesNames.put(parameters.value, variableValue);
+
+                        System.out.println("\t" + parameters.value + "=" + variableValue);
+                        break;
+                    case CONSTANT:
+                        variablesNames.put(parameters.value, parameters.value);
+
+                        System.out.println("\t" + parameters.value + "=" + parameters.value);
+                        break;
+                }
             }
             return new RouteResolution(action, variablesNames);
         }

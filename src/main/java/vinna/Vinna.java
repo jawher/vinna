@@ -5,12 +5,13 @@ import vinna.route.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Vinna {
 
     private final Router router;
-	private RouteBuilder currentBuilder;
+    private List<Parameters> routeParameters;
 
     public Vinna(String routesPath) throws UnsupportedEncodingException {
         this();
@@ -32,22 +33,19 @@ public class Vinna {
 
     protected final RouteBuilder get(String path) {
         // TODO exception
-		currentBuilder = new RouteBuilder("GET", path, this);
-        return currentBuilder;
+        routeParameters = new ArrayList<>();
+        return new RouteBuilder("GET", path, this, routeParameters);
     }
 
-    protected final int getInt(String name) {
-		currentBuilder.addArgument(name);
-        return 0;
+    protected final Parameters param(String name) {
+        Parameters param = new Parameters(Parameters.Type.VARIABLE, name);
+        routeParameters.add(param);
+        return param;
     }
 
-	protected final String getString(String name) {
-		currentBuilder.addArgument(name);
-		return "";
-	}
-
-	protected final boolean getBoolean(String name) {
-		currentBuilder.addArgument(name);
-		return false;
-	}
+    protected final Parameters constant(String value) {
+        Parameters param = new Parameters(Parameters.Type.CONSTANT, value);
+        routeParameters.add(param);
+        return param;
+    }
 }

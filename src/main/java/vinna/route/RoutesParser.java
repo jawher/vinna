@@ -32,7 +32,7 @@ public class RoutesParser {
 
                         ParsedPath parsedPath = parsePath(path);
                         ParsedAction parsedAction = parseAction(action);
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, new Route.Action(parsedAction.controller, parsedAction.method, new ArrayList<String>())));
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, new Route.Action(parsedAction.controller, parsedAction.method, new ArrayList<Parameters>())));
 
 
                         //log how vitta sees this route, as matcher.find is too forgiving

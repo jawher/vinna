@@ -7,24 +7,23 @@ import vinna.outcome.Outcome;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class RouteBuilder {
     private final String path;
     private final String verb;
     private final Vinna context;
+    private final List<Parameters> parameters;
 
     private Class controller;
     private Method method;
-	private List<String> arguments;
     private String controllerId;//FIXME: expose a way to set this
 
-    public RouteBuilder(String verb, String path, Vinna context) {
+    public RouteBuilder(String verb, String path, Vinna context, List<Parameters> parameters) {
         this.path = path;
         this.context = context;
         this.verb = verb;
-		this.arguments = new ArrayList<>();
+        this.parameters = parameters;
     }
 
     public <T> T withController(Class<T> controller) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
@@ -33,21 +32,16 @@ public final class RouteBuilder {
         ProxyFactory factory = new ProxyFactory();
         factory.setSuperclass(controller);
 
-		// TODO constructor with params
+        // TODO constructor with params
         T proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
         return proxy;
     }
 
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-        Route.Action action = new Route.Action(controllerId, controller, method,arguments);
+        Route.Action action = new Route.Action(controllerId, controller, method, parameters);
         return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action);
     }
-
-	public void addArgument(String name) {
-		// TODO constant argument
-		this.arguments.add(name);
-	}
 
     private class RouteMethodHandler implements MethodHandler {
 
