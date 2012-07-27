@@ -1,5 +1,7 @@
 package vinna.route;
 
+import vinna.request.Request;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,8 @@ public class Router {
         routes.add(route);
     }
 
-    public RouteResolution match(HttpServletRequest request) {
-        System.out.println("Try to match " + request.getServletPath());
+    public RouteResolution match(Request request) {
+        System.out.println("Try to match " + request.getPath());
         for (Route route : routes) {
             System.out.println("checking against " + route);
             RouteResolution routeResolution = route.match(request);

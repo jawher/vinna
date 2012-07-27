@@ -1,5 +1,6 @@
 package vinna;
 
+import vinna.request.Request;
 import vinna.route.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +24,7 @@ public class Vinna {
         this.router = new Router();
     }
 
-    public RouteResolution match(HttpServletRequest request) {
+    public RouteResolution match(Request request) {
         return router.match(request);
     }
 

@@ -1,5 +1,7 @@
 package vinna.route;
 
+import vinna.request.Request;
+
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -56,10 +58,10 @@ public class Route {
     }
 
 
-    public RouteResolution match(HttpServletRequest request) {
-        if (request.getMethod().equalsIgnoreCase(verb)) {
+    public RouteResolution match(Request request) {
+        if (request.getVerb().equalsIgnoreCase(verb)) {
 
-            Matcher m = pathPattern.matcher(request.getServletPath());
+            Matcher m = pathPattern.matcher(request.getPath());
             if (m.matches()) {
                 System.out.println("Got match for " + toString());
                 Map<String, String> paramValues = new HashMap<>();
@@ -67,15 +69,15 @@ public class Route {
                 for (String variablesName : variableNames) {
                     //FIXME: check that the variable exists, or else that it is optional
                     if (args.containsKey(variablesName)) {
-                        if (request.getParameter(variablesName) != null) {
+                        if (request.getParam(variablesName) != null) {
                             if (args.get(variablesName) != null) {
-                                if (!args.get(variablesName).matcher(request.getParameter(variablesName)).matches()) {
+                                if (!args.get(variablesName).matcher(request.getParam(variablesName)).matches()) {
                                     return null;
                                 } else {
-                                    paramValues.put(variablesName, request.getParameter(variablesName));
+                                    paramValues.put(variablesName, request.getParam(variablesName));
                                 }
                             } else { //no pattern, put it as it is
-                                paramValues.put(variablesName, request.getParameter(variablesName));
+                                paramValues.put(variablesName, request.getParam(variablesName));
                             }
                         }
                     } else {

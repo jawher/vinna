@@ -1,6 +1,8 @@
 package vinna;
 
 import vinna.outcome.Outcome;
+import vinna.request.*;
+import vinna.request.ServletRequestWrapper;
 import vinna.route.RouteResolution;
 
 import javax.servlet.*;
@@ -42,7 +44,7 @@ public class VinnaFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-            RouteResolution resolvedRoute = vinna.match(httpRequest);
+            RouteResolution resolvedRoute = vinna.match(new ServletRequestWrapper(httpRequest));
             if (resolvedRoute != null) {
                 try {
                     Outcome outcome = resolvedRoute.callAction();
