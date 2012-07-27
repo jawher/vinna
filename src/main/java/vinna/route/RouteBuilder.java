@@ -51,6 +51,9 @@ public final class RouteBuilder {
             System.err.println(thisMethod + ":" + thisMethod.getReturnType());
             if (method == null) {
                 if (Outcome.class.isAssignableFrom(thisMethod.getReturnType())) {
+                    if(parameters.size()!=args.length) {
+                        throw new IllegalStateException("Like, really ?");
+                    }
                     method = thisMethod;
                     context.addRoute(createRoute());
                 } else {
