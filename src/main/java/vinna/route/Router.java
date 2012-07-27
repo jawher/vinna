@@ -16,17 +16,13 @@ public class Router {
         System.out.println("Try to match " + request.getServletPath());
         for (Route route : routes) {
             System.out.println("checking against " + route);
-            if (route.hasVerb(request.getMethod())) {
-                RouteResolution routeResolution = route.match(request.getServletPath());
-                if (routeResolution != null) {
-                    return routeResolution;
-                }
+            RouteResolution routeResolution = route.match(request);
+            if (routeResolution != null) {
+                return routeResolution;
             }
         }
         return null;
     }
-
-
 
 
     public void addRoutes(List<Route> routes) {

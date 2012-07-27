@@ -1,5 +1,6 @@
 package vinna.route;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,24 +56,38 @@ public class Route {
     }
 
 
-    public RouteResolution match(String path) {
-        Matcher m = pathPattern.matcher(path);
-        if (m.matches()) {
-            System.out.println("Got match for " + toString());
-            Map<String, String> paramValues = new HashMap<>();
+    public RouteResolution match(HttpServletRequest request) {
+        if (request.getMethod().equalsIgnoreCase(verb)) {
 
-            for (String variablesName : variableNames) {
-                //FIXME: check that the variable exists, or else that it is optional
-                paramValues.put(variablesName, m.group(variablesName));
+            Matcher m = pathPattern.matcher(request.getServletPath());
+            if (m.matches()) {
+                System.out.println("Got match for " + toString());
+                Map<String, String> paramValues = new HashMap<>();
+
+                for (String variablesName : variableNames) {
+                    //FIXME: check that the variable exists, or else that it is optional
+                    if (args.containsKey(variablesName)) {
+                        if (request.getParameter(variablesName) != null) {
+                            if (args.get(variablesName) != null) {
+                                if (!args.get(variablesName).matcher(request.getParameter(variablesName)).matches()) {
+                                    return null;
+                                } else {
+                                    paramValues.put(variablesName, request.getParameter(variablesName));
+                                }
+                            } else { //no pattern, put it as it is
+                                paramValues.put(variablesName, request.getParameter(variablesName));
+                            }
+                        }
+                    } else {
+                        paramValues.put(variablesName, m.group(variablesName));
+                    }
+                }
+                return new RouteResolution(action, paramValues);
             }
-            return new RouteResolution(action, paramValues);
         }
         return null;
     }
 
-    public boolean hasVerb(String verb) {
-        return this.verb.equalsIgnoreCase(verb);
-    }
 
     @Override
     public String toString() {
