@@ -43,7 +43,6 @@ public class TotoAppTest extends Vinna {
         Assert.assertTrue(route.hasVerb("get"));
     }
 
-
     @Test
     public void checkRouteResolutionSuccess() {
         TotoAppTest toto = new TotoAppTest();
