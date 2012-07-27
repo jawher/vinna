@@ -18,6 +18,8 @@ public class RouteBuilder {
 
     private Class controller;
     private Method method;
+    private String controllerId;//FIXME: expose a way to set this
+
 
     public RouteBuilder(String verb, String path, Vinna context) {
         this.path = path;
@@ -37,9 +39,8 @@ public class RouteBuilder {
 
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-        //FIXME: we do have the class and the method objects here, maybe we need another variant of route ?
-        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, controller.getCanonicalName(), method.getName());
-        // TODO
+        Route.Action action = new Route.Action(controllerId, controller, method);
+        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action);
     }
 
     private class RouteMethodHandler implements MethodHandler {
