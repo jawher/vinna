@@ -31,9 +31,7 @@ public class Router {
     }
 
 
-    public List<Route> getRoutes() {
-        return Collections.unmodifiableList(routes);
-    }
+
 
     public void addRoutes(List<Route> routes) {
         this.routes.addAll(routes);

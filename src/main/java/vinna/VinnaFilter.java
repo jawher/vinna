@@ -34,8 +34,6 @@ public class VinnaFilter implements Filter {
                 vinna = new Vinna();
             }
         }
-        System.out.println("Defined routes:");
-        System.out.println(this.vinna.getRoutes());
     }
 
     @Override
