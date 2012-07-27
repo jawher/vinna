@@ -31,11 +31,9 @@ public class RoutesParser {
 
 
                         ParsedPath parsedPath = parsePath(path);
-                        try {
-                            routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action));
-                        } catch (ClassNotFoundException e) {
-                            System.err.println("Cannot add route: " + line+": class not found");
-                        }
+                        ParsedAction parsedAction = parseAction(action);
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, parsedAction.controller, parsedAction.method));
+
 
                         //log how vitta sees this route, as matcher.find is too forgiving
                     }
@@ -116,6 +114,42 @@ public class RoutesParser {
         System.out.println(pathPattern);
         System.out.println(queryMap);
         return new ParsedPath(Pattern.compile(pathPattern.toString()), queryMap, variablesNames);
+    }
+
+    public static final class ParsedAction {
+        public final String controller;
+        public final String method;
+
+        public ParsedAction(String controller, String method) {
+            this.controller = controller;
+            this.method = method;
+        }
+    }
+
+    public static ParsedAction parseAction(String action) {
+        /*
+        controller.method({arg}, "string", true, 4, 3.6, {})
+        controller.method()
+        package.controller.method()
+         */
+
+        Pattern actionPattern = Pattern.compile("(?<controllerAndMethod>.+())\\((?<args>.*)\\)");
+        //String action = "pkg.controller.method({arg}, \"string\", true, 4, 3.6, {})";
+        Matcher actionMatcher = actionPattern.matcher(action);
+        if (actionMatcher.matches()) {
+            String controllerAndMethod = actionMatcher.group("controllerAndMethod");
+
+            Matcher m = Pattern.compile("(?<controller>.+)\\.(?<method>[^\\.]+)$").matcher(controllerAndMethod);
+            if (m.matches()) {
+                return new ParsedAction(m.group("controller"), m.group("method"));
+            } else {
+                throw new RuntimeException("Invalid class and method " + controllerAndMethod);
+            }
+
+
+        } else {
+            throw new RuntimeException("Invalid action");
+        }
     }
 
 }

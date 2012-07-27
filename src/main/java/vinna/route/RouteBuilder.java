@@ -37,7 +37,8 @@ public class RouteBuilder {
 
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, controller, method);
+        //FIXME: we do have the class and the method objects here, maybe we need another variant of route ?
+        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, controller.getCanonicalName(), method.getName());
         // TODO
     }
 

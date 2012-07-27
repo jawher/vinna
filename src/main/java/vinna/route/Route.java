@@ -18,15 +18,34 @@ public class Route {
 
         public Outcome callAction() throws IllegalAccessException, InstantiationException, InvocationTargetException {
             // TODO objectFactory
-            Object controllerInstance = controller.newInstance();
+            Class<?> controllerClz = null;
+            try {
+                controllerClz = Class.forName(controller);
+            } catch (ClassNotFoundException e) {
+                throw new  IllegalArgumentException("Invalid controller class "+controller);
+            }
+
+            Method toCall = null;
+            for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
+                if (controllerMethod.getName().equals(method)) {
+                    toCall = controllerMethod;
+                    break;
+                }
+            }
+
+            if (toCall == null) {
+                throw new IllegalArgumentException("no method " + method + " in " + controller);
+            }
+
+            Object controllerInstance = controllerClz.newInstance();
 
             List<Object> castedParams = new ArrayList<>();
-            for (Class clazz : method.getParameterTypes()) {
+            for (Class clazz : toCall.getParameterTypes()) {
                 castedParams.add(clazz.cast(paramValues.removeFirst()));
             }
 
             // throw exception or return an ErrorOutcome ?
-            return (Outcome) method.invoke(controllerInstance, castedParams.toArray());
+            return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
         }
     }
 
@@ -34,10 +53,10 @@ public class Route {
     private final Pattern pathPattern;
     private final Map<String, Pattern> args;
     private final Collection<String> variableNames;
-    private final Class controller;
-    private Method method;
+    private final String controller;
+    private final String method;
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Class controller, Method method) {
+    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, String controller, String method) {
         this.verb = verb;
         this.pathPattern = pathPattern;
         this.args = args;
@@ -46,28 +65,6 @@ public class Route {
         this.method = method;
     }
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, String action) throws ClassNotFoundException {
-        this.verb = verb;
-        this.pathPattern = pathPattern;
-        this.args = args;
-        this.variableNames = variableNames;
-
-        // TODO
-        int separatorPos = action.lastIndexOf('.');
-
-        String className = action.substring(0, separatorPos);
-        String methodName = action.substring(separatorPos + 1, action.indexOf('('));
-        System.err.println("class:" + className);
-        System.err.println("method:" + methodName);
-        controller = Class.forName(className);
-
-        for (Method controllerMethod : controller.getDeclaredMethods()) {
-            if (controllerMethod.getName().equals(methodName)) {
-                method = controllerMethod;
-                break;
-            }
-        }
-    }
 
     public RouteResolution match(String path) {
         Matcher m = pathPattern.matcher(path);
@@ -89,6 +86,6 @@ public class Route {
     @Override
     public String toString() {
         return "Route{" + verb + " " + pathPattern + " " + method + " }";
-        //return "Route{" + verb + " " + pathPattern + "?" + args + " => ";
+        //return "Route{" + verb + " " + pathPattern + "?" + queryMap + " => ";
     }
 }
