@@ -1,8 +1,10 @@
 package vinna.outcome;
 
+import vinna.request.Request;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface Outcome {
-    public void execute(HttpServletRequest request, HttpServletResponse response);
+    public void execute(Request request, HttpServletResponse response);
 }

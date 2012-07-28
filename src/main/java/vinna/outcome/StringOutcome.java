@@ -1,6 +1,7 @@
 package vinna.outcome;
 
-import javax.servlet.http.HttpServletRequest;
+import vinna.request.Request;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ public class StringOutcome implements Outcome {
     }
 
     @Override
-    public void execute(HttpServletRequest request, HttpServletResponse response) {
+    public void execute(Request request, HttpServletResponse response) {
         try {
             response.getOutputStream().write((content.getBytes("utf-8")));
         } catch (IOException e) {

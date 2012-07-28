@@ -1,12 +1,9 @@
 package vinna.request;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collection;
 
-/**
- * @author lpereira
- */
 public class ServletRequestWrapper implements Request {
 
     private final HttpServletRequest servletRequest;
@@ -26,7 +23,7 @@ public class ServletRequestWrapper implements Request {
     }
 
     @Override
-    public String getParam(String name) {
-        return servletRequest.getParameter(name);
+    public Collection<String> getParam(String name) {
+        return Arrays.asList(servletRequest.getParameterValues(name));
     }
 }

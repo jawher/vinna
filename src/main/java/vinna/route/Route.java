@@ -69,15 +69,16 @@ public class Route {
                 for (String variablesName : variableNames) {
                     //FIXME: check that the variable exists, or else that it is optional
                     if (args.containsKey(variablesName)) {
-                        if (request.getParam(variablesName) != null) {
+                        if (!request.getParam(variablesName).isEmpty()) {
+                            String param = request.getParam(variablesName).iterator().next();
                             if (args.get(variablesName) != null) {
-                                if (!args.get(variablesName).matcher(request.getParam(variablesName)).matches()) {
+                                if (!args.get(variablesName).matcher(param).matches()) {
                                     return null;
                                 } else {
-                                    paramValues.put(variablesName, request.getParam(variablesName));
+                                    paramValues.put(variablesName, param);
                                 }
                             } else { //no pattern, put it as it is
-                                paramValues.put(variablesName, request.getParam(variablesName));
+                                paramValues.put(variablesName, param);
                             }
                         }
                     } else {
