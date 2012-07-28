@@ -3,6 +3,8 @@ package vinna.route;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +34,8 @@ public class RoutesParser {
 
                         ParsedPath parsedPath = parsePath(path);
                         ParsedAction parsedAction = parseAction(action);
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, new Route.Action(parsedAction.controller, parsedAction.method, new ArrayList<ActionArgument>())));
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames,
+                                new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters)));
 
 
                         //log how vitta sees this route, as matcher.find is too forgiving
@@ -44,6 +47,7 @@ public class RoutesParser {
             throw new RuntimeException(e);
         }
     }
+
 
     public static final class ParsedPath {
         public final Pattern pathPattern;
@@ -119,10 +123,12 @@ public class RoutesParser {
     public static final class ParsedAction {
         public final String controller;
         public final String method;
+        public final List<ActionArgument> parameters;
 
-        public ParsedAction(String controller, String method) {
+        public ParsedAction(String controller, String method, List<ActionArgument> parameters) {
             this.controller = controller;
             this.method = method;
+            this.parameters = parameters;
         }
     }
 
@@ -141,7 +147,36 @@ public class RoutesParser {
 
             Matcher m = Pattern.compile("(?<controller>.+)\\.(?<method>[^\\.]+)$").matcher(controllerAndMethod);
             if (m.matches()) {
-                return new ParsedAction(m.group("controller"), m.group("method"));
+                String controller = m.group("controller");
+                String method = m.group("method");
+
+                String argsString = actionMatcher.group("args").trim();
+                List<ActionArgument> parameters = new ArrayList<>();
+                Pattern pvar = Pattern.compile("\\{(.+)\\}");
+                Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
+                Pattern pbool = Pattern.compile("(true|false)");
+                if (!argsString.isEmpty()) {
+                    String[] args = argsString.split("\\s*,\\s*");
+                    for (String arg : args) {
+                        Matcher pm;
+                        if ((pm = pvar.matcher(arg)).matches()) {
+                            parameters.add(new ActionArgument.Variable(pm.group(1)));
+                        } else if ((pm = pstr.matcher(arg)).matches()) {
+                            parameters.add(new ActionArgument.Const<String>(pm.group(1)));
+                        } else if ((pm = pbool.matcher(arg)).matches()) {
+                            parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
+                        } else {
+                            try {
+                                parameters.add(new NumConst(new BigDecimal(arg)));
+                            } catch (NumberFormatException e) {
+                                throw new RuntimeException("Invalid action argument " + arg);
+                            }
+                        }
+                    }
+                }
+
+
+                return new ParsedAction(controller, method, parameters);
             } else {
                 throw new RuntimeException("Invalid class and method " + controllerAndMethod);
             }
@@ -149,6 +184,36 @@ public class RoutesParser {
 
         } else {
             throw new RuntimeException("Invalid action");
+        }
+    }
+
+    private static final class NumConst extends ActionArgument {
+        private final BigDecimal value;
+
+        public NumConst(BigDecimal value) {
+            this.value = value;
+        }
+
+        @Override
+        protected Object resolve(Map<String, String> matchedVars, Class<?> targetType) {
+            if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
+                return value.longValue();
+            } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
+                return value.intValue();
+            } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
+                return value.intValue();
+            } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
+                return value.byteValue();
+            } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
+                return value.doubleValue();
+            } else if (Float.class.equals(targetType) || Float.TYPE.equals(targetType)) {
+                return value.floatValue();
+            } else if (BigDecimal.class.equals(targetType)) {
+                return value;
+            } else if (BigInteger.class.equals(targetType)) {
+                return value.toBigInteger();
+            }
+            throw new IllegalArgumentException("Cannot convert a numeric value to " + targetType);
         }
     }
 
