@@ -29,19 +29,19 @@ public class App {
         Pattern actionPattern = Pattern.compile("(?<clzMeth>.+())\\((?<args>.*)\\)");
         String action = "pkg.controller.method({arg}, \"string\", true, 4, 3.6, {})";
         Matcher actionMatcher = actionPattern.matcher(action);
-        if(actionMatcher.matches()) {
+        if (actionMatcher.matches()) {
             String clzMeth = actionMatcher.group("clzMeth");
 
             Matcher m = Pattern.compile("(.+)\\.([^\\.]+)$").matcher(clzMeth);
-            if(m.matches()) {
-                System.out.println(m.group(1)+" :<>: "+m.group(2));
+            if (m.matches()) {
+                System.out.println(m.group(1) + " :<>: " + m.group(2));
             } else {
-                throw new RuntimeException("Invalid class and method "+clzMeth);
+                throw new RuntimeException("Invalid class and method " + clzMeth);
             }
 
 
             String args = actionMatcher.group("args");
-            System.out.println(clzMeth+" :: "+args);
+            System.out.println(clzMeth + " :: " + args);
         } else {
             throw new RuntimeException("Invalid action");
         }
