@@ -26,14 +26,19 @@ public final class RouteBuilder {
         this.parameters = parameters;
     }
 
-    public <T> T withController(Class<T> controller) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
+    public <T> T withController(Class<T> controller)  {
         this.controller = controller;
 
         ProxyFactory factory = new ProxyFactory();
         factory.setSuperclass(controller);
 
         // TODO constructor with params
-        T proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
+        T proxy = null;
+        try {
+            proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
         return proxy;
     }
 
