@@ -31,14 +31,8 @@ public class RequestTest {
         public VinnApp(String path) {
             try {
                 get(path).withController(Ctrl.class).process();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (InstantiationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -50,19 +44,13 @@ public class RequestTest {
 
     @Test
     public void checkPathMatchingSuccess() {
-        MockedRequest mockedRequest = new MockedRequest();
-        mockedRequest.path = "/beer/109";
-        mockedRequest.verb = "get";
-        mockedRequest.param = Collections.<String, Collection<String>>singletonMap("foudre", Collections.<String>singletonList("tonnerre"));
+        MockedRequest mockedRequest = MockedRequest.get("/beer/109").param("foudre", "tonnerre").build();
         Assert.assertNotNull(vinnApp.match(mockedRequest));
     }
 
     @Test
     public void checkPathMatchingFailure() {
-        MockedRequest mockedRequest = new MockedRequest();
-        mockedRequest.path = "/beer/NaN";
-        mockedRequest.verb = "get";
-        mockedRequest.param = Collections.<String, Collection<String>>singletonMap("foudre", Collections.<String>singletonList("tonnerre"));
+        MockedRequest mockedRequest = MockedRequest.get("/beer/NaN").param("foudre", "tonnerre").build();
         Assert.assertNull(vinnApp.match(mockedRequest));
     }
 }
