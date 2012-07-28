@@ -2,7 +2,7 @@ package vinna.request;
 
 import java.util.*;
 
-class MockedRequest implements Request {
+public class MockedRequest implements Request {
 
     private String verb;
     private String path;
