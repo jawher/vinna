@@ -57,6 +57,7 @@ public class RequestTest {
         Assert.assertNotNull(vinnApp.match(mockedRequest));
     }
 
+    @Test
     public void checkPathMatchingFailure() {
         MockedRequest mockedRequest = new MockedRequest();
         mockedRequest.path = "/beer/NaN";
