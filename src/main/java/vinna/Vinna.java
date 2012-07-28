@@ -3,7 +3,6 @@ package vinna;
 import vinna.request.Request;
 import vinna.route.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

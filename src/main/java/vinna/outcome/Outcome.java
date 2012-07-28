@@ -2,7 +2,6 @@ package vinna.outcome;
 
 import vinna.request.Request;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public interface Outcome {
