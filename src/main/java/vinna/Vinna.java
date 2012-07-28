@@ -14,13 +14,18 @@ public class Vinna {
     private List<ActionArgument> routeParameters;
 
     public Vinna(String routesPath) throws UnsupportedEncodingException {
-        this();
+        this.router = new Router();
         List<Route> routes = new RoutesParser().loadFrom(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"));
         router.addRoutes(routes);
     }
 
     public Vinna() {
         this.router = new Router();
+        routes();
+    }
+
+    protected void routes() {
+        //TODO: define default catchall routes
     }
 
     public RouteResolution match(Request request) {
