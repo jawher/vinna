@@ -8,7 +8,7 @@ public class MockedRequest implements Request {
     private String path;
     private Map<String, Collection<String>> params;
 
-    MockedRequest(String verb, String path, Map<String, Collection<String>> params) {
+    private MockedRequest(String verb, String path, Map<String, Collection<String>> params) {
         this.verb = verb;
         this.path = path;
         this.params = params;
@@ -31,6 +31,10 @@ public class MockedRequest implements Request {
 
     public static Builder get(String path) {
         return new Builder("GET", path);
+    }
+
+    public static Builder post(String path) {
+        return new Builder("POST", path);
     }
 
     public static class Builder {

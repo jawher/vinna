@@ -27,6 +27,36 @@ public class RoutingTests {
         };
     }
 
+    private Vinna onePostRouteApp(final String path) {
+        return new Vinna() {
+            @Override
+            protected void routes() {
+                post(path).withController(NoOpcontroller.class).process();
+            }
+        };
+    }
+
+    @Test
+    public void failsWithAPostVerbInRouteButNotInRequest() {
+        Vinna app = onePostRouteApp("/users");
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void failsWithAGetVerbInRouteButNotInRequest() {
+        Vinna app = oneRouteApp("/users");
+        MockedRequest mockedRequest = MockedRequest.post("/users").build();
+        assertNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void matchesAConstantPathWithPostVerb() {
+        Vinna app = onePostRouteApp("/users");
+        MockedRequest mockedRequest = MockedRequest.post("/users").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
     @Test
     public void matchesAConstantPath() {
         Vinna app = oneRouteApp("/users");

@@ -32,7 +32,7 @@ public class Vinna {
         return router.match(request);
     }
 
-    public void addRoute(Route route) {
+    public final void addRoute(Route route) {
         this.router.addRoute(route);
     }
 
@@ -40,6 +40,11 @@ public class Vinna {
         // TODO exception
         routeParameters = new ArrayList<>();
         return new RouteBuilder("GET", path, this, routeParameters);
+    }
+
+    protected final RouteBuilder post(String path) {
+        routeParameters = new ArrayList<>();
+        return new RouteBuilder("POST", path, this, routeParameters);
     }
 
     protected final ActionArgument.Variable param(String name) {

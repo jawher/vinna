@@ -26,7 +26,7 @@ public final class RouteBuilder {
         this.parameters = parameters;
     }
 
-    public <T> T withController(Class<T> controller)  {
+    public <T> T withController(Class<T> controller) {
         this.controller = controller;
 
         ProxyFactory factory = new ProxyFactory();
@@ -53,10 +53,9 @@ public final class RouteBuilder {
         @Override
         public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
             // be careful with the method finalize
-            System.err.println(thisMethod + ":" + thisMethod.getReturnType());
             if (method == null) {
                 if (Outcome.class.isAssignableFrom(thisMethod.getReturnType())) {
-                    if(parameters.size()!=args.length) {
+                    if (parameters.size() != args.length) {
                         throw new IllegalStateException("Like, really ?");
                     }
                     method = thisMethod;
