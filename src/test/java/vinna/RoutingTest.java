@@ -9,10 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class RoutingTest {
 
-    private static class NoOpcontroller {
-        public NoOpcontroller() {
-        }
-
+    public static class NoOpcontroller {
         public Outcome process() {
             return null;
         }

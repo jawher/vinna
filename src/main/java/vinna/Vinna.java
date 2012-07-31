@@ -6,6 +6,8 @@ import vinna.route.*;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Vinna {
@@ -37,7 +39,6 @@ public class Vinna {
     }
 
     protected final RouteBuilder get(String path) {
-        // TODO exception
         routeParameters = new ArrayList<>();
         return new RouteBuilder("GET", path, this, routeParameters);
     }
@@ -57,5 +58,17 @@ public class Vinna {
         ActionArgument param = new ActionArgument.Const<>(value);
         routeParameters.add(param);
         return value;
+    }
+
+    protected final String header(String name) {
+        ActionArgument param = new ActionArgument.Header(name);
+        routeParameters.add(param);
+        return name;
+    }
+
+    protected final Collection<String> headers(String name) {
+        ActionArgument param = new ActionArgument.Headers(name);
+        routeParameters.add(param);
+        return Collections.emptyList();
     }
 }

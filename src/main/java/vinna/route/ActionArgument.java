@@ -1,10 +1,24 @@
 package vinna.route;
 
+import vinna.request.Request;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
 public abstract class ActionArgument {
+
+    public static class Environment {
+        protected final Map<String, String> matchedVars;
+        protected final Request request;
+        protected final Class<?> targetType;
+
+        public Environment(Request request, Map<String, String> matchedVars, Class<?> targetType) {
+            this.matchedVars = matchedVars;
+            this.request = request;
+            this.targetType = targetType;
+        }
+    }
 
     public static class Const<T> extends ActionArgument {
         private final T value;
@@ -14,7 +28,7 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Map<String, String> matchedVars, Class<?> targetType) {
+        protected Object resolve(Environment env) {
             return value;
         }
     }
@@ -27,77 +41,102 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Map<String, String> matchedVars, Class<?> targetType) {
-            String value = matchedVars.get(name);
-            if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
+        protected Object resolve(Environment env) {
+            String value = env.matchedVars.get(name);
+            if (Long.class.equals(env.targetType) || Long.TYPE.equals(env.targetType)) {
                 return Long.parseLong(value);
-            } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
+            } else if (Integer.class.equals(env.targetType) || Integer.TYPE.equals(env.targetType)) {
                 return Integer.parseInt(value);
-            } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
+            } else if (Short.class.equals(env.targetType) || Short.TYPE.equals(env.targetType)) {
                 return Short.parseShort(value);
-            } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
+            } else if (Byte.class.equals(env.targetType) || Byte.TYPE.equals(env.targetType)) {
                 return Byte.parseByte(value);
-            } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
+            } else if (Double.class.equals(env.targetType) || Double.TYPE.equals(env.targetType)) {
                 return Double.parseDouble(value);
-            } else if (Float.class.equals(targetType) || Float.TYPE.equals(targetType)) {
+            } else if (Float.class.equals(env.targetType) || Float.TYPE.equals(env.targetType)) {
                 return Float.parseFloat(value);
-            } else if (BigDecimal.class.equals(targetType)) {
+            } else if (BigDecimal.class.equals(env.targetType)) {
                 return new BigDecimal(value);
-            } else if (BigInteger.class.equals(targetType)) {
+            } else if (BigInteger.class.equals(env.targetType)) {
                 return new BigInteger(value);
-            } else if (Boolean.class.equals(targetType) || Boolean.TYPE.equals(targetType)) {
+            } else if (Boolean.class.equals(env.targetType) || Boolean.TYPE.equals(env.targetType)) {
                 return Boolean.parseBoolean(value);
-            } else if (String.class.equals(targetType)) {
+            } else if (String.class.equals(env.targetType)) {
                 return value;
             }
             //TODO: handle other types
-            throw new IllegalArgumentException("Unsupported conversion of '" + value + "' to " + targetType);
+            throw new IllegalArgumentException("Unsupported conversion of '" + value + "' to " + env.targetType);
         }
 
-        public final long toLong() {
+        public final long asLong() {
             return 42;
         }
 
-        public final int toInt() {
+        public final int asInt() {
             return 42;
         }
 
-        public final short toShort() {
+        public final short asShort() {
             return 42;
         }
 
-        public final byte toByte() {
+        public final byte asByte() {
             return 42;
         }
 
-        public final float toFloat() {
+        public final float asFloat() {
             return 42.0f;
         }
 
-        public final double toDouble() {
+        public final double asDouble() {
             return 42.0;
         }
 
-        public final BigDecimal toBigDecimal() {
+        public final BigDecimal asBigDecimal() {
             return BigDecimal.TEN;
         }
 
-        public final BigInteger toBigInteger() {
+        public final BigInteger asBigInteger() {
             return BigInteger.TEN;
         }
 
-        public final String toString() {
+        public final String asString() {
             return "42";
         }
 
-        public final boolean toBoolean() {
+        public final boolean asBoolean() {
             return false;
         }
     }
 
-    //FIXME: ugly ugly matchedVars map argument. Maybe replace with an env type, encapsulating matched vars, sys
-    // properties and special variables (req.body, req.headers.*, etc.)
-    protected abstract Object resolve(Map<String, String> matchedVars, Class<?> targetType);
+    public static class Headers extends ActionArgument {
 
+        private final String headerName;
+
+        public Headers(String headerName) {
+            this.headerName = headerName;
+        }
+
+        @Override
+        protected Object resolve(Environment env) {
+            return env.request.getHeaders(headerName);
+        }
+    }
+
+    public static class Header extends ActionArgument {
+
+        private final String headerName;
+
+        public Header(String headerName) {
+            this.headerName = headerName;
+        }
+
+        @Override
+        protected Object resolve(Environment env) {
+            return env.request.getHeader(headerName);
+        }
+    }
+
+    protected abstract Object resolve(Environment env);
 
 }

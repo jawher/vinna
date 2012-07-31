@@ -84,7 +84,7 @@ public class Route {
                         paramValues.put(variablesName, m.group(variablesName));
                     }
                 }
-                return new RouteResolution(action, paramValues);
+                return new RouteResolution(action, paramValues, request);
             }
         }
         return null;

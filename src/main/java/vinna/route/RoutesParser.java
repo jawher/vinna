@@ -195,25 +195,25 @@ public class RoutesParser {
         }
 
         @Override
-        protected Object resolve(Map<String, String> matchedVars, Class<?> targetType) {
-            if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
+        protected Object resolve(Environment env) {
+            if (Long.class.equals(env.targetType) || Long.TYPE.equals(env.targetType)) {
                 return value.longValue();
-            } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
+            } else if (Integer.class.equals(env.targetType) || Integer.TYPE.equals(env.targetType)) {
                 return value.intValue();
-            } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
+            } else if (Short.class.equals(env.targetType) || Short.TYPE.equals(env.targetType)) {
                 return value.intValue();
-            } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
+            } else if (Byte.class.equals(env.targetType) || Byte.TYPE.equals(env.targetType)) {
                 return value.byteValue();
-            } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
+            } else if (Double.class.equals(env.targetType) || Double.TYPE.equals(env.targetType)) {
                 return value.doubleValue();
-            } else if (Float.class.equals(targetType) || Float.TYPE.equals(targetType)) {
+            } else if (Float.class.equals(env.targetType) || Float.TYPE.equals(env.targetType)) {
                 return value.floatValue();
-            } else if (BigDecimal.class.equals(targetType)) {
+            } else if (BigDecimal.class.equals(env.targetType)) {
                 return value;
-            } else if (BigInteger.class.equals(targetType)) {
+            } else if (BigInteger.class.equals(env.targetType)) {
                 return value.toBigInteger();
             }
-            throw new IllegalArgumentException("Cannot convert a numeric value to " + targetType);
+            throw new IllegalArgumentException("Cannot convert a numeric value to " +env.targetType);
         }
     }
 

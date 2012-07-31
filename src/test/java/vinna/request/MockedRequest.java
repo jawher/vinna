@@ -4,14 +4,16 @@ import java.util.*;
 
 public class MockedRequest implements Request {
 
-    private String verb;
-    private String path;
-    private Map<String, Collection<String>> params;
+    private final String verb;
+    private final String path;
+    private final Map<String, Collection<String>> params;
+    private final Map<String, Collection<String>> headers;
 
-    private MockedRequest(String verb, String path, Map<String, Collection<String>> params) {
+    private MockedRequest(String verb, String path, Map<String, Collection<String>> params, Map<String, Collection<String>> headers) {
         this.verb = verb;
         this.path = path;
         this.params = params;
+        this.headers = headers;
     }
 
     @Override
@@ -29,6 +31,17 @@ public class MockedRequest implements Request {
         return params.get(name);
     }
 
+    @Override
+    public String getHeader(String name) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaders(String name) {
+        return headers.get(name);
+    }
+
     public static Builder get(String path) {
         return new Builder("GET", path);
     }
@@ -38,29 +51,38 @@ public class MockedRequest implements Request {
     }
 
     public static class Builder {
-        private String verb;
-        private String path;
-        private Map<String, Collection<String>> params = new HashMap<>();
+        private final String verb;
+        private final String path;
+        private final Map<String, Collection<String>> params = new HashMap<>();
+        private final Map<String, Collection<String>> headers = new HashMap<>();
 
         private Builder(String verb, String path) {
             this.verb = verb;
             this.path = path;
         }
 
-
         public Builder param(String name, String value) {
             params.put(name, Collections.singleton(value));
             return this;
         }
-
 
         public Builder param(String name, String... values) {
             params.put(name, Arrays.asList(values));
             return this;
         }
 
+        public Builder header(String name, String value) {
+            headers.put(name, Collections.singleton(value));
+            return this;
+        }
+
+        public Builder header(String name, String... values) {
+            headers.put(name, Arrays.asList(values));
+            return this;
+        }
+
         public MockedRequest build() {
-            return new MockedRequest(verb, path, params);
+            return new MockedRequest(verb, path, params, headers);
         }
     }
 }

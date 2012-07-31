@@ -9,4 +9,8 @@ public interface Request {
     String getPath();
 
     Collection<String> getParam(String name);
+
+    String getHeader(String name);
+
+    Collection<String> getHeaders(String name);
 }

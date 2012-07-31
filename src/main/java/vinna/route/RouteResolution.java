@@ -1,6 +1,7 @@
 package vinna.route;
 
 import vinna.outcome.Outcome;
+import vinna.request.Request;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,12 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 public class RouteResolution {
+
     private final Map<String, String> paramValues;
     private final Route.Action action;
+    private final Request request;
 
-    public RouteResolution(Route.Action action, Map<String, String> paramValues) {
+    public RouteResolution(Route.Action action, Map<String, String> paramValues, Request request) {
         this.paramValues = paramValues;
         this.action = action;
+        this.request = request;
     }
 
     public Outcome callAction() throws IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -40,20 +44,14 @@ public class RouteResolution {
             }
         }
 
-
         Object controllerInstance = controllerClz.newInstance();
 
         List<Object> castedParams = new ArrayList<>();
         Class[] argTypes = toCall.getParameterTypes();
         for (int i = 0; i < argTypes.length; i++) {
-            castedParams.add(action.parameters.get(i).resolve(paramValues, argTypes[i]));
-            System.err.println(argTypes[i]);
-
+            castedParams.add(action.parameters.get(i).resolve(new ActionArgument.Environment(request, paramValues, argTypes[i])));
         }
-        System.err.println(castedParams);
         // throw exception or return an ErrorOutcome ?
         return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
     }
-
-
 }
