@@ -3,6 +3,8 @@ package vinna;
 import vinna.outcome.Outcome;
 import vinna.request.Request;
 import vinna.request.ServletRequestWrapper;
+import vinna.response.Response;
+import vinna.response.ServletResponseWrapper;
 import vinna.route.RouteResolution;
 
 import javax.servlet.*;
@@ -41,18 +43,17 @@ public class VinnaFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            Request vinnaRequest = new ServletRequestWrapper((HttpServletRequest) request);
+            Response vinnaResponse = new ServletResponseWrapper((HttpServletResponse) response);
 
-            Request vinnaRequest = new ServletRequestWrapper(httpRequest);
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
                     Outcome outcome = resolvedRoute.callAction();
-                    outcome.execute(vinnaRequest, httpResponse);
+                    outcome.execute(vinnaRequest, vinnaResponse);
                 } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                    e.getCause().printStackTrace(httpResponse.getWriter());
-                    httpResponse.setStatus(500);
+                    e.getCause().printStackTrace(vinnaResponse.getWriter());
+                    vinnaResponse.setStatus(500);
                 }
             } else {
                 chain.doFilter(request, response);
