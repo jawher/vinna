@@ -7,6 +7,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>vinna</name>
     <url>https://github.com/jawher/vinna</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -26,6 +31,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
