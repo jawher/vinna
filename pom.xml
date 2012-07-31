@@ -4,7 +4,7 @@
     <groupId>vinna</groupId>
     <artifactId>vinna</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>vinna</name>
     <url>https://github.com/jawher/vinna</url>
 
