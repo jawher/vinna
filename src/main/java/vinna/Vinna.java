@@ -12,8 +12,10 @@ import java.util.List;
 public class Vinna {
 
     private final Router router;
-    private List<ActionArgument> routeParameters;
     private ControllerFactory controllerFactory;
+
+    private List<ActionArgument> routeParameters;
+    protected final RequestBuilder req = new RequestBuilder();
 
     public Vinna(Reader routesReader) {
         this.controllerFactory = controllerFactory();
@@ -44,11 +46,11 @@ public class Vinna {
         return new DefaultControllerFactory();
     }
 
-    public Object createController(String id, Class<?> clazz) {
+    public final Object createController(String id, Class<?> clazz) {
         return controllerFactory.create(id, clazz);
     }
 
-    public RouteResolution match(Request request) {
+    public final RouteResolution match(Request request) {
         return router.match(request);
     }
 
@@ -78,15 +80,20 @@ public class Vinna {
         return value;
     }
 
-    protected final String header(String name) {
-        ActionArgument param = new ActionArgument.Header(name);
-        routeParameters.add(param);
-        return name;
-    }
+    protected final class RequestBuilder {
 
-    protected final Collection<String> headers(String name) {
-        ActionArgument param = new ActionArgument.Headers(name);
-        routeParameters.add(param);
-        return Collections.emptyList();
+        private RequestBuilder() {}
+
+        public final String header(String name) {
+            ActionArgument param = new ActionArgument.Header(name);
+            routeParameters.add(param);
+            return name;
+        }
+
+        public final Collection<String> headers(String name) {
+            ActionArgument param = new ActionArgument.Headers(name);
+            routeParameters.add(param);
+            return Collections.emptyList();
+        }
     }
 }
