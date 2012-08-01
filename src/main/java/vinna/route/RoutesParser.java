@@ -1,5 +1,7 @@
 package vinna.route;
 
+import vinna.Vinna;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class RoutesParser {
 
-    public final List<Route> loadFrom(Reader reader) {
+    public final List<Route> loadFrom(Reader reader, Vinna vinna) {
         List<Route> routes = new ArrayList<>();
         BufferedReader br = new BufferedReader(reader);
         String line = null;
@@ -35,7 +37,7 @@ public class RoutesParser {
                         ParsedPath parsedPath = parsePath(path);
                         ParsedAction parsedAction = parseAction(action);
                         routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames,
-                                new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters)));
+                                new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters), vinna));
 
 
                         //log how vitta sees this route, as matcher.find is too forgiving

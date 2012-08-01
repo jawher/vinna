@@ -14,20 +14,39 @@ public class Vinna {
 
     private final Router router;
     private List<ActionArgument> routeParameters;
+    private ControllerFactory controllerFactory;
 
     public Vinna(String routesPath) throws UnsupportedEncodingException {
+        this.controllerFactory = controllerFactory();
         this.router = new Router();
-        List<Route> routes = new RoutesParser().loadFrom(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"));
+        List<Route> routes = new RoutesParser().loadFrom(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"), this);
         router.addRoutes(routes);
     }
 
     public Vinna() {
+        this.controllerFactory = controllerFactory();
         this.router = new Router();
         routes();
     }
 
+    /**
+     * Override to define the app routes
+     */
     protected void routes() {
         //TODO: define default catchall routes
+    }
+
+    /**
+     * override to provide a custom controller factory
+     *
+     * @return a ... you guessed right, a controller factory
+     */
+    protected ControllerFactory controllerFactory() {
+        return new DefaultControllerFactory();
+    }
+
+    public Object createController(String id, Class<?> clazz) {
+        return controllerFactory.create(id, clazz);
     }
 
     public RouteResolution match(Request request) {

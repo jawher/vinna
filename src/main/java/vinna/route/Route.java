@@ -1,5 +1,6 @@
 package vinna.route;
 
+import vinna.Vinna;
 import vinna.request.Request;
 
 import java.lang.reflect.Method;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 public class Route {
 
     // TODO multiple action per route
-    static final class Action {
+    public static final class Action {
         public final String controllerId;
         public final Class<?> controllerClass;
         public final String methodName;
@@ -47,13 +48,15 @@ public class Route {
     private final Map<String, Pattern> args;
     private final Collection<String> variableNames;
     private final Action action;
+    private final Vinna vinna;
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Action action) {
+    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Action action, Vinna vinna) {
         this.verb = verb;
         this.pathPattern = pathPattern;
         this.args = args;
         this.variableNames = variableNames;
         this.action = action;
+        this.vinna = vinna;
     }
 
 
@@ -84,7 +87,7 @@ public class Route {
                         paramValues.put(variablesName, m.group(variablesName));
                     }
                 }
-                return new RouteResolution(action, paramValues, request);
+                return new RouteResolution(action, paramValues, request, vinna);
             }
         }
         return null;
