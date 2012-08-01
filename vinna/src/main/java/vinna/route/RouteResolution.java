@@ -15,16 +15,14 @@ public class RouteResolution {
     private final Map<String, String> paramValues;
     private final Route.Action action;
     private final Request request;
-    private final Vinna vinna;
 
-    public RouteResolution(Route.Action action, Map<String, String> paramValues, Request request, Vinna vinna) {
+    public RouteResolution(Route.Action action, Map<String, String> paramValues, Request request) {
         this.paramValues = paramValues;
         this.action = action;
         this.request = request;
-        this.vinna = vinna;
     }
 
-    public Outcome callAction() throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public Outcome callAction(Vinna vinna) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         Object controllerInstance = vinna.createController(action.controllerId, action.controllerClass);
         Class<?> controllerClz = controllerInstance.getClass();
         Method toCall = action.method;

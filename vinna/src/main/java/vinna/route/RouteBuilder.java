@@ -45,7 +45,7 @@ public final class RouteBuilder {
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
         Route.Action action = new Route.Action(controllerId, controller, method, parameters);
-        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action, context);
+        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action);
     }
 
     private class RouteMethodHandler implements MethodHandler {

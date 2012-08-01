@@ -48,15 +48,13 @@ public class Route {
     private final Map<String, Pattern> args;
     private final Collection<String> variableNames;
     private final Action action;
-    private final Vinna vinna;
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Action action, Vinna vinna) {
+    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Action action) {
         this.verb = verb;
         this.pathPattern = pathPattern;
         this.args = args;
         this.variableNames = variableNames;
         this.action = action;
-        this.vinna = vinna;
     }
 
 
@@ -87,7 +85,7 @@ public class Route {
                         paramValues.put(variablesName, m.group(variablesName));
                     }
                 }
-                return new RouteResolution(action, paramValues, request, vinna);
+                return new RouteResolution(action, paramValues, request);
             }
         }
         return null;

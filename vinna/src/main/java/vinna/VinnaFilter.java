@@ -50,7 +50,7 @@ public class VinnaFilter implements Filter {
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
-                    Outcome outcome = resolvedRoute.callAction();
+                    Outcome outcome = resolvedRoute.callAction(vinna);
                     outcome.execute(vinnaRequest, vinnaResponse);
                 } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                     e.getCause().printStackTrace(vinnaResponse.getWriter());

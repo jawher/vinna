@@ -103,7 +103,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action("a");
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -122,7 +122,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(5);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -141,7 +141,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(666);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -160,7 +160,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(true);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -179,7 +179,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(false);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -198,7 +198,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(Boolean.TRUE);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -217,7 +217,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action(Boolean.FALSE);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -245,7 +245,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             verify(app.controllerMock).action("w");
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -271,7 +271,7 @@ public class ControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
-            resolution.callAction();
+            resolution.callAction(app);
             fail("Should fail due to ambiguous situation");
         } catch (RuntimeException e) {
             // TODO: to be updated when a custom and more precise exception is defined
