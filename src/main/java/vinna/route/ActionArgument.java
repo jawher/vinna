@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
-public abstract class ActionArgument {
+public interface ActionArgument {
 
     public static class Environment {
         protected final Map<String, String> matchedVars;
@@ -18,7 +18,7 @@ public abstract class ActionArgument {
         }
     }
 
-    public static class Const<T> extends ActionArgument {
+    public static class Const<T> implements ActionArgument {
         private final T value;
 
         public Const(T value) {
@@ -26,12 +26,12 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(Environment env, Class<?> targetType) {
             return value;
         }
     }
 
-    public static class Variable extends ActionArgument {
+    public static class Variable implements ActionArgument {
         private final String name;
 
         public Variable(String name) {
@@ -39,7 +39,7 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
             if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
                 return Long.parseLong(value);
@@ -107,7 +107,7 @@ public abstract class ActionArgument {
         }
     }
 
-    public static class Headers extends ActionArgument {
+    public static class Headers implements ActionArgument {
 
         private final String headerName;
 
@@ -116,12 +116,12 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(Environment env, Class<?> targetType) {
             return env.request.getHeaders(headerName);
         }
     }
 
-    public static class Header extends ActionArgument {
+    public static class Header implements ActionArgument {
 
         private final String headerName;
 
@@ -130,12 +130,12 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(Environment env, Class<?> targetType) {
             //FIXME: conversion !
             return env.request.getHeader(headerName);
         }
     }
 
-    protected abstract Object resolve(Environment env, Class<?> targetType);
+    Object resolve(Environment env, Class<?> targetType);
 
 }

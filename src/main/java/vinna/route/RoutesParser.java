@@ -189,7 +189,7 @@ public class RoutesParser {
         }
     }
 
-    private static final class NumConst extends ActionArgument {
+    private static final class NumConst implements ActionArgument {
         private final BigDecimal value;
 
         public NumConst(BigDecimal value) {
@@ -197,7 +197,7 @@ public class RoutesParser {
         }
 
         @Override
-        protected Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(Environment env, Class<?> targetType) {
             if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
                 return value.longValue();
             } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
