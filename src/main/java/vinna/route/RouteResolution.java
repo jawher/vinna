@@ -29,11 +29,17 @@ public class RouteResolution {
         Class<?> controllerClz = controllerInstance.getClass();
         Method toCall = action.method;
         if (toCall == null) {
+            List<Method> matchingMethods = new ArrayList<>();
             for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
-                if (controllerMethod.getName().equals(action.methodName)) {
-                    toCall = controllerMethod;
-                    break;
+                if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.parameters.size()) {
+                    matchingMethods.add(controllerMethod);
                 }
+            }
+            if (matchingMethods.size() > 1) {
+                throw new RuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
+                        controllerClz, matchingMethods.size(), action.methodName, action.parameters.size()));
+            } else {
+                toCall = matchingMethods.get(0);
             }
             if (toCall == null) {
                 throw new IllegalArgumentException("no methodName " + action.methodName + " in " + action.controllerId);

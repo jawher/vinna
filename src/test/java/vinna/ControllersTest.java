@@ -5,10 +5,12 @@ import vinna.outcome.Outcome;
 import vinna.request.MockedRequest;
 import vinna.route.RouteResolution;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -23,6 +25,30 @@ public class ControllersTest {
             return new ControllerFactory() {
                 @Override
                 public Object create(String id, Class<?> clazz) {
+                    controllerMock = (T) mock(clazz);
+                    return controllerMock;
+                }
+            };
+        }
+    }
+
+    private static class MockFactoryDeclarativeVinna<T> extends Vinna {
+        public T controllerMock;
+
+        private MockFactoryDeclarativeVinna(Reader routesReader) {
+            super(routesReader);
+        }
+
+        @Override
+        protected ControllerFactory controllerFactory() {
+            return new ControllerFactory() {
+                @Override
+                public Object create(String id, Class<?> clazz) {
+                    try {
+                        clazz = Class.forName(id);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
                     controllerMock = (T) mock(clazz);
                     return controllerMock;
                 }
@@ -64,7 +90,6 @@ public class ControllersTest {
             return null;
         }
     }
-
 
     @Test
     public void passesAPathVarAsAString() {
@@ -199,6 +224,61 @@ public class ControllersTest {
         }
     }
 
+    //TODO: test the other types (double, float, bigdecimal, etc.)
+
+    public static class ControllerWithOverloadedAndDiffArgCountMethods {
+
+        public Outcome action(Boolean param, int x) {
+            return null;
+        }
+
+        public Outcome action(String param) {
+            return null;
+        }
+    }
+
+    @Test
+    public void handlesOverloadedActionsIfDifferentArgCountInDeclarativeMode() {
+        String route = "GET /ambiguous/{id} vinna.ControllersTest$ControllerWithOverloadedAndDiffArgCountMethods.action({id})";
+        MockFactoryDeclarativeVinna<ControllerWithOverloadedAndDiffArgCountMethods> app = new MockFactoryDeclarativeVinna<ControllerWithOverloadedAndDiffArgCountMethods>(new StringReader(route));
+        MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction();
+            verify(app.controllerMock).action("w");
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static class Two1ArgController {
+
+        public Outcome action(Boolean param) {
+            return null;
+        }
+
+        public Outcome action(String param) {
+            return null;
+        }
+    }
+
+    @Test
+    public void failsWithTwoActionsWithTheSameNameAndParamCountInDeclarativeMode() {
+        String route = "GET /ambiguous/{id} vinna.ControllersTest$Two1ArgController.action({id})";
+        MockFactoryDeclarativeVinna<Two1ArgController> app = new MockFactoryDeclarativeVinna<Two1ArgController>(new StringReader(route));
+        MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction();
+            fail("Should fail due to ambiguous situation");
+        } catch (RuntimeException e) {
+            // TODO: to be updated when a custom and more precise exception is defined
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     //TODO: moar tests !
 }
