@@ -82,12 +82,13 @@ public class Vinna {
 
     protected final class RequestBuilder {
 
-        private RequestBuilder() {}
+        private RequestBuilder() {
+        }
 
-        public final String header(String name) {
-            ActionArgument param = new ActionArgument.Header(name);
+        public final ActionArgument.CastArgument header(String name) {
+            ActionArgument.Header param = new ActionArgument.Header(name);
             routeParameters.add(param);
-            return name;
+            return param;
         }
 
         public final Collection<String> headers(String name) {

@@ -31,7 +31,7 @@ public interface ActionArgument {
         }
     }
 
-    public static class Variable implements ActionArgument {
+    public static class Variable extends CastArgument {
         private final String name;
 
         public Variable(String name) {
@@ -41,6 +41,41 @@ public interface ActionArgument {
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
+            return castValue(targetType, value);
+        }
+    }
+
+    public static class Headers implements ActionArgument {
+
+        private final String headerName;
+
+        public Headers(String headerName) {
+            this.headerName = headerName;
+        }
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return env.request.getHeaders(headerName);
+        }
+    }
+
+    public static class Header extends CastArgument {
+
+        private final String headerName;
+
+        public Header(String headerName) {
+            this.headerName = headerName;
+        }
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return castValue(targetType, env.request.getHeader(headerName));
+        }
+    }
+
+    public abstract class CastArgument implements ActionArgument {
+
+        protected Object castValue(Class<?> targetType, String value) {
             if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
                 return Long.parseLong(value);
             } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
@@ -62,6 +97,7 @@ public interface ActionArgument {
             } else if (String.class.equals(targetType)) {
                 return value;
             }
+
             //TODO: handle other types
             throw new IllegalArgumentException("Unsupported conversion of '" + value + "' to " + targetType);
         }
@@ -104,35 +140,6 @@ public interface ActionArgument {
 
         public final boolean asBoolean() {
             return false;
-        }
-    }
-
-    public static class Headers implements ActionArgument {
-
-        private final String headerName;
-
-        public Headers(String headerName) {
-            this.headerName = headerName;
-        }
-
-        @Override
-        public Object resolve(Environment env, Class<?> targetType) {
-            return env.request.getHeaders(headerName);
-        }
-    }
-
-    public static class Header implements ActionArgument {
-
-        private final String headerName;
-
-        public Header(String headerName) {
-            this.headerName = headerName;
-        }
-
-        @Override
-        public Object resolve(Environment env, Class<?> targetType) {
-            //FIXME: conversion !
-            return env.request.getHeader(headerName);
         }
     }
 
