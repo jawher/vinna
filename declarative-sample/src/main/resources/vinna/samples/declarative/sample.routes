@@ -1,0 +1,12 @@
+
+GET /user/{id:\d+} vinna.samples.declarative.Controller.test({id})
+
+GET /user/{id:\d+}/{name} vinna.samples.declarative.Controller.test2({name}, {id})
+
+GET /hello/{hello:true|false}/{id}/{name} vinna.samples.declarative.Controller.test2({name}, {hello}, {id})
+
+GET /constant/{test} vinna.samples.declarative.Controller.test2({test}, 17)
+
+GET /header vinna.samples.declarative.Controller.writeHeader({req.header.Accept})
+
+GET /headers vinna.samples.declarative.Controller.writeHeaders({req.header.Accept})
