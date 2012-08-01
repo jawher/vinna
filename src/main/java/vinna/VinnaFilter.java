@@ -11,6 +11,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -24,7 +25,7 @@ public class VinnaFilter implements Filter {
         String routesPath = filterConfig.getInitParameter("routes");
         if (routesPath != null) {
             try {
-                vinna = new Vinna(routesPath);
+                vinna = new Vinna(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"));
             } catch (UnsupportedEncodingException e) {
                 throw new ServletException("shit !", e);
             }

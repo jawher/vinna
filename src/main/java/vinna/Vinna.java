@@ -3,8 +3,7 @@ package vinna;
 import vinna.request.Request;
 import vinna.route.*;
 
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,10 +15,10 @@ public class Vinna {
     private List<ActionArgument> routeParameters;
     private ControllerFactory controllerFactory;
 
-    public Vinna(String routesPath) throws UnsupportedEncodingException {
+    public Vinna(Reader routesReader) {
         this.controllerFactory = controllerFactory();
         this.router = new Router();
-        List<Route> routes = new RoutesParser().loadFrom(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"), this);
+        List<Route> routes = new RoutesParser().loadFrom(routesReader, this);
         router.addRoutes(routes);
     }
 
