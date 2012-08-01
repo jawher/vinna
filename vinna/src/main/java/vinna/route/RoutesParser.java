@@ -154,6 +154,7 @@ public class RoutesParser {
 
                 String argsString = actionMatcher.group("args").trim();
                 List<ActionArgument> parameters = new ArrayList<>();
+                Pattern pheader = Pattern.compile("\\{req\\.header\\.(.+)\\}");
                 Pattern pvar = Pattern.compile("\\{(.+)\\}");
                 Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
                 Pattern pbool = Pattern.compile("(true|false)");
@@ -161,7 +162,9 @@ public class RoutesParser {
                     String[] args = argsString.split("\\s*,\\s*");
                     for (String arg : args) {
                         Matcher pm;
-                        if ((pm = pvar.matcher(arg)).matches()) {
+                        if ((pm = pheader.matcher(arg)).matches()) {
+                            parameters.add(new ActionArgument.Header(pm.group(1)));
+                        } else if ((pm = pvar.matcher(arg)).matches()) {
                             parameters.add(new ActionArgument.Variable(pm.group(1)));
                         } else if ((pm = pstr.matcher(arg)).matches()) {
                             parameters.add(new ActionArgument.Const<String>(pm.group(1)));
