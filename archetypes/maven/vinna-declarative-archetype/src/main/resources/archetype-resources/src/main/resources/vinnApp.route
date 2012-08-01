@@ -1,0 +1,1 @@
+GET /hello/{name} ${package}.controllers.HelloControler.sayHello({name})
