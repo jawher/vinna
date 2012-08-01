@@ -11,12 +11,10 @@ public abstract class ActionArgument {
     public static class Environment {
         protected final Map<String, String> matchedVars;
         protected final Request request;
-        protected final Class<?> targetType;
 
-        public Environment(Request request, Map<String, String> matchedVars, Class<?> targetType) {
+        public Environment(Request request, Map<String, String> matchedVars) {
             this.matchedVars = matchedVars;
             this.request = request;
-            this.targetType = targetType;
         }
     }
 
@@ -28,7 +26,7 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env) {
+        protected Object resolve(Environment env, Class<?> targetType) {
             return value;
         }
     }
@@ -41,31 +39,31 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env) {
+        protected Object resolve(Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
-            if (Long.class.equals(env.targetType) || Long.TYPE.equals(env.targetType)) {
+            if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
                 return Long.parseLong(value);
-            } else if (Integer.class.equals(env.targetType) || Integer.TYPE.equals(env.targetType)) {
+            } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
                 return Integer.parseInt(value);
-            } else if (Short.class.equals(env.targetType) || Short.TYPE.equals(env.targetType)) {
+            } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
                 return Short.parseShort(value);
-            } else if (Byte.class.equals(env.targetType) || Byte.TYPE.equals(env.targetType)) {
+            } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
                 return Byte.parseByte(value);
-            } else if (Double.class.equals(env.targetType) || Double.TYPE.equals(env.targetType)) {
+            } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
                 return Double.parseDouble(value);
-            } else if (Float.class.equals(env.targetType) || Float.TYPE.equals(env.targetType)) {
+            } else if (Float.class.equals(targetType) || Float.TYPE.equals(targetType)) {
                 return Float.parseFloat(value);
-            } else if (BigDecimal.class.equals(env.targetType)) {
+            } else if (BigDecimal.class.equals(targetType)) {
                 return new BigDecimal(value);
-            } else if (BigInteger.class.equals(env.targetType)) {
+            } else if (BigInteger.class.equals(targetType)) {
                 return new BigInteger(value);
-            } else if (Boolean.class.equals(env.targetType) || Boolean.TYPE.equals(env.targetType)) {
+            } else if (Boolean.class.equals(targetType) || Boolean.TYPE.equals(targetType)) {
                 return Boolean.parseBoolean(value);
-            } else if (String.class.equals(env.targetType)) {
+            } else if (String.class.equals(targetType)) {
                 return value;
             }
             //TODO: handle other types
-            throw new IllegalArgumentException("Unsupported conversion of '" + value + "' to " + env.targetType);
+            throw new IllegalArgumentException("Unsupported conversion of '" + value + "' to " + targetType);
         }
 
         public final long asLong() {
@@ -118,7 +116,7 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env) {
+        protected Object resolve(Environment env, Class<?> targetType) {
             return env.request.getHeaders(headerName);
         }
     }
@@ -132,11 +130,12 @@ public abstract class ActionArgument {
         }
 
         @Override
-        protected Object resolve(Environment env) {
+        protected Object resolve(Environment env, Class<?> targetType) {
+            //FIXME: conversion !
             return env.request.getHeader(headerName);
         }
     }
 
-    protected abstract Object resolve(Environment env);
+    protected abstract Object resolve(Environment env, Class<?> targetType);
 
 }

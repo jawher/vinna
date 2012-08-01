@@ -49,9 +49,11 @@ public class RouteResolution {
 
         List<Object> castedParams = new ArrayList<>();
         Class[] argTypes = toCall.getParameterTypes();
+
+        ActionArgument.Environment env = new ActionArgument.Environment(request, paramValues);
         for (int i = 0; i < argTypes.length; i++) {
             //FIXME: handle conversion errors in resolve: what to do ? 404 ?
-            castedParams.add(action.parameters.get(i).resolve(new ActionArgument.Environment(request, paramValues, argTypes[i])));
+            castedParams.add(action.parameters.get(i).resolve(env, argTypes[i]));
         }
         // throw exception or return an ErrorOutcome ?
         return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
