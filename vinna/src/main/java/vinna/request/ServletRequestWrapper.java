@@ -22,8 +22,28 @@ public class ServletRequestWrapper implements Request {
     }
 
     @Override
-    public Collection<String> getParam(String name) {
+    public String getParam(String name) {
+        return servletRequest.getParameter(name);
+    }
+
+    @Override
+    public Collection<String> getParams(String name) {
         return Arrays.asList(servletRequest.getParameterValues(name));
+    }
+
+    @Override
+    public Map<String, Collection<String>> getParams() {
+        Map<String, Collection<String>> params = new HashMap<>();
+
+        Enumeration enumeration = servletRequest.getParameterNames();
+        if (enumeration != null) {
+            while (enumeration.hasMoreElements()) {
+                String paramName = (String) enumeration.nextElement();
+                params.put(paramName, getParams(paramName));
+            }
+        }
+
+        return Collections.unmodifiableMap(params);
     }
 
     @Override

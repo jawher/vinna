@@ -1,6 +1,5 @@
 package vinna.route;
 
-import vinna.Vinna;
 import vinna.request.Request;
 
 import java.lang.reflect.Method;
@@ -69,8 +68,8 @@ public class Route {
                 for (String variablesName : variableNames) {
                     //FIXME: check that the variable exists, or else that it is optional
                     if (args.containsKey(variablesName)) {
-                        if (!request.getParam(variablesName).isEmpty()) {
-                            String param = request.getParam(variablesName).iterator().next();
+                        if (!request.getParams(variablesName).isEmpty()) {
+                            String param = request.getParams(variablesName).iterator().next();
                             if (args.get(variablesName) != null) {
                                 if (!args.get(variablesName).matcher(param).matches()) {
                                     return null;

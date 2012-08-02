@@ -27,8 +27,20 @@ public class MockedRequest implements Request {
     }
 
     @Override
-    public Collection<String> getParam(String name) {
+    public String getParam(String name) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public Collection<String> getParams(String name) {
         return params.get(name);
+    }
+
+    @Override
+    public Map<String, Collection<String>> getParams() {
+        // TODO
+        return null;
     }
 
     @Override

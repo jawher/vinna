@@ -9,7 +9,11 @@ public interface Request {
 
     String getPath();
 
-    Collection<String> getParam(String name);
+    String getParam(String name);
+
+    Collection<String> getParams(String name);
+
+    Map<String, Collection<String>> getParams();
 
     String getHeader(String name);
 
