@@ -13,6 +13,7 @@ public class ServletResponseWrapper implements Response {
     private final HttpServletResponse httpServletResponse;
 
     private int status;
+    private String contentType;
     private Map<String, Collection<String>> headers;
 
     public ServletResponseWrapper(HttpServletResponse httpServletResponse) {
@@ -28,6 +29,17 @@ public class ServletResponseWrapper implements Response {
     @Override
     public PrintWriter getWriter() throws IOException {
         return httpServletResponse.getWriter();
+    }
+
+    @Override
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+        httpServletResponse.setContentType(contentType);
+    }
+
+    @Override
+    public String getContentType() {
+        return this.contentType;
     }
 
     @Override

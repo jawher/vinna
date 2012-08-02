@@ -42,6 +42,12 @@ public class MockedRequest implements Request {
         return headers.get(name);
     }
 
+    @Override
+    public Map<String, Collection<String>> getHeaders() {
+        // TODO
+        return null;
+    }
+
     public static Builder get(String path) {
         return new Builder("GET", path);
     }

@@ -14,4 +14,8 @@ public interface Response {
     int getStatus();
 
     PrintWriter getWriter() throws IOException;
+
+    void setContentType(String contentType);
+
+    String getContentType();
 }

@@ -5,6 +5,9 @@ import vinna.util.Conversions;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public interface ActionArgument {
@@ -48,29 +51,42 @@ public interface ActionArgument {
 
     public static class Headers implements ActionArgument {
 
-        private final String headerName;
-
-        public Headers(String headerName) {
-            this.headerName = headerName;
+        public Headers() {
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            return env.request.getHeaders(headerName);
+            return env.request.getHeaders();
         }
     }
 
     public static class Header extends ChameleonArgument {
 
         private final String headerName;
+        private Class<?> collectionType;
 
         public Header(String headerName) {
             this.headerName = headerName;
         }
 
+        public Header(String headerName, Class<?> collectionType) {
+            this(headerName);
+            this.collectionType = collectionType;
+        }
+
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
+
+            if (collectionType != null) {
+               return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
+            }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
+        }
+
+        public final <T> Collection<T> asCollection(Class<T> clazz) {
+            this.collectionType = clazz;
+            // TODO homemade collection implementation with unsupported operation ?
+            return Collections.emptyList();
         }
     }
 

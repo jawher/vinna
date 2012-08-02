@@ -2,6 +2,9 @@ package vinna.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Conversions {
 
@@ -51,5 +54,15 @@ public class Conversions {
             return value.toBigInteger();
         }
         throw new IllegalArgumentException("Cannot convert a numeric value to " + targetType);
+    }
+
+    public static <T> Collection<T> convertCollection(Collection<String> collection, Class<T> type) {
+        Collection<T> convertedCollection = new ArrayList<>();
+
+        for (String value : collection) {
+            convertedCollection.add((T) convertString(value, type));
+        }
+
+        return Collections.unmodifiableCollection(convertedCollection);
     }
 }

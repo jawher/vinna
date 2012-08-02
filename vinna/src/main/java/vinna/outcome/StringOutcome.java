@@ -15,6 +15,7 @@ public class StringOutcome implements Outcome {
 
     @Override
     public void execute(Request request, Response response) throws IOException {
+        response.setContentType("text/plain");
         response.getOutputStream().write((content.getBytes("utf-8")));
     }
 }

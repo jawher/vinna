@@ -4,10 +4,7 @@ import vinna.request.Request;
 import vinna.route.*;
 
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Vinna {
 
@@ -91,10 +88,10 @@ public class Vinna {
             return param;
         }
 
-        public final Collection<String> headers(String name) {
-            ActionArgument param = new ActionArgument.Headers(name);
-            routeParameters.add(param);
-            return Collections.emptyList();
+        public final Map<String, Collection<String>> headers() {
+            ActionArgument.Headers headers = new ActionArgument.Headers();
+            routeParameters.add(headers);
+            return new HashMap<>();
         }
     }
 }

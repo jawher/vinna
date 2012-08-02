@@ -1,6 +1,7 @@
 package vinna.request;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface Request {
 
@@ -13,4 +14,6 @@ public interface Request {
     String getHeader(String name);
 
     Collection<String> getHeaders(String name);
+
+    Map<String, Collection<String>> getHeaders();
 }

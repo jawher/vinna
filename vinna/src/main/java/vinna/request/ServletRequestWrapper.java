@@ -1,9 +1,7 @@
 package vinna.request;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class ServletRequestWrapper implements Request {
 
@@ -36,5 +34,20 @@ public class ServletRequestWrapper implements Request {
     @Override
     public Collection<String> getHeaders(String name) {
         return Collections.list(servletRequest.getHeaders(name));
+    }
+
+    @Override
+    public Map<String, Collection<String>> getHeaders() {
+        Map<String, Collection<String>> headers = new HashMap<>();
+
+        Enumeration enumeration = servletRequest.getHeaderNames();
+        if (enumeration != null) {
+            while (enumeration.hasMoreElements()) {
+                String headerName = (String) enumeration.nextElement();
+                headers.put(headerName, getHeaders(headerName));
+            }
+        }
+
+        return Collections.unmodifiableMap(headers);
     }
 }
