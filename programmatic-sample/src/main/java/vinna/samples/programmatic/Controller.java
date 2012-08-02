@@ -50,4 +50,8 @@ public class Controller {
         }
         return new StringOutcome(builder.toString());
     }
+
+    public Outcome params(String a, String b, int c) {
+        return new StringOutcome(a + ":" + b + ":" + c);
+    }
 }

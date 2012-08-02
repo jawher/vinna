@@ -28,7 +28,8 @@ public class ServletRequestWrapper implements Request {
 
     @Override
     public Collection<String> getParams(String name) {
-        return Arrays.asList(servletRequest.getParameterValues(name));
+        String[] parameterValues = servletRequest.getParameterValues(name);
+        return parameterValues == null ? null : Arrays.asList(parameterValues);
     }
 
     @Override
