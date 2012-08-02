@@ -1,6 +1,7 @@
 package vinna.route;
 
 import vinna.Vinna;
+import vinna.util.Conversions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -201,24 +202,7 @@ public class RoutesParser {
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
-                return value.longValue();
-            } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
-                return value.intValue();
-            } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
-                return value.intValue();
-            } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
-                return value.byteValue();
-            } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
-                return value.doubleValue();
-            } else if (Float.class.equals(targetType) || Float.TYPE.equals(targetType)) {
-                return value.floatValue();
-            } else if (BigDecimal.class.equals(targetType)) {
-                return value;
-            } else if (BigInteger.class.equals(targetType)) {
-                return value.toBigInteger();
-            }
-            throw new IllegalArgumentException("Cannot convert a numeric value to " + targetType);
+            return Conversions.convertNumeric(value, targetType);
         }
     }
 

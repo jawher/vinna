@@ -85,7 +85,7 @@ public class Vinna {
         private RequestBuilder() {
         }
 
-        public final ActionArgument.CastArgument header(String name) {
+        public final ActionArgument.Header header(String name) {
             ActionArgument.Header param = new ActionArgument.Header(name);
             routeParameters.add(param);
             return param;
