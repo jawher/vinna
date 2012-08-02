@@ -29,7 +29,10 @@ public class ServletRequestWrapper implements Request {
     @Override
     public Collection<String> getParams(String name) {
         String[] parameterValues = servletRequest.getParameterValues(name);
-        return parameterValues == null ? null : Arrays.asList(parameterValues);
+        if (parameterValues != null) {
+            return Arrays.asList(parameterValues);
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -54,7 +57,12 @@ public class ServletRequestWrapper implements Request {
 
     @Override
     public Collection<String> getHeaders(String name) {
-        return Collections.list(servletRequest.getHeaders(name));
+        Enumeration<String> enumeration = servletRequest.getHeaders(name);
+        if (enumeration != null) {
+            return Collections.list(enumeration);
+        }
+        return Collections.emptyList();
+
     }
 
     @Override
