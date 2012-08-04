@@ -59,21 +59,17 @@ public interface ActionArgument {
             this.name = name;
         }
 
+        public RequestParameter(String name, Class<?> collectionType) {
+            super(collectionType);
+            this.name = name;
+        }
+
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
+            if (collectionType != null) {
+                return Conversions.convertCollection(env.request.getParams(name), collectionType);
+            }
             return Conversions.convertString(env.request.getParam(name), targetType);
-        }
-    }
-
-    public static class Headers implements ActionArgument {
-
-        public Headers() {
-        }
-
-        @Override
-        public Object resolve(Environment env, Class<?> targetType) {
-            return env.request.getHeaders();
-
         }
     }
 
@@ -96,6 +92,22 @@ public interface ActionArgument {
                 return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
+        }
+    }
+
+    public static class Headers implements ActionArgument {
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return env.request.getHeaders();
+        }
+    }
+
+    public static class RequestParameters implements ActionArgument {
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return env.request.getParams();
         }
     }
 

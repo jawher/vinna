@@ -51,7 +51,18 @@ public class Controller {
         return new StringOutcome(builder.toString());
     }
 
-    public Outcome params(String a, String b, int c) {
+    public Outcome params(String a, String b, Integer c) {
         return new StringOutcome(a + ":" + b + ":" + c);
+    }
+
+    public Outcome paramCollection(Collection<String> params) {
+        if (params == null || params.size() == 0) {
+            return new StringOutcome("no param");
+        }
+        StringBuilder builder = new StringBuilder();
+        for (String param : params) {
+            builder.append(param + "\n");
+        }
+        return new StringOutcome(builder.toString());
     }
 }
