@@ -5,7 +5,6 @@ import vinna.util.Conversions;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -39,11 +38,13 @@ public interface ActionArgument {
         private final String name;
 
         public Variable(String name) {
+            super(null);
             this.name = name;
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
+            // FIXME resolve asCollection
             String value = env.matchedVars.get(name);
             return Conversions.convertString(value, targetType);
         }
@@ -57,40 +58,39 @@ public interface ActionArgument {
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             return env.request.getHeaders();
+
         }
     }
 
     public static class Header extends ChameleonArgument {
 
         private final String headerName;
-        private Class<?> collectionType;
 
         public Header(String headerName) {
-            this.headerName = headerName;
+            this(headerName, null);
         }
 
         public Header(String headerName, Class<?> collectionType) {
-            this(headerName);
-            this.collectionType = collectionType;
+            super(collectionType);
+            this.headerName = headerName;
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-
             if (collectionType != null) {
                return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
-
-        public final <T> Collection<T> asCollection(Class<T> clazz) {
-            this.collectionType = clazz;
-            // TODO homemade collection implementation with unsupported operation ?
-            return Collections.emptyList();
-        }
     }
 
     public static abstract class ChameleonArgument implements ActionArgument {
+
+        protected Class<?> collectionType;
+
+        public ChameleonArgument(Class<?> collectionType){
+            this.collectionType = collectionType;
+        }
 
         public final long asLong() {
             return 42;
@@ -130,6 +130,12 @@ public interface ActionArgument {
 
         public final boolean asBoolean() {
             return false;
+        }
+
+        public final <T> Collection<T> asCollection(Class<T> clazz) {
+            this.collectionType = clazz;
+            // TODO homemade collection implementation with unsupported operation ?
+            return Collections.emptyList();
         }
     }
 
