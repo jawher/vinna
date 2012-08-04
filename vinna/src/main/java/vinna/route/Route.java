@@ -70,6 +70,12 @@ public class Route {
                     //FIXME: check that the variable exists, or else that it is optional
                     paramValues.put(variablesName, m.group(variablesName));
                 }
+                for (String mandatoryPathParam : mandatoryPathParameters) {
+                    if (request.getParams(mandatoryPathParam).isEmpty()) {
+                        // TODO return bad request or check others routes
+                        return null;
+                    }
+                }
                 return new RouteResolution(action, paramValues, request);
             }
         }

@@ -24,6 +24,15 @@ public class RoutingTest {
         };
     }
 
+    private Vinna oneRouteAppWithParam(final String path, final String param) {
+        return new Vinna() {
+            @Override
+            protected void routes() {
+                get(path).hasParam(param).withController(NoOpcontroller.class).process();
+            }
+        };
+    }
+
     private Vinna onePostRouteApp(final String path) {
         return new Vinna() {
             @Override
@@ -146,6 +155,23 @@ public class RoutingTest {
 
         MockedRequest mockedRequest2 = MockedRequest.get("/users/ohai").build();
         assertNull(app.match(mockedRequest2));
+    }
+
+    @Test
+    public void failsWithARouteWithMandatoryPathParamAndNonMatchingRequest() {
+        Vinna app = oneRouteAppWithParam("/users","id");
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNull(app.match(mockedRequest));
+
+        MockedRequest mockedRequest2 = MockedRequest.get("/users").param("uid","5").build();
+        assertNull(app.match(mockedRequest2));
+    }
+
+    @Test
+    public void matchesWithARouteWithMandatoryPathParam() {
+        Vinna app = oneRouteAppWithParam("/users","id");
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id","5").build();
+        assertNotNull(app.match(mockedRequest));
     }
 
     //TODO: moar test !

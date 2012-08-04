@@ -28,36 +28,38 @@ public class MockedRequest implements Request {
 
     @Override
     public String getParam(String name) {
-        // TODO
-        return null;
+        return params.get(name).iterator().next();
     }
 
     @Override
     public Collection<String> getParams(String name) {
-        return params.get(name);
+        if (params.get(name) == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableCollection(params.get(name));
     }
 
     @Override
     public Map<String, Collection<String>> getParams() {
-        // TODO
-        return null;
+        return Collections.unmodifiableMap(params);
     }
 
     @Override
     public String getHeader(String name) {
-        // TODO
-        return null;
+        return headers.get(name).iterator().next();
     }
 
     @Override
     public Collection<String> getHeaders(String name) {
-        return headers.get(name);
+        if (headers.get(name) == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableCollection(headers.get(name));
     }
 
     @Override
     public Map<String, Collection<String>> getHeaders() {
-        // TODO
-        return null;
+        return Collections.unmodifiableMap(headers);
     }
 
     public static Builder get(String path) {

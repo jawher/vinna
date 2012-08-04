@@ -42,6 +42,11 @@ public class ProgrammaticSampleApp extends Vinna {
                 .withController(Controller.class)
                 .paramCollection(req.param("a").asCollection(String.class));
 
+        get("/mandatoryParam")
+                .hasParam("goldMedal")
+                .withController(Controller.class)
+                .writeHeader(req.param("goldMedal").asString());
+
         get("/params")
                 .withController(Controller.class)
                 .params(req.param("a").asString(), req.param("b").asString(), req.param("c").asInt());
