@@ -29,13 +29,13 @@ public class RouteResolution {
         if (toCall == null) {
             List<Method> matchingMethods = new ArrayList<>();
             for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
-                if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.parameters.size()) {
+                if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.methodParameters.size()) {
                     matchingMethods.add(controllerMethod);
                 }
             }
             if (matchingMethods.size() > 1) {
                 throw new RuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
-                        controllerClz, matchingMethods.size(), action.methodName, action.parameters.size()));
+                        controllerClz, matchingMethods.size(), action.methodName, action.methodParameters.size()));
             } else {
                 toCall = matchingMethods.get(0);
             }
@@ -51,7 +51,7 @@ public class RouteResolution {
         ActionArgument.Environment env = new ActionArgument.Environment(request, paramValues);
         for (int i = 0; i < argTypes.length; i++) {
             //FIXME: handle conversion errors in resolve: what to do ? 404 ?
-            castedParams.add(action.parameters.get(i).resolve(env, argTypes[i]));
+            castedParams.add(action.methodParameters.get(i).resolve(env, argTypes[i]));
         }
         // throw exception or return an ErrorOutcome ?
         return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());

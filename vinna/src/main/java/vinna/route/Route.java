@@ -18,22 +18,23 @@ public class Route {
         public final Class<?> controllerClass;
         public final String methodName;
         public final Method method;
-        public final List<ActionArgument> parameters;
+        public final List<ActionArgument> methodParameters;
 
-        public Action(String controllerId, String methodName, List<ActionArgument> parameters) {
+        public Action(String controllerId, String methodName, List<ActionArgument> methodParameters) {
             this.controllerId = controllerId;
             this.controllerClass = null;
             this.methodName = methodName;
             this.method = null;
-            this.parameters = parameters;
+            this.methodParameters = methodParameters;
         }
 
-        public Action(String controllerId, Class<?> controllerClass, Method method, List<ActionArgument> parameters) {
+        public Action(String controllerId, Class<?> controllerClass, Method method, List<ActionArgument> methodParameters) {
             this.controllerId = controllerId;
             this.controllerClass = controllerClass;
             this.methodName = null;
             this.method = method;
-            this.parameters = parameters;
+            this.methodParameters = methodParameters;
+            // TODO check that methodParameters.size() == method.getParameterTypes().length
         }
 
         @Override
@@ -44,15 +45,15 @@ public class Route {
 
     private final String verb;
     private final Pattern pathPattern;
-    private final Map<String, Pattern> args;
-    private final Collection<String> variableNames;
+    private final Collection<String> mandatoryPathParameters;
+    private final Collection<String> pathVariableName;
     private final Action action;
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> args, Collection<String> variableNames, Action action) {
+    public Route(String verb, Pattern pathPattern, Collection<String> mandatoryPathParameters, Collection<String> pathVariableName, Action action) {
         this.verb = verb;
         this.pathPattern = pathPattern;
-        this.args = args;
-        this.variableNames = variableNames;
+        this.mandatoryPathParameters = mandatoryPathParameters;
+        this.pathVariableName = pathVariableName;
         this.action = action;
     }
 
@@ -65,24 +66,9 @@ public class Route {
                 System.out.println("Got match for " + toString());
                 Map<String, String> paramValues = new HashMap<>();
 
-                for (String variablesName : variableNames) {
+                for (String variablesName : pathVariableName) {
                     //FIXME: check that the variable exists, or else that it is optional
-                    if (args.containsKey(variablesName)) {
-                        if (!request.getParams(variablesName).isEmpty()) {
-                            String param = request.getParams(variablesName).iterator().next();
-                            if (args.get(variablesName) != null) {
-                                if (!args.get(variablesName).matcher(param).matches()) {
-                                    return null;
-                                } else {
-                                    paramValues.put(variablesName, param);
-                                }
-                            } else { //no pattern, put it as it is
-                                paramValues.put(variablesName, param);
-                            }
-                        }
-                    } else {
-                        paramValues.put(variablesName, m.group(variablesName));
-                    }
+                    paramValues.put(variablesName, m.group(variablesName));
                 }
                 return new RouteResolution(action, paramValues, request);
             }

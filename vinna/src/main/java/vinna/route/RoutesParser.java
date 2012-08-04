@@ -7,8 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ public class RoutesParser {
 
                         ParsedPath parsedPath = parsePath(path);
                         ParsedAction parsedAction = parseAction(action);
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames,
+                        routes.add(new Route(verb, parsedPath.pathPattern, new ArrayList<String>(), parsedPath.variableNames,
                                 new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters)));
 
 
@@ -54,12 +55,10 @@ public class RoutesParser {
 
     public static final class ParsedPath {
         public final Pattern pathPattern;
-        public final Map<String, Pattern> queryMap;
         public final Collection<String> variableNames;
 
-        public ParsedPath(Pattern pathPattern, Map<String, Pattern> queryMap, Collection<String> variableNames) {
+        public ParsedPath(Pattern pathPattern, Collection<String> variableNames) {
             this.pathPattern = pathPattern;
-            this.queryMap = queryMap;
             this.variableNames = variableNames;
         }
     }
@@ -93,34 +92,12 @@ public class RoutesParser {
             }
         }
 
-        //query string
-        String query = path.substring(lastEnd);
-        if (query.startsWith("/")) {
+        if (path.substring(lastEnd).startsWith("/")) {
             pathPattern.append("/");
-            query = query.substring(1);
-        }
-        if (query.startsWith("?")) {
-            query = "&" + query.substring(1);
-        }
-        Map<String, Pattern> queryMap = new HashMap<>();
-        if (!query.isEmpty()) {
-            Pattern queryVar = Pattern.compile("&" + variable);
-            m = queryVar.matcher(query);
-            while (m.find()) {
-                String pattern = m.group("pattern");
-                String name = m.group("name");
-                variablesNames.add(name);
-                if (pattern != null) {
-                    queryMap.put(name, Pattern.compile(pattern));
-                } else {
-                    queryMap.put(name, null);
-                }
-            }
         }
 
         System.out.println(pathPattern);
-        System.out.println(queryMap);
-        return new ParsedPath(Pattern.compile(pathPattern.toString()), queryMap, variablesNames);
+        return new ParsedPath(Pattern.compile(pathPattern.toString()), variablesNames);
     }
 
     public static final class ParsedAction {

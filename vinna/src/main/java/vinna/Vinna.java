@@ -88,6 +88,12 @@ public class Vinna {
             return param;
         }
 
+        public final ActionArgument.RequestParameter param(String name) {
+            ActionArgument.RequestParameter param = new ActionArgument.RequestParameter(name);
+            routeParameters.add(param);
+            return param;
+        }
+
         public final Map<String, Collection<String>> headers() {
             ActionArgument.Headers headers = new ActionArgument.Headers();
             routeParameters.add(headers);

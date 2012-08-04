@@ -7,23 +7,37 @@ import vinna.outcome.Outcome;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public final class RouteBuilder {
     private final String path;
     private final String verb;
     private final Vinna context;
-    private final List<ActionArgument> parameters;
+    private final List<ActionArgument> methodParameters;
+    private final Collection<String> mandatoryPathParameters;
 
     private Class controller;
     private Method method;
     private String controllerId;//FIXME: expose a way to set this
 
-    public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> parameters) {
+    public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> methodParameters) {
         this.path = path;
         this.context = context;
         this.verb = verb;
-        this.parameters = parameters;
+        this.methodParameters = methodParameters;
+        this.mandatoryPathParameters = new HashSet<>();
+    }
+
+    public RouteBuilder hasHeader(String name) {
+        // TODO
+        return this;
+    }
+
+    public RouteBuilder hasParam(String name) {
+        mandatoryPathParameters.add(name);
+        return this;
     }
 
     public <T> T withController(Class<T> controller) {
@@ -44,8 +58,8 @@ public final class RouteBuilder {
 
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-        Route.Action action = new Route.Action(controllerId, controller, method, parameters);
-        return new Route(verb, parsedPath.pathPattern, parsedPath.queryMap, parsedPath.variableNames, action);
+        Route.Action action = new Route.Action(controllerId, controller, method, methodParameters);
+        return new Route(this.verb, parsedPath.pathPattern, this.mandatoryPathParameters, parsedPath.variableNames, action);
     }
 
     private class RouteMethodHandler implements MethodHandler {
@@ -55,7 +69,7 @@ public final class RouteBuilder {
             // be careful with the method finalize
             if (method == null) {
                 if (Outcome.class.isAssignableFrom(thisMethod.getReturnType())) {
-                    if (parameters.size() != args.length) {
+                    if (methodParameters.size() != args.length) {
                         throw new IllegalStateException("Like, really ?");
                     }
                     method = thisMethod;

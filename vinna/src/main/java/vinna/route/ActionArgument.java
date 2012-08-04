@@ -50,6 +50,21 @@ public interface ActionArgument {
         }
     }
 
+    public static class RequestParameter extends ChameleonArgument {
+
+        private final String name;
+
+        public RequestParameter(String name) {
+            super(null);
+            this.name = name;
+        }
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return Conversions.convertString(env.request.getParam(name), targetType);
+        }
+    }
+
     public static class Headers implements ActionArgument {
 
         public Headers() {
@@ -78,7 +93,7 @@ public interface ActionArgument {
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             if (collectionType != null) {
-               return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
+                return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
@@ -88,7 +103,7 @@ public interface ActionArgument {
 
         protected Class<?> collectionType;
 
-        public ChameleonArgument(Class<?> collectionType){
+        public ChameleonArgument(Class<?> collectionType) {
             this.collectionType = collectionType;
         }
 

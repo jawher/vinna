@@ -29,12 +29,13 @@ public class ProgrammaticSampleApp extends Vinna {
         get("/headers")
                 .withController(Controller.class)
                 .writeHeaders(req.header("Accept").asCollection(String.class));
+
         get("/allheaders")
                 .withController(Controller.class)
                 .printHeaders(req.headers());
 
-        get("/params?{a}&{b}&{c: \\d+}")
+        get("/params")
                 .withController(Controller.class)
-                .params(param("a").asString(), param("b").asString(), param("c").asInt());
+                .params(req.param("a").asString(), req.param("b").asString(), req.param("c").asInt());
     }
 }
