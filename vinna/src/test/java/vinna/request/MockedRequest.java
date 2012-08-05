@@ -28,7 +28,11 @@ public class MockedRequest implements Request {
 
     @Override
     public String getParam(String name) {
-        return params.get(name).iterator().next();
+        Collection<String> param = params.get(name);
+        if (param.size() == 0) {
+            return null;
+        }
+        return param.iterator().next();
     }
 
     @Override
@@ -46,7 +50,11 @@ public class MockedRequest implements Request {
 
     @Override
     public String getHeader(String name) {
-        return headers.get(name).iterator().next();
+        Collection<String> header = getHeaders(name);
+        if (header.size() == 0) {
+            return null;
+        }
+        return header.iterator().next();
     }
 
     @Override
