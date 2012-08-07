@@ -18,6 +18,10 @@ public class ProgrammaticSampleApp extends Vinna {
                 .withController(Controller.class)
                 .test2(param("name").asString(), param("hello").asBoolean(), param("id").asInt());
 
+        get("/hello/{hello}/{id}/{name}")
+                .withController(Controller.class)
+                .printHeaders(req.headers());
+
         get("/constant/{test}")
                 .withController(Controller.class)
                 .test2(param("test").asString(), constant(17));
