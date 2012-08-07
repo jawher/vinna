@@ -45,16 +45,21 @@ public class Route {
 
     private final String verb;
     private final Pattern pathPattern;
-    private final Collection<String> mandatoryPathParameters;
     private final Collection<String> pathVariableName;
+
+    private final Map<String, Pattern> mandatoryQueryParameters;
+    private final Map<String, Pattern> mandatoryRequestHeaders;
+
     private final Action action;
 
-    public Route(String verb, Pattern pathPattern, Collection<String> mandatoryPathParameters, Collection<String> pathVariableName, Action action) {
+    public Route(String verb, Pattern pathPattern, Map<String, Pattern> mandatoryQueryParameters,
+                 Collection<String> pathVariableName, Map<String, Pattern> mandatoryRequestHeaders, Action action) {
         this.verb = verb;
         this.pathPattern = pathPattern;
-        this.mandatoryPathParameters = mandatoryPathParameters;
+        this.mandatoryQueryParameters = mandatoryQueryParameters;
         this.pathVariableName = pathVariableName;
         this.action = action;
+        this.mandatoryRequestHeaders = mandatoryRequestHeaders;
     }
 
 
@@ -66,22 +71,44 @@ public class Route {
                 System.out.println("Got match for " + toString());
                 Map<String, String> paramValues = new HashMap<>();
 
+                for (Map.Entry<String, Pattern> paramEntry : mandatoryQueryParameters.entrySet()) {
+                    Collection<String> params = request.getParams(paramEntry.getKey());
+                    if (!matchMandatoryCollectionWithPattern(params, paramEntry.getValue())) {
+                        return null;
+                    }
+                }
+
+                for (Map.Entry<String, Pattern> headerEntry : mandatoryRequestHeaders.entrySet()) {
+                    Collection<String> headers = request.getHeaders(headerEntry.getKey());
+                    if (!matchMandatoryCollectionWithPattern(headers, headerEntry.getValue())) {
+                        return null;
+                    }
+                }
+
                 for (String variablesName : pathVariableName) {
                     //FIXME: check that the variable exists, or else that it is optional
                     paramValues.put(variablesName, m.group(variablesName));
                 }
-                for (String mandatoryPathParam : mandatoryPathParameters) {
-                    if (request.getParams(mandatoryPathParam).isEmpty()) {
-                        // TODO return bad request or check others routes
-                        return null;
-                    }
-                }
+
                 return new RouteResolution(action, paramValues, request);
             }
         }
         return null;
     }
 
+    private boolean matchMandatoryCollectionWithPattern(Collection<String> collection, Pattern pattern) {
+        if (collection.isEmpty()) {
+            return false;
+        }
+        if (pattern != null) {
+            for (String element : collection) {
+                if (!pattern.matcher(element).matches()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public String toString() {

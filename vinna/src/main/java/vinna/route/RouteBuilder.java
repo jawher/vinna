@@ -7,16 +7,19 @@ import vinna.outcome.Outcome;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public final class RouteBuilder {
     private final String path;
     private final String verb;
     private final Vinna context;
     private final List<ActionArgument> methodParameters;
-    private final Collection<String> mandatoryPathParameters;
+
+    private final Map<String, Pattern> mandatoryQueryParameters;
+    private final Map<String, Pattern> mandatoryRequestHeaders;
 
     private Class controller;
     private Method method;
@@ -27,16 +30,34 @@ public final class RouteBuilder {
         this.context = context;
         this.verb = verb;
         this.methodParameters = methodParameters;
-        this.mandatoryPathParameters = new HashSet<>();
+
+        this.mandatoryQueryParameters = new HashMap<>();
+        this.mandatoryRequestHeaders = new HashMap<>();
     }
 
     public RouteBuilder hasHeader(String name) {
-        // TODO
+        return hasHeader(name, null);
+    }
+
+    public RouteBuilder hasHeader(String name, String pattern) {
+        if (pattern != null) {
+            mandatoryRequestHeaders.put(name, Pattern.compile(pattern));
+        } else {
+            mandatoryRequestHeaders.put(name, null);
+        }
         return this;
     }
 
     public RouteBuilder hasParam(String name) {
-        mandatoryPathParameters.add(name);
+        return hasParam(name, null);
+    }
+
+    public RouteBuilder hasParam(String name, String pattern) {
+        if (pattern != null) {
+            mandatoryQueryParameters.put(name, Pattern.compile(pattern));
+        } else {
+            mandatoryQueryParameters.put(name, null);
+        }
         return this;
     }
 
@@ -59,7 +80,7 @@ public final class RouteBuilder {
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
         Route.Action action = new Route.Action(controllerId, controller, method, methodParameters);
-        return new Route(this.verb, parsedPath.pathPattern, this.mandatoryPathParameters, parsedPath.variableNames, action);
+        return new Route(this.verb, parsedPath.pathPattern, this.mandatoryQueryParameters, parsedPath.variableNames, mandatoryRequestHeaders, action);
     }
 
     private class RouteMethodHandler implements MethodHandler {

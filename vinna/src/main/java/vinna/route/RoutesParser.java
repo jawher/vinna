@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +39,7 @@ public class RoutesParser {
 
                         ParsedPath parsedPath = parsePath(path);
                         ParsedAction parsedAction = parseAction(action);
-                        routes.add(new Route(verb, parsedPath.pathPattern, new ArrayList<String>(), parsedPath.variableNames,
+                        routes.add(new Route(verb, parsedPath.pathPattern, new HashMap<String, Pattern>(), parsedPath.variableNames, new HashMap<String, Pattern>(),
                                 new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters)));
 
 

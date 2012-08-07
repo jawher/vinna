@@ -25,10 +25,27 @@ public class RoutingTest {
     }
 
     private Vinna oneRouteAppWithParam(final String path, final String param) {
+        return oneRouteAppWithParamAndPattern(path, param, null);
+    }
+
+    private Vinna oneRouteAppWithParamAndPattern(final String path, final String param, final String pattern) {
         return new Vinna() {
             @Override
             protected void routes() {
-                get(path).hasParam(param).withController(NoOpcontroller.class).process();
+                get(path).hasParam(param, pattern).withController(NoOpcontroller.class).process();
+            }
+        };
+    }
+
+    private Vinna oneRouteAppWithHeader(final String path, final String header) {
+        return oneRouteAppWithHeaderAndPattern(path, header, null);
+    }
+
+    private Vinna oneRouteAppWithHeaderAndPattern(final String path, final String header, final String pattern) {
+        return new Vinna() {
+            @Override
+            protected void routes() {
+                get(path).hasHeader(header, pattern).withController(NoOpcontroller.class).process();
             }
         };
     }
@@ -158,20 +175,76 @@ public class RoutingTest {
     }
 
     @Test
+    public void matchesWithAPathWithAVariableWithAPattern() {
+        Vinna app = oneRouteApp("/users/{id: \\d+}");
+        MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void failsWithAPathWithAVariableWithAPatternAndANonMatchingRequest() {
+        Vinna app = oneRouteApp("/users/{id: \\d+}");
+        MockedRequest mockedRequest = MockedRequest.get("/users/abc").build();
+        assertNull(app.match(mockedRequest));
+    }
+
+    @Test
     public void failsWithARouteWithMandatoryPathParamAndNonMatchingRequest() {
-        Vinna app = oneRouteAppWithParam("/users","id");
+        Vinna app = oneRouteAppWithParam("/users", "id");
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         assertNull(app.match(mockedRequest));
 
-        MockedRequest mockedRequest2 = MockedRequest.get("/users").param("uid","5").build();
+        MockedRequest mockedRequest2 = MockedRequest.get("/users").param("uid", "5").build();
         assertNull(app.match(mockedRequest2));
     }
 
     @Test
     public void matchesWithARouteWithMandatoryPathParam() {
-        Vinna app = oneRouteAppWithParam("/users","id");
-        MockedRequest mockedRequest = MockedRequest.get("/users").param("id","5").build();
+        Vinna app = oneRouteAppWithParam("/users", "id");
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "5").build();
         assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void matchesARouteWithAMandatoryParamWithAPattern() {
+        Vinna app = oneRouteAppWithParamAndPattern("/users", "id", "\\d+");
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "5").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void failsARouteWithAMandatoryParamWithAPatternAndNonMatchingRequest() {
+        Vinna app = oneRouteAppWithParamAndPattern("/users", "id", "\\d+");
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "five").build();
+        assertNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void matchesWithARouteWithAMandatoryHeader() {
+        Vinna app = oneRouteAppWithHeader("/users", "X-Vinna");
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("X-Vinna", "Let's work instead of playing").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void failsWithARouteWithAMandatoryHeaderAndNonMatchingRequest() {
+        Vinna app = oneRouteAppWithHeader("/users", "X-Vinna");
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void matchesARouteWithAMandatoryHeaderWithAPattern() {
+        Vinna app = oneRouteAppWithHeaderAndPattern("/users", "X-Vinna", "\\d+");
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("X-Vinna", "5").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void failsARouteWithAMandatoryHeaderWithAPatternAndNonMatchingRequest() {
+        Vinna app = oneRouteAppWithHeaderAndPattern("/users", "X-Vinna", "\\d+");
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("X-Vinna", "five").build();
+        assertNull(app.match(mockedRequest));
     }
 
     //TODO: moar test !
