@@ -17,7 +17,7 @@ public class Vinna {
     public Vinna(Reader routesReader) {
         this.controllerFactory = controllerFactory();
         this.router = new Router();
-        List<Route> routes = new RoutesParser().loadFrom(routesReader, this);
+        List<Route> routes = new RoutesParser(routesReader).load();
         router.addRoutes(routes);
     }
 

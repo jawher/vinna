@@ -1,66 +1,176 @@
 package vinna.route;
 
-import vinna.Vinna;
 import vinna.util.Conversions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class RoutesParser {
+    private final BufferedReader reader;
 
-    public final List<Route> loadFrom(Reader reader, Vinna vinna) {
-        List<Route> routes = new ArrayList<>();
-        BufferedReader br = new BufferedReader(reader);
-        String line = null;
-        int lineNum = 0;
-        Pattern routeLine = Pattern.compile("(?<verb>.*?)\\s+(?<path>.*?)\\s+(?<action>.*?)");
-        try {
-            while ((line = br.readLine()) != null) {
-                lineNum++;
-                line = line.trim();
-                if (!line.isEmpty() && !line.startsWith("#")) {
-                    Matcher rm = routeLine.matcher(line);
-                    if (!rm.matches()) {
-                        throw new RuntimeException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
-                    } else {
-                        // TODO method for creating the pathPattern, the queryMap and variablesNames. Needed by RouteBuilder
-                        String verb = rm.group("verb");
-                        String path = rm.group("path");
-                        String action = rm.group("action");
+    public RoutesParser(Reader reader) {
+        this.reader = new BufferedReader(reader);
+    }
 
+    private List<String> lines = new ArrayList<>();
 
-                        ParsedPath parsedPath = parsePath(path);
-                        ParsedAction parsedAction = parseAction(action);
-                        routes.add(new Route(verb, parsedPath.pathPattern, new HashMap<String, Pattern>(), parsedPath.variableNames, new HashMap<String, Pattern>(),
-                                new Route.Action(parsedAction.controller, parsedAction.method, parsedAction.parameters)));
-
-
-                        //log how vitta sees this route, as matcher.find is too forgiving
-                    }
-                }
+    private String readLine() {
+        if (lines.isEmpty()) {
+            try {
+                return reader.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            return routes;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            String res = lines.get(0);
+            lines = lines.subList(1, lines.size());
+            return res;
         }
     }
 
+    private void pushBack(String line) {
+        lines.add(line);
+    }
 
-    public static final class ParsedPath {
-        public final Pattern pathPattern;
-        public final Collection<String> variableNames;
+    private boolean ignoreLine(String line) {
+        String l = line.trim();
+        return l.isEmpty() || l.startsWith("#");
+    }
 
-        public ParsedPath(Pattern pathPattern, Collection<String> variableNames) {
-            this.pathPattern = pathPattern;
-            this.variableNames = variableNames;
+    private Pattern constraint(String prefix) {
+        final String eolOrComment = "(\\s+#.*|\\s*)";
+        if (!prefix.isEmpty()) {
+            return Pattern.compile("\\s+" + Pattern.quote(prefix) + "(.+?)" + eolOrComment + "$");
+        } else {
+            return Pattern.compile("\\s+(.+?)" + eolOrComment + "$");
+        }
+    }
+
+    private Pattern constraintWithPattern(String prefix) {
+        final String eolOrComment = "(\\s+#.*|\\s*)";
+        if (!prefix.isEmpty()) {
+            return Pattern.compile("\\s+" + Pattern.quote(prefix) + "(.+?)\\s*:\\s*(.+?)" + eolOrComment + "$");
+        } else {
+            return Pattern.compile("\\s+(.+?)\\s*:\\s*(.+?)" + eolOrComment + "$");
+
+        }
+    }
+
+    public List<Route> load() {
+        List<Route> routes = new ArrayList<>();
+        String line;
+        int lineNum = 0;
+        String verbp = "(?<verb>[^\\s]+)";
+        String controllerAndMethodp = "(?<controller>.+)\\.(?<method>[^\\.]+)";
+        String actionp = controllerAndMethodp + "\\s*\\((?<args>.*)\\)";
+        String pathp = "(?<path>.+?)";
+        Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+" + actionp);
+        System.out.println(routeLine);
+
+        while ((line = readLine()) != null) {
+            lineNum++;
+            if (!ignoreLine(line)) {
+                Matcher rm = routeLine.matcher(line);
+                if (!rm.matches()) {
+                    throw new RuntimeException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
+                } else {
+                    String verb = rm.group("verb");
+                    String path = rm.group("path");
+                    String controller = rm.group("controller");
+                    String method = rm.group("method");
+                    String args = rm.group("args").trim();
+
+                    //read constraints
+                    Map<String, Pattern> queryVars = new HashMap<>();
+                    Map<String, Pattern> headers = new HashMap<>();
+                    Map<String, String> pathVarsConstraints = new HashMap<>();
+
+                    Pattern constraintp = constraintWithPattern("");// Pattern.compile("\\s+(.+?)\\s*:\\s*(.+?)\\s*$");
+                    Pattern qvPatConstraintp = constraintWithPattern("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*:\\s*(.+?)\\s*$");
+                    Pattern qvConstraintp = constraint("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*$");
+
+                    Pattern hConstraintp = constraint("req.header.");// Pattern.compile("\\s+req\\.header\\.(.+?)\\s*$");
+                    Pattern hPatConstraintp = constraintWithPattern("req.header.");//  Pattern.compile("\\s+req\\.header\\.(.+?)\\s*:\\s*(.+?)\\s*$");
+
+                    String cline;
+                    while ((cline = readLine()) != null) {
+                        if (!ignoreLine(cline)) {
+                            Matcher m;
+                            if ((m = qvPatConstraintp.matcher(cline)).matches()) {
+                                queryVars.put(m.group(1), Pattern.compile(m.group(2)));
+                            } else if ((m = qvConstraintp.matcher(cline)).matches()) {
+                                queryVars.put(m.group(1), null);
+                            } else if ((m = hPatConstraintp.matcher(cline)).matches()) {
+                                headers.put(m.group(1), Pattern.compile(m.group(2)));
+                            } else if ((m = hConstraintp.matcher(cline)).matches()) {
+                                headers.put(m.group(1), null);
+                            } else if ((m = constraintp.matcher(cline)).matches()) {
+                                String pat = m.group(2);
+                                try {
+                                    Pattern.compile(pat);
+                                } catch (PatternSyntaxException e) {
+                                    throw new RuntimeException("Invalid path variable pattern '" + pat + "'", e);
+                                }
+                                pathVarsConstraints.put(m.group(1), pat);
+                            } else {
+                                pushBack(cline);
+                                break;
+                            }
+                        }
+                    }
+
+                    ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
+                    routes.add(new Route(verb, parsedPath.pathPattern, queryVars, parsedPath.variableNames, headers, new Route.Action(controller, method, parseArgs(args))));
+                }
+            }
+        }
+        return routes;
+
+    }
+
+    private static ParsedPath parsePath(String path, Map<String, String> pathVarsConstraints) {
+        if (!path.startsWith("/")) {
+            path = ".*?/" + path;
+        }
+        String ref = "\\{(.+?)\\}";
+
+        Pattern refp = Pattern.compile(ref);
+
+        Set<String> pathVariables = new HashSet<>();
+        StringBuffer pathPattern = new StringBuffer();
+        Matcher m = refp.matcher(path);
+        while (m.find()) {
+            String var = m.group(1);
+            pathVariables.add(var);
+            if (pathVarsConstraints.containsKey(var)) {
+                m.appendReplacement(pathPattern, "(?<$1>");
+                            /*
+                            Beware, for the beast is prawling the streets
+                            Matcher#appendReplacement ignores "\" characters, and hence will
+                            mess up the user specified regular expressions
+                            That's why we have to use the following hack: use appendReplacement for the
+                            safe part, and then directly append the user regexp to the StingBuffer
+                            */
+                pathPattern.append(pathVarsConstraints.get(var)).append(")");
+            } else {
+                m.appendReplacement(pathPattern, "(?<$1>[^/]+)");
+            }
+        }
+        m.appendTail(pathPattern);
+
+        Pattern compiledPathPattern;
+        try {
+            compiledPathPattern = Pattern.compile(pathPattern.toString());
+            return new ParsedPath(compiledPathPattern, pathVariables);
+        } catch (PatternSyntaxException e) {
+            throw new RuntimeException("Illegal path " + pathPattern);
         }
     }
 
@@ -97,8 +207,17 @@ public class RoutesParser {
             pathPattern.append("/");
         }
 
-        System.out.println(pathPattern);
         return new ParsedPath(Pattern.compile(pathPattern.toString()), variablesNames);
+    }
+
+    public static final class ParsedPath {
+        public final Pattern pathPattern;
+        public final Collection<String> variableNames;
+
+        public ParsedPath(Pattern pathPattern, Collection<String> variableNames) {
+            this.pathPattern = pathPattern;
+            this.variableNames = variableNames;
+        }
     }
 
     public static final class ParsedAction {
@@ -113,62 +232,40 @@ public class RoutesParser {
         }
     }
 
-    public static ParsedAction parseAction(String action) {
-        /*
-        controller.method({arg}, "string", true, 4, 3.6, {})
-        controller.method()
-        package.controller.method()
-         */
+    public static List<ActionArgument> parseArgs(String argsString) {
 
-        Pattern actionPattern = Pattern.compile("(?<controllerAndMethod>.+())\\((?<args>.*)\\)");
-        //String action = "pkg.controller.method({arg}, \"string\", true, 4, 3.6, {})";
-        Matcher actionMatcher = actionPattern.matcher(action);
-        if (actionMatcher.matches()) {
-            String controllerAndMethod = actionMatcher.group("controllerAndMethod");
-
-            Matcher m = Pattern.compile("(?<controller>.+)\\.(?<method>[^\\.]+)$").matcher(controllerAndMethod);
-            if (m.matches()) {
-                String controller = m.group("controller");
-                String method = m.group("method");
-
-                String argsString = actionMatcher.group("args").trim();
-                List<ActionArgument> parameters = new ArrayList<>();
-                Pattern pheader = Pattern.compile("\\{req\\.header\\.(.+)\\}");
-                Pattern pvar = Pattern.compile("\\{(.+)\\}");
-                Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
-                Pattern pbool = Pattern.compile("(true|false)");
-                if (!argsString.isEmpty()) {
-                    String[] args = argsString.split("\\s*,\\s*");
-                    for (String arg : args) {
-                        Matcher pm;
-                        if ((pm = pheader.matcher(arg)).matches()) {
-                            parameters.add(new ActionArgument.Header(pm.group(1)));
-                        } else if ((pm = pvar.matcher(arg)).matches()) {
-                            parameters.add(new ActionArgument.Variable(pm.group(1)));
-                        } else if ((pm = pstr.matcher(arg)).matches()) {
-                            parameters.add(new ActionArgument.Const<String>(pm.group(1)));
-                        } else if ((pm = pbool.matcher(arg)).matches()) {
-                            parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
-                        } else {
-                            try {
-                                parameters.add(new NumConst(new BigDecimal(arg)));
-                            } catch (NumberFormatException e) {
-                                throw new RuntimeException("Invalid action argument " + arg);
-                            }
-                        }
+        List<ActionArgument> parameters = new ArrayList<>();
+        Pattern pqvar = Pattern.compile("\\{req\\.param\\.(.+)\\}");
+        Pattern pheader = Pattern.compile("\\{req\\.header\\.(.+)\\}");
+        Pattern pvar = Pattern.compile("\\{(.+)\\}");
+        Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
+        Pattern pbool = Pattern.compile("(true|false)");
+        if (!argsString.isEmpty()) {
+            String[] args = argsString.split("\\s*,\\s*");
+            for (String arg : args) {
+                Matcher pm;
+                if ((pm = pqvar.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.RequestParameter(pm.group(1)));
+                } else if ((pm = pheader.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.Header(pm.group(1)));
+                } else if ((pm = pvar.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.Variable(pm.group(1)));
+                } else if ((pm = pstr.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.Const<String>(pm.group(1)));
+                } else if ((pm = pbool.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
+                } else {
+                    try {
+                        parameters.add(new NumConst(new BigDecimal(arg)));
+                    } catch (NumberFormatException e) {
+                        throw new RuntimeException("Invalid action argument " + arg);
                     }
                 }
-
-
-                return new ParsedAction(controller, method, parameters);
-            } else {
-                throw new RuntimeException("Invalid class and method " + controllerAndMethod);
             }
-
-
-        } else {
-            throw new RuntimeException("Invalid action");
         }
+
+
+        return parameters;
     }
 
     private static final class NumConst implements ActionArgument {
@@ -183,5 +280,4 @@ public class RoutesParser {
             return Conversions.convertNumeric(value, targetType);
         }
     }
-
 }

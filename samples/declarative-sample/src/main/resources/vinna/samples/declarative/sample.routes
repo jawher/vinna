@@ -1,9 +1,12 @@
 
-GET /user/{id:\d+} vinna.samples.declarative.Controller.test({id})
+GET /user/{id} vinna.samples.declarative.Controller.test({id})
+  id: \d+
 
-GET /user/{id:\d+}/{name} vinna.samples.declarative.Controller.test2({name}, {id})
+GET /user/{id}/{name} vinna.samples.declarative.Controller.test2({name}, {id})
+  id: \d+
 
-GET /hello/{hello:true|false}/{id}/{name} vinna.samples.declarative.Controller.test2({name}, {hello}, {id})
+GET /hello/{hello}/{id}/{name} vinna.samples.declarative.Controller.test2({name}, {hello}, {id})
+  hello: true|false
 
 GET /constant/{test} vinna.samples.declarative.Controller.test2({test}, 17)
 
