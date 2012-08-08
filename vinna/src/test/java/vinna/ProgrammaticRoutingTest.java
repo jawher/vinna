@@ -7,7 +7,7 @@ import vinna.request.MockedRequest;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class RoutingTest {
+public class ProgrammaticRoutingTest {
 
     public static class NoOpcontroller {
         public Outcome process() {
