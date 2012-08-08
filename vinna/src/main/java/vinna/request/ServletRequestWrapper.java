@@ -1,6 +1,8 @@
 package vinna.request;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class ServletRequestWrapper implements Request {
@@ -78,5 +80,10 @@ public class ServletRequestWrapper implements Request {
         }
 
         return Collections.unmodifiableMap(headers);
+    }
+
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return servletRequest.getInputStream();
     }
 }
