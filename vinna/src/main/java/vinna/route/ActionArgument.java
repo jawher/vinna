@@ -5,6 +5,7 @@ import vinna.util.Conversions;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -38,14 +39,22 @@ public interface ActionArgument {
         private final String name;
 
         public Variable(String name) {
-            super(null);
             this.name = name;
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            // FIXME resolve asCollection
             String value = env.matchedVars.get(name);
+            if (targetType.isAssignableFrom(Collection.class)) {
+                //TODO: simply do not expose asCollection for path variables ?
+                if (typeArg != null) {
+                    Object convertedValue = Conversions.convertString(value, typeArg);
+                    return Collections.unmodifiableCollection(Arrays.asList(convertedValue));
+                } else {
+                    throw new RuntimeException("need an argType when the target is a collection");
+                }
+            }
+
             return Conversions.convertString(value, targetType);
         }
     }
@@ -55,19 +64,23 @@ public interface ActionArgument {
         private final String name;
 
         public RequestParameter(String name) {
-            super(null);
             this.name = name;
         }
 
         public RequestParameter(String name, Class<?> collectionType) {
-            super(collectionType);
+            type = Collection.class;
+            typeArg = collectionType;
             this.name = name;
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            if (collectionType != null) {
-                return Conversions.convertCollection(env.request.getParams(name), collectionType);
+            if (targetType.isAssignableFrom(Collection.class)) {
+                if (typeArg != null) {
+                    return Conversions.convertCollection(env.request.getParams(name), typeArg);
+                } else {
+                    throw new RuntimeException("need an argType when the target is a collection");
+                }
             }
             return Conversions.convertString(env.request.getParam(name), targetType);
         }
@@ -82,14 +95,19 @@ public interface ActionArgument {
         }
 
         public Header(String headerName, Class<?> collectionType) {
-            super(collectionType);
+            type = Collection.class;
+            typeArg = collectionType;
             this.headerName = headerName;
         }
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            if (collectionType != null) {
-                return Conversions.convertCollection(env.request.getHeaders(headerName), collectionType);
+            if (targetType.isAssignableFrom(Collection.class)) {
+                if (typeArg != null) {
+                    return Conversions.convertCollection(env.request.getHeaders(headerName), typeArg);
+                } else {
+                    throw new RuntimeException("need an argType when the target is a collection");
+                }
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
@@ -112,12 +130,8 @@ public interface ActionArgument {
     }
 
     public static abstract class ChameleonArgument implements ActionArgument {
-
-        protected Class<?> collectionType;
-
-        public ChameleonArgument(Class<?> collectionType) {
-            this.collectionType = collectionType;
-        }
+        protected Class<?> type;
+        protected Class<?> typeArg;
 
         public final long asLong() {
             return 42;
@@ -160,7 +174,8 @@ public interface ActionArgument {
         }
 
         public final <T> Collection<T> asCollection(Class<T> clazz) {
-            this.collectionType = clazz;
+            this.type = Collection.class;
+            this.typeArg = clazz;
             // TODO homemade collection implementation with unsupported operation ?
             return Collections.emptyList();
         }

@@ -4,9 +4,9 @@ import vinna.util.Conversions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -232,12 +232,75 @@ public class RoutesParser {
         }
     }
 
-    public static List<ActionArgument> parseArgs(String argsString) {
+    private static Pattern argp(String prefix) {
+        String typep = "(?:\\s*:\\s*(.+))?";
+        if (prefix.isEmpty()) {
+            return Pattern.compile("\\{(.+?)" + typep + "\\}");
+        } else {
+            return Pattern.compile("\\{" + Pattern.quote(prefix) + "(.+?)" + typep + "\\}");
+        }
+    }
 
+    private static final Map<String, Class<?>> TYPES_NAMES;
+
+    static {
+        TYPES_NAMES = new HashMap<>();
+        TYPES_NAMES.put("byte", Byte.TYPE);
+        TYPES_NAMES.put("short", Short.TYPE);
+        TYPES_NAMES.put("int", Integer.TYPE);
+        TYPES_NAMES.put("long", Long.TYPE);
+        TYPES_NAMES.put("float", Float.TYPE);
+        TYPES_NAMES.put("double", Double.TYPE);
+
+        TYPES_NAMES.put("Byte", Byte.class);
+        TYPES_NAMES.put("Short", Short.class);
+        TYPES_NAMES.put("Integer", Integer.class);
+        TYPES_NAMES.put("Long", Long.class);
+        TYPES_NAMES.put("Float", Float.class);
+        TYPES_NAMES.put("Double", Double.class);
+
+        TYPES_NAMES.put("boolean", Boolean.TYPE);
+        TYPES_NAMES.put("Boolean", Boolean.class);
+
+        TYPES_NAMES.put("BigInteger", BigInteger.class);
+        TYPES_NAMES.put("BigDecimal", BigDecimal.class);
+
+        TYPES_NAMES.put("String", String.class);
+    }
+
+    private static void fillInTypes(ActionArgument.ChameleonArgument arg, Matcher m) {
+        System.out.println("ohai " + m.toMatchResult().groupCount());
+        String type = m.group(2);
+        if (type != null) {
+            System.out.println("type=" + type);
+            String primitiveTypes = "int|long|float|double|short|byte|boolean";
+            String objectTypes = "Integer|Long|Float|Double|Short|Byte|Boolean|BigInteger|BigDecimal|String";
+            String types = primitiveTypes + "|" + objectTypes;
+            String collTypes = "\\[(" + objectTypes + ")\\]";
+
+            Matcher tm = Pattern.compile(types).matcher(type);
+            if (tm.matches()) {
+                System.out.println("yes ! self");
+                arg.type = TYPES_NAMES.get(type);
+            } else {
+                Matcher ctm = Pattern.compile(collTypes).matcher(type);
+                if (ctm.matches()) {
+                    arg.type = Collection.class;
+                    arg.typeArg = TYPES_NAMES.get(ctm.group(1));
+                    System.out.println("yes ! " + ctm.group(1));
+                } else {
+                    throw new IllegalArgumentException("Unknown type " + type);
+                }
+            }
+        }
+
+    }
+
+    public static List<ActionArgument> parseArgs(String argsString) {
         List<ActionArgument> parameters = new ArrayList<>();
-        Pattern pqvar = Pattern.compile("\\{req\\.param\\.(.+)\\}");
-        Pattern pheader = Pattern.compile("\\{req\\.header\\.(.+)\\}");
-        Pattern pvar = Pattern.compile("\\{(.+)\\}");
+        Pattern pqvar = argp("req.param.");
+        Pattern pheader = argp("req.header.");
+        Pattern pvar = argp("");
         Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
         Pattern pbool = Pattern.compile("(true|false)");
         if (!argsString.isEmpty()) {
@@ -245,11 +308,17 @@ public class RoutesParser {
             for (String arg : args) {
                 Matcher pm;
                 if ((pm = pqvar.matcher(arg)).matches()) {
-                    parameters.add(new ActionArgument.RequestParameter(pm.group(1)));
+                    final ActionArgument.RequestParameter res = new ActionArgument.RequestParameter(pm.group(1));
+                    fillInTypes(res, pm);
+                    parameters.add(res);
                 } else if ((pm = pheader.matcher(arg)).matches()) {
-                    parameters.add(new ActionArgument.Header(pm.group(1)));
+                    final ActionArgument.Header res = new ActionArgument.Header(pm.group(1));
+                    fillInTypes(res, pm);
+                    parameters.add(res);
                 } else if ((pm = pvar.matcher(arg)).matches()) {
-                    parameters.add(new ActionArgument.Variable(pm.group(1)));
+                    final ActionArgument.Variable res = new ActionArgument.Variable(pm.group(1));
+                    fillInTypes(res, pm);
+                    parameters.add(res);
                 } else if ((pm = pstr.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<String>(pm.group(1)));
                 } else if ((pm = pbool.matcher(arg)).matches()) {
@@ -279,5 +348,9 @@ public class RoutesParser {
         public Object resolve(Environment env, Class<?> targetType) {
             return Conversions.convertNumeric(value, targetType);
         }
+    }
+
+    public static void main(String[] args) {
+        parseArgs("{x:[Integer]}");
     }
 }
