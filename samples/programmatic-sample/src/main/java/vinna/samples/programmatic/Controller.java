@@ -65,4 +65,8 @@ public class Controller {
         }
         return new StringOutcome(builder.toString());
     }
+
+    public Outcome post(String title, String description) {
+        return new StringOutcome(title + " : " + description);
+    }
 }

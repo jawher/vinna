@@ -1,5 +1,7 @@
 package vinna.request;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -20,4 +22,6 @@ public interface Request {
     Collection<String> getHeaders(String name);
 
     Map<String, Collection<String>> getHeaders();
+
+    InputStream getInputStream() throws IOException;
 }

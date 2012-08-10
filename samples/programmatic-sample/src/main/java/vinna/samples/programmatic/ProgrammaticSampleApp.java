@@ -54,5 +54,9 @@ public class ProgrammaticSampleApp extends Vinna {
         get("/params")
                 .withController(Controller.class)
                 .params(req.param("a").asString(), req.param("b").asString(), req.param("c").asInt());
+
+        post("post")
+                .withController(Controller.class)
+                .post(req.param("title").asString(), req.param("description").asString());
     }
 }

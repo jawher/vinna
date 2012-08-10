@@ -3,6 +3,7 @@ package vinna.route;
 import vinna.request.Request;
 import vinna.util.Conversions;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -83,6 +84,18 @@ public interface ActionArgument {
                 }
             }
             return Conversions.convertString(env.request.getParam(name), targetType);
+        }
+    }
+
+    public static class RequestBody implements ActionArgument {
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            try {
+                return env.request.getInputStream();
+            } catch (IOException e) {
+                throw new RuntimeException("unexpected exception while reading the request", e);
+            }
         }
     }
 

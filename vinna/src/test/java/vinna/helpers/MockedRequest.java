@@ -2,6 +2,7 @@ package vinna.helpers;
 
 import vinna.request.Request;
 
+import java.io.InputStream;
 import java.util.*;
 
 public class MockedRequest implements Request {
@@ -70,6 +71,11 @@ public class MockedRequest implements Request {
     @Override
     public Map<String, Collection<String>> getHeaders() {
         return Collections.unmodifiableMap(headers);
+    }
+
+    @Override
+    public InputStream getInputStream() {
+        throw new UnsupportedOperationException();
     }
 
     public static Builder get(String path) {

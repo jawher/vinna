@@ -2,15 +2,17 @@ package vinna;
 
 import org.junit.Test;
 import vinna.helpers.MockedRequest;
+import org.mockito.ArgumentCaptor;
 import vinna.outcome.Outcome;
 import vinna.route.RouteResolution;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Iterator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -87,6 +89,13 @@ public class ControllersTest {
     public static class BooleanArgController {
 
         public Outcome action(Boolean param) {
+            return null;
+        }
+    }
+
+    public static class CollectionArgController {
+
+        public Outcome action(Collection<?> param) {
             return null;
         }
     }
@@ -219,6 +228,64 @@ public class ControllersTest {
         try {
             resolution.callAction(app);
             verify(app.controllerMock).action(Boolean.FALSE);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesARequestQueryAsAStringCollection() {
+        MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(CollectionArgController.class).action(req.param("names").asCollection(String.class));
+            }
+        };
+
+        String[] params = new String[]{"Loulou", "Riri", "Fifi"};
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("names", params).build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+
+        try {
+            ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
+            resolution.callAction(app);
+            verify(app.controllerMock).action(argument.capture());
+
+            assertEquals(params.length, argument.getValue().size());
+            Iterator iterator = argument.getValue().iterator();
+            for (String param : params) {
+                assertEquals(param, iterator.next());
+            }
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesARequestQueryAsAnIntegerCollection() {
+        MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(CollectionArgController.class).action(req.param("ids").asCollection(Integer.class));
+            }
+        };
+
+        String[] params = new String[]{"1", "2", "3"};
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("ids", params).build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+
+        try {
+            ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
+            resolution.callAction(app);
+            verify(app.controllerMock).action(argument.capture());
+
+            assertEquals(params.length, argument.getValue().size());
+            Iterator iterator = argument.getValue().iterator();
+            for (String param : params) {
+                assertEquals(Integer.parseInt(param), iterator.next());
+            }
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

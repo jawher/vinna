@@ -3,6 +3,8 @@ package vinna;
 import vinna.request.Request;
 import vinna.route.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 
@@ -104,6 +106,18 @@ public class Vinna {
             ActionArgument.RequestParameters headers = new ActionArgument.RequestParameters();
             routeParameters.add(headers);
             return new HashMap<>();
+        }
+
+        public final InputStream body() {
+            ActionArgument.RequestBody bodyActionArgument = new ActionArgument.RequestBody();
+            routeParameters.add(bodyActionArgument);
+            return new InputStream() {
+
+                @Override
+                public int read() throws IOException {
+                    return -1;
+                }
+            };
         }
     }
 }
