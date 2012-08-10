@@ -10,9 +10,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class RouteBuilder {
+
+    private static final Pattern METHOD_PATTERN = Pattern.compile("(?<method>[^\\.]+)\\s*\\((?<args>.*)\\)");
+
     private final String path;
     private final String verb;
     private final Vinna context;
@@ -23,7 +27,10 @@ public final class RouteBuilder {
 
     private Class controller;
     private Method method;
-    private String controllerId;//FIXME: expose a way to set this
+
+    private String controllerId;
+    private String methodName;
+    private String methodArgs;
 
     public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> methodParameters) {
         this.path = path;
@@ -59,6 +66,30 @@ public final class RouteBuilder {
             mandatoryQueryParameters.put(name, null);
         }
         return this;
+    }
+
+    public RouteBuilder withControllerId(String controllerId) {
+        if (this.controllerId != null) {
+            throw new RuntimeException("ControllerId already defined");
+        }
+        this.controllerId = controllerId;
+        return this;
+    }
+
+    public void withMethod(String methodPattern) {
+        Matcher methodMatcher = METHOD_PATTERN.matcher(methodPattern);
+        if (methodMatcher.matches()) {
+            this.methodName = methodMatcher.group("method");
+            this.methodArgs = methodMatcher.group("args");
+
+            RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
+            Route.Action action = new Route.Action(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
+            Route route = new Route(this.verb, parsedPath.pathPattern, this.mandatoryQueryParameters, parsedPath.variableNames, mandatoryRequestHeaders, action);
+            context.addRoute(route);
+
+        } else {
+            throw new RuntimeException("Incorrect method pattern");
+        }
     }
 
     public <T> T withController(Class<T> controller) {
@@ -102,6 +133,5 @@ public final class RouteBuilder {
             return null;
         }
     }
-
 
 }

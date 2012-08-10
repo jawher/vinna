@@ -1,6 +1,7 @@
 package vinna;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 import vinna.route.RouteResolution;
@@ -11,13 +12,12 @@ import java.math.BigInteger;
 import java.util.Collection;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static vinna.helpers.VinnaMatchers.eqColl;
 
 public class ProgrammaticControllersTest {
-
 
     private static class MockFactoryVinna<T> extends Vinna {
         public T controllerMock;
@@ -27,6 +27,13 @@ public class ProgrammaticControllersTest {
             return new ControllerFactory() {
                 @Override
                 public Object create(String id, Class<?> clazz) {
+                    if (clazz == null) {
+                        try {
+                            clazz = Class.forName(id);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                     controllerMock = (T) mock(clazz);
                     return controllerMock;
                 }
@@ -37,6 +44,17 @@ public class ProgrammaticControllersTest {
     public static class StringArgController {
 
         public Outcome action(String param) {
+            return null;
+        }
+    }
+
+    public static class StringArgAndIntegerArgController {
+
+        public Outcome action(String param) {
+            return null;
+        }
+
+        public Outcome action(Integer param) {
             return null;
         }
     }
@@ -598,6 +616,89 @@ public class ProgrammaticControllersTest {
         try {
             resolution.callAction(app);
             verify(app.controllerMock).action(null);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAPathVarToAMethodDefinedByWithMethod() {
+        MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
+            @Override
+            protected void routes() {
+                get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgController").withMethod("action({id})");
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).action("a");
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAPathIntegerVarToAMethodWithAmbiguousMethod() {
+        MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users/{id: \\d+}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
+                        .withMethod("action({id:Integer})");
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock, Mockito.never()).action(anyString());
+            verify(app.controllerMock).action(5);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAPathStringVarToAMethodWithAmbiguousMethod() {
+        MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
+                        .withMethod("action({id:String})");
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/abc").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock, Mockito.never()).action(anyInt());
+            verify(app.controllerMock).action("abc");
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // TODO change the expected exception
+    @Test(expected = RuntimeException.class)
+    public void passesAPathVarToAMethodWithUnsolvableAmbiguousMethod() {
+        MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
+                        .withMethod("action({id})");
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/abc").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock, Mockito.never()).action(anyInt());
+            verify(app.controllerMock, Mockito.never()).action(anyString());
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

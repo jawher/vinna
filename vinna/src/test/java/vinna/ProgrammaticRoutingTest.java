@@ -247,5 +247,17 @@ public class ProgrammaticRoutingTest {
         assertNull(app.match(mockedRequest));
     }
 
+    @Test
+    public void matchesAConstantRouteDefinedByWithMethod() {
+        Vinna app = new Vinna() {
+            @Override
+            protected void routes() {
+                get("/users").withControllerId("vinna.ProgrammaticRoutingTest.NoOpcontroller").withMethod("process()");
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
     //TODO: moar test !
 }
