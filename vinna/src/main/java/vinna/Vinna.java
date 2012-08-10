@@ -93,7 +93,7 @@ public class Vinna {
         public final Map<String, Collection<String>> headers() {
             ActionArgument.Headers headers = new ActionArgument.Headers();
             routeParameters.add(headers);
-            return new HashMap<>();
+            return null;
         }
 
         public final ActionArgument.RequestParameter param(String name) {
@@ -105,19 +105,13 @@ public class Vinna {
         public final Map<String, Collection<String>> params() {
             ActionArgument.RequestParameters headers = new ActionArgument.RequestParameters();
             routeParameters.add(headers);
-            return new HashMap<>();
+            return null;
         }
 
         public final InputStream body() {
             ActionArgument.RequestBody bodyActionArgument = new ActionArgument.RequestBody();
             routeParameters.add(bodyActionArgument);
-            return new InputStream() {
-
-                @Override
-                public int read() throws IOException {
-                    return -1;
-                }
-            };
+            return null;
         }
     }
 }
