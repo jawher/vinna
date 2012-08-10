@@ -211,8 +211,7 @@ public interface ActionArgument {
         public final <T> Collection<T> asCollection(Class<T> clazz) {
             this.type = Collection.class;
             this.typeArg = clazz;
-            // TODO homemade collection implementation with unsupported operation ?
-            return Collections.emptyList();
+            return null;
         }
 
         @Override
