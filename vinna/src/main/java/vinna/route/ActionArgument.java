@@ -75,12 +75,6 @@ public interface ActionArgument {
             this.name = name;
         }
 
-        public RequestParameter(String name, Class<?> collectionType) {
-            type = Collection.class;
-            typeArg = collectionType;
-            this.name = name;
-        }
-
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
