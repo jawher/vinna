@@ -31,7 +31,7 @@ public class MockedRequest implements Request {
 
     @Override
     public String getParam(String name) {
-        Collection<String> param = params.get(name);
+        Collection<String> param = getParams(name);
         if (param.size() == 0) {
             return null;
         }

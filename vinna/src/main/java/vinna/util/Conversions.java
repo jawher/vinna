@@ -9,6 +9,14 @@ import java.util.Collections;
 public class Conversions {
 
     public static Object convertString(String value, Class<?> targetType) {
+        if (value == null) {
+            if (targetType.isPrimitive()) {
+                // TODO create a custom exception
+                throw new NullPointerException("Primitive cannot be null");
+            }
+            return null;
+        }
+
         if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
             return Long.parseLong(value);
         } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
@@ -36,6 +44,14 @@ public class Conversions {
     }
 
     public static Object convertNumeric(BigDecimal value, Class<?> targetType) {
+        if (value == null) {
+            if (targetType.isPrimitive()) {
+                // TODO create a custom exception
+                throw new NullPointerException("Primitive cannot be null");
+            }
+            return null;
+        }
+
         if (Long.class.equals(targetType) || Long.TYPE.equals(targetType)) {
             return value.longValue();
         } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {

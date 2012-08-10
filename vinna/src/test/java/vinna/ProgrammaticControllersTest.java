@@ -565,5 +565,43 @@ public class ProgrammaticControllersTest {
         }
     }
 
+    // TODO expected custom exception defined in Conversions.convertString
+    @Test(expected = NullPointerException.class)
+    public void passesAPathVarAsAIntWithANullValue() {
+        MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(IntArgController.class).action(req.param("id").asInt());
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAPathVarAsAIntegerWithANullValue() {
+        MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).action(null);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //TODO: moar tests !
 }
