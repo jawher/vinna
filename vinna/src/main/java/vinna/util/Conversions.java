@@ -57,7 +57,7 @@ public class Conversions {
         } else if (Integer.class.equals(targetType) || Integer.TYPE.equals(targetType)) {
             return value.intValue();
         } else if (Short.class.equals(targetType) || Short.TYPE.equals(targetType)) {
-            return value.intValue();
+            return value.shortValue();
         } else if (Byte.class.equals(targetType) || Byte.TYPE.equals(targetType)) {
             return value.byteValue();
         } else if (Double.class.equals(targetType) || Double.TYPE.equals(targetType)) {
