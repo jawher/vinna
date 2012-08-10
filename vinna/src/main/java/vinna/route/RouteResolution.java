@@ -22,23 +22,13 @@ public class RouteResolution {
         this.request = request;
     }
 
+
     public Outcome callAction(Vinna vinna) throws IllegalAccessException, InstantiationException, InvocationTargetException {
         Object controllerInstance = vinna.createController(action.controllerId, action.controllerClass);
         Class<?> controllerClz = controllerInstance.getClass();
         Method toCall = action.method;
         if (toCall == null) {
-            List<Method> matchingMethods = new ArrayList<>();
-            for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
-                if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.methodParameters.size()) {
-                    matchingMethods.add(controllerMethod);
-                }
-            }
-            if (matchingMethods.size() > 1) {
-                throw new RuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
-                        controllerClz, matchingMethods.size(), action.methodName, action.methodParameters.size()));
-            } else {
-                toCall = matchingMethods.get(0);
-            }
+            toCall = selectMethod(controllerClz);
             if (toCall == null) {
                 throw new IllegalArgumentException("no methodName " + action.methodName + " in " + action.controllerId);
             }
@@ -58,5 +48,39 @@ public class RouteResolution {
         }
         // throw exception or return an ErrorOutcome ?
         return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
+    }
+
+    private Method selectMethod(Class<?> controllerClz) {
+        List<Method> matchingMethods = new ArrayList<>();
+        for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
+            if (isSuitable(controllerMethod)) {
+                matchingMethods.add(controllerMethod);
+            }
+        }
+        if (matchingMethods.isEmpty()) {
+            throw new RuntimeException(String.format("The controller %s has no methods named '%s' and taking %d param(s) of the desired types",
+                    controllerClz, action.methodName, action.methodParameters.size()));
+        } else if (matchingMethods.size() > 1) {
+            throw new RuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
+                    controllerClz, matchingMethods.size(), action.methodName, action.methodParameters.size()));
+        } else {
+            return matchingMethods.get(0);
+        }
+    }
+
+    private boolean isSuitable(Method controllerMethod) {
+        if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.methodParameters.size()) {
+            List<ActionArgument> methodParameters = action.methodParameters;
+            for (int i = 0, methodParametersSize = methodParameters.size(); i < methodParametersSize; i++) {
+                ActionArgument argument = methodParameters.get(i);
+                Class<?> targetType = controllerMethod.getParameterTypes()[i];
+                if (!argument.compatibleWith(targetType)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 }

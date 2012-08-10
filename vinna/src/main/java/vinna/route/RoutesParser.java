@@ -348,5 +348,10 @@ public class RoutesParser {
         public Object resolve(Environment env, Class<?> targetType) {
             return Conversions.convertNumeric(value, targetType);
         }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return Number.class.isAssignableFrom(type);
+        }
     }
 }

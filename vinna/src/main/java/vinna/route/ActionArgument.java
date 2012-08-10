@@ -4,6 +4,7 @@ import vinna.request.Request;
 import vinna.util.Conversions;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -33,6 +34,12 @@ public interface ActionArgument {
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             return value;
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            //TODO: handle primtives/object duos
+            return value == null || type.isAssignableFrom(value.getClass());
         }
     }
 
@@ -97,6 +104,11 @@ public interface ActionArgument {
                 throw new RuntimeException("unexpected exception while reading the request", e);
             }
         }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(InputStream.class);
+        }
     }
 
     public static class Header extends ChameleonArgument {
@@ -132,6 +144,11 @@ public interface ActionArgument {
         public Object resolve(Environment env, Class<?> targetType) {
             return env.request.getHeaders();
         }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(Map.class);
+        }
     }
 
     public static class RequestParameters implements ActionArgument {
@@ -139,6 +156,11 @@ public interface ActionArgument {
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             return env.request.getParams();
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(Map.class);
         }
     }
 
@@ -192,8 +214,15 @@ public interface ActionArgument {
             // TODO homemade collection implementation with unsupported operation ?
             return Collections.emptyList();
         }
+
+        @Override
+        public boolean compatibleWith(Class<?> argType) {
+            return (type == null || argType.isAssignableFrom(type));
+        }
     }
 
     Object resolve(Environment env, Class<?> targetType);
+
+    boolean compatibleWith(Class<?> type);
 
 }
