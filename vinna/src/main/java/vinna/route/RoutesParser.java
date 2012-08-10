@@ -232,7 +232,7 @@ public class RoutesParser {
         }
     }
 
-    private static Pattern argp(String prefix) {
+    private static Pattern argPattern(String prefix) {
         String typep = "(?:\\s*:\\s*(.+))?";
         if (prefix.isEmpty()) {
             return Pattern.compile("\\{(.+?)" + typep + "\\}");
@@ -268,26 +268,21 @@ public class RoutesParser {
         TYPES_NAMES.put("String", String.class);
     }
 
-    private static void fillInTypes(ActionArgument.ChameleonArgument arg, Matcher m) {
-        System.out.println("ohai " + m.toMatchResult().groupCount());
-        String type = m.group(2);
+    private static void fillInTypes(ActionArgument.ChameleonArgument arg, String type) {
         if (type != null) {
-            System.out.println("type=" + type);
             String primitiveTypes = "int|long|float|double|short|byte|boolean";
             String objectTypes = "Integer|Long|Float|Double|Short|Byte|Boolean|BigInteger|BigDecimal|String";
             String types = primitiveTypes + "|" + objectTypes;
             String collTypes = "\\[(" + objectTypes + ")\\]";
 
-            Matcher tm = Pattern.compile(types).matcher(type);
-            if (tm.matches()) {
-                System.out.println("yes ! self");
+            Matcher m = Pattern.compile(types).matcher(type);
+            if (m.matches()) {
                 arg.type = TYPES_NAMES.get(type);
             } else {
-                Matcher ctm = Pattern.compile(collTypes).matcher(type);
-                if (ctm.matches()) {
+                m = Pattern.compile(collTypes).matcher(type);
+                if (m.matches()) {
                     arg.type = Collection.class;
-                    arg.typeArg = TYPES_NAMES.get(ctm.group(1));
-                    System.out.println("yes ! " + ctm.group(1));
+                    arg.typeArg = TYPES_NAMES.get(m.group(1));
                 } else {
                     throw new IllegalArgumentException("Unknown type " + type);
                 }
@@ -298,26 +293,31 @@ public class RoutesParser {
 
     public static List<ActionArgument> parseArgs(String argsString) {
         List<ActionArgument> parameters = new ArrayList<>();
-        Pattern pqvar = argp("req.param.");
-        Pattern pheader = argp("req.header.");
-        Pattern pvar = argp("");
+        Pattern pbody = Pattern.compile("\\{" + Pattern.quote("req.body") + "\\}");
+        Pattern pqvar = argPattern("req.param.");
+        Pattern pheader = argPattern("req.header.");
+        Pattern pvar = argPattern("");
         Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
         Pattern pbool = Pattern.compile("(true|false)");
         if (!argsString.isEmpty()) {
             String[] args = argsString.split("\\s*,\\s*");
             for (String arg : args) {
                 Matcher pm;
-                if ((pm = pqvar.matcher(arg)).matches()) {
+
+                if ((pm = pbody.matcher(arg)).matches()) {
+                    final ActionArgument.RequestBody res = new ActionArgument.RequestBody();
+                    parameters.add(res);
+                } else if ((pm = pqvar.matcher(arg)).matches()) {
                     final ActionArgument.RequestParameter res = new ActionArgument.RequestParameter(pm.group(1));
-                    fillInTypes(res, pm);
+                    fillInTypes(res, pm.group(2));
                     parameters.add(res);
                 } else if ((pm = pheader.matcher(arg)).matches()) {
                     final ActionArgument.Header res = new ActionArgument.Header(pm.group(1));
-                    fillInTypes(res, pm);
+                    fillInTypes(res, pm.group(2));
                     parameters.add(res);
                 } else if ((pm = pvar.matcher(arg)).matches()) {
                     final ActionArgument.Variable res = new ActionArgument.Variable(pm.group(1));
-                    fillInTypes(res, pm);
+                    fillInTypes(res, pm.group(2));
                     parameters.add(res);
                 } else if ((pm = pstr.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<String>(pm.group(1)));
@@ -348,9 +348,5 @@ public class RoutesParser {
         public Object resolve(Environment env, Class<?> targetType) {
             return Conversions.convertNumeric(value, targetType);
         }
-    }
-
-    public static void main(String[] args) {
-        parseArgs("{x:[Integer]}");
     }
 }
