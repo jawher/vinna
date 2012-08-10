@@ -1,4 +1,6 @@
-package vinna.request;
+package vinna.helpers;
+
+import vinna.request.Request;
 
 import java.util.*;
 

@@ -2,7 +2,7 @@ package vinna;
 
 import org.junit.Test;
 import vinna.outcome.Outcome;
-import vinna.request.MockedRequest;
+import vinna.helpers.MockedRequest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

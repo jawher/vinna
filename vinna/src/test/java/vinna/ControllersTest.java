@@ -1,8 +1,8 @@
 package vinna;
 
 import org.junit.Test;
+import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
-import vinna.request.MockedRequest;
 import vinna.route.RouteResolution;
 
 import java.io.Reader;

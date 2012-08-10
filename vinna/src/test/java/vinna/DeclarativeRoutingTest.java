@@ -2,7 +2,7 @@ package vinna;
 
 import org.junit.Test;
 import vinna.outcome.Outcome;
-import vinna.request.MockedRequest;
+import vinna.helpers.MockedRequest;
 
 import java.io.InputStreamReader;
 import java.io.StringReader;
