@@ -1,8 +1,8 @@
 package vinna;
 
 import org.junit.Test;
-import vinna.helpers.MockedRequest;
 import org.mockito.ArgumentCaptor;
+import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 import vinna.route.RouteResolution;
 
@@ -10,11 +10,12 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static vinna.helpers.VinnaMatchers.eqColl;
 
 public class ControllersTest {
 
@@ -248,15 +249,8 @@ public class ControllersTest {
         assertNotNull(resolution);
 
         try {
-            ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
             resolution.callAction(app);
-            verify(app.controllerMock).action(argument.capture());
-
-            assertEquals(params.length, argument.getValue().size());
-            Iterator iterator = argument.getValue().iterator();
-            for (String param : params) {
-                assertEquals(param, iterator.next());
-            }
+            verify(app.controllerMock).action(argThat(eqColl(params)));
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -279,13 +273,7 @@ public class ControllersTest {
         try {
             ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
             resolution.callAction(app);
-            verify(app.controllerMock).action(argument.capture());
-
-            assertEquals(params.length, argument.getValue().size());
-            Iterator iterator = argument.getValue().iterator();
-            for (String param : params) {
-                assertEquals(Integer.parseInt(param), iterator.next());
-            }
+            verify(app.controllerMock).action(argThat(eqColl(1, 2, 3)));
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
