@@ -72,7 +72,6 @@ public class RoutesParser {
         String actionp = controllerAndMethodp + "\\s*\\((?<args>.*)\\)";
         String pathp = "(?<path>.+?)";
         Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+" + actionp);
-        System.out.println(routeLine);
 
         while ((line = readLine()) != null) {
             lineNum++;

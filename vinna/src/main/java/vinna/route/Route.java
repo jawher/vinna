@@ -68,7 +68,6 @@ public class Route {
 
             Matcher m = pathPattern.matcher(request.getPath());
             if (m.matches()) {
-                System.out.println("Got match for " + toString());
                 Map<String, String> paramValues = new HashMap<>();
 
                 for (Map.Entry<String, Pattern> paramEntry : mandatoryQueryParameters.entrySet()) {

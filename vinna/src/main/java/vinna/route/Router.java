@@ -14,9 +14,7 @@ public class Router {
     }
 
     public RouteResolution match(Request request) {
-        System.out.println("Try to match " + request.getPath());
         for (Route route : routes) {
-            System.out.println("checking against " + route);
             RouteResolution routeResolution = route.match(request);
             if (routeResolution != null) {
                 return routeResolution;
