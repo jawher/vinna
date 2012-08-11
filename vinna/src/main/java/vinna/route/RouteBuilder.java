@@ -127,7 +127,7 @@ public final class RouteBuilder {
                     method = thisMethod;
                     context.addRoute(createRoute());
                 } else {
-                    throw new Exception("Sorry, witchery is only available at Poudlard");
+                    throw new IllegalStateException("Sorry, witchery is only available at Poudlard");
                 }
             }
             return null;

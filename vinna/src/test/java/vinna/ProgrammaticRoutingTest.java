@@ -1,8 +1,8 @@
 package vinna;
 
 import org.junit.Test;
-import vinna.outcome.Outcome;
 import vinna.helpers.MockedRequest;
+import vinna.outcome.Outcome;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,6 +11,14 @@ public class ProgrammaticRoutingTest {
 
     public static class NoOpcontroller {
         public Outcome process() {
+            return null;
+        }
+
+        public Outcome process(String param) {
+            return null;
+        }
+
+        public String process(int param) {
             return null;
         }
     }
@@ -257,6 +265,46 @@ public class ProgrammaticRoutingTest {
         };
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void failsToBuildARouteByPassingParametersWithoutUsingApi() {
+        new Vinna() {
+            @Override
+            protected void routes() {
+                get("/users").withController(NoOpcontroller.class).process("passing an arg");
+            }
+        };
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void failsToBuildARouteByUsingAMethodNotReturningOutcome() {
+        new Vinna() {
+            @Override
+            protected void routes() {
+                get("/users").withController(NoOpcontroller.class).process(constant(0));
+            }
+        };
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void failsToCallTwiceWithControllerIdMethod() {
+        new Vinna() {
+            @Override
+            protected void routes() {
+                get("/users").withControllerId("controllerId").withControllerId("controllerId").withMethod("method()");
+            }
+        };
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void failsWithIncorrectMethodPattern() {
+        new Vinna() {
+            @Override
+            protected void routes() {
+                get("/users").withControllerId("controllerId").withMethod("i am not a method");
+            }
+        };
     }
 
     //TODO: moar test !

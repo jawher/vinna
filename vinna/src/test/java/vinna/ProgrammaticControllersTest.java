@@ -356,6 +356,70 @@ public class ProgrammaticControllersTest {
     }
 
     @Test
+    public void passesARequestQueryAsAnInteger() {
+        MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
+            }
+        };
+
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "1").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).action(1);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesARequestHeaderAsAnInteger() {
+        MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(IntegerArgController.class).action(req.header("x-id").asInt());
+            }
+        };
+
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "1").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).action(1);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesARequestHeaderAsAnIntegerCollection() {
+        MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
+            @Override
+            protected void routes() {
+                get("/users").withController(CollectionArgController.class).action(req.header("x-ids").asCollection(Integer.class));
+            }
+        };
+
+        String[] params = new String[]{"1", "2", "3"};
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-ids", params).build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).action(argThat(eqColl(1, 2, 3)));
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void passesAPathVarAsALongPrimitive() {
         MockFactoryVinna<LongPrimitiveArgController> app = new MockFactoryVinna<LongPrimitiveArgController>() {
             @Override
