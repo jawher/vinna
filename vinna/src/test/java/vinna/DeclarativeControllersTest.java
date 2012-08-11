@@ -433,5 +433,101 @@ public class DeclarativeControllersTest {
         }
     }
 
+    @Test
+    public void injectsPathVariablesInControllerId() {
+        String route = "GET /{controller} {controller}.actionInteger(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInteger(5);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void injectsPathVariablesInMethodName() {
+        String route = "GET /{action} Controller.{action}(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/actionInteger").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInteger(5);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void injectsPathVariablesInControllerIdAndMethodName() {
+        String route = "GET /{controller}/{action} {controller}.{action}(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/Controller/actionInteger").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInteger(5);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void injectsPathVariablesInControllerIdAndMethodNameInAFreeFormWay() {
+        String route = "GET /{controller}/{action} {controller}ler.action{action}(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/Control/Integer").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInteger(5);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void failsWhithAnUnknownVariablesInControllerId() {
+        String route = "GET /{controller} {bad-controller}.actionInteger(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            fail("Should have failed with an unknow variable");
+        } catch (RuntimeException e) {
+            //FIXME: replace with a concrete exception type when one is defined
+            //all is good
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void failsWhithAnUnknownVariablesInMethodName() {
+        String route = "GET /{action} Controller.{bad-action}(5)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/stuff").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            fail("Should have failed with an unknow variable");
+        } catch (RuntimeException e) {
+            //FIXME: replace with a concrete exception type when one is defined
+            //all is good
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //TODO: moar tests !
 }

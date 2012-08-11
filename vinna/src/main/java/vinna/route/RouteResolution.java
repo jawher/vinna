@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RouteResolution {
 
@@ -24,11 +26,19 @@ public class RouteResolution {
 
 
     public Outcome callAction(Vinna vinna) throws IllegalAccessException, InstantiationException, InvocationTargetException {
-        Object controllerInstance = vinna.createController(action.controllerId, action.controllerClass);
+        String controllerId = action.controllerId;
+        if (controllerId != null) {
+            controllerId = evaluate(controllerId, paramValues);
+        }
+        String methodName = action.methodName;
+        if (methodName != null) {
+            methodName = evaluate(methodName, paramValues);
+        }
+        Object controllerInstance = vinna.createController(controllerId, action.controllerClass);
         Class<?> controllerClz = controllerInstance.getClass();
         Method toCall = action.method;
         if (toCall == null) {
-            toCall = selectMethod(controllerClz);
+            toCall = selectMethod(controllerClz, methodName);
             if (toCall == null) {
                 throw new IllegalArgumentException("no methodName " + action.methodName + " in " + action.controllerId);
             }
@@ -50,10 +60,24 @@ public class RouteResolution {
         return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
     }
 
-    private Method selectMethod(Class<?> controllerClz) {
+    private String evaluate(String s, Map<String, String> paramValues) {
+        StringBuffer res = new StringBuffer();
+        Matcher m = Pattern.compile("\\{(.+?)\\}").matcher(s);
+        while (m.find()) {
+            String key = m.group(1);
+            if(!paramValues.containsKey(key)) {
+                throw new RuntimeException("Unknown variable "+key);
+            }
+            m.appendReplacement(res, paramValues.get(key));
+        }
+        m.appendTail(res);
+        return res.toString();
+    }
+
+    private Method selectMethod(Class<?> controllerClz, String methodName) {
         List<Method> matchingMethods = new ArrayList<>();
         for (Method controllerMethod : controllerClz.getDeclaredMethods()) {
-            if (isSuitable(controllerMethod)) {
+            if (isSuitable(controllerMethod, methodName)) {
                 matchingMethods.add(controllerMethod);
             }
         }
@@ -68,8 +92,8 @@ public class RouteResolution {
         }
     }
 
-    private boolean isSuitable(Method controllerMethod) {
-        if (controllerMethod.getName().equals(action.methodName) && controllerMethod.getParameterTypes().length == action.methodParameters.size()) {
+    private boolean isSuitable(Method controllerMethod, String methodName) {
+        if (controllerMethod.getName().equals(methodName) && controllerMethod.getParameterTypes().length == action.methodParameters.size()) {
             List<ActionArgument> methodParameters = action.methodParameters;
             for (int i = 0, methodParametersSize = methodParameters.size(); i < methodParametersSize; i++) {
                 ActionArgument argument = methodParameters.get(i);
