@@ -110,7 +110,7 @@ public interface ActionArgument {
         private final String headerName;
 
         public Header(String headerName) {
-            this(headerName, null);
+            this.headerName = headerName;
         }
 
         public Header(String headerName, Class<?> collectionType) {
