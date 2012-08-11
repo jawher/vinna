@@ -101,6 +101,36 @@ public class DeclarativeControllersTest {
         }
     }
 
+    @Test
+    public void passesAQueryVarAsAString() {
+        String route = "get /users Controller.actionString({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "a").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionString("a");
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsAString() {
+        String route = "get /users Controller.actionString({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "a").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionString("a");
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Test
     public void passesAPathVarAsAnInt() {
@@ -119,6 +149,36 @@ public class DeclarativeControllersTest {
     }
 
     @Test
+    public void passesAQueryVarAsAInt() {
+        String route = "get /users Controller.actionInt({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInt(13);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsAInt() {
+        String route = "get /users Controller.actionInt({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInt(27);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void passesAPathVarAsAnInteger() {
         String route = "get /users/{id} Controller.actionInteger({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
@@ -128,6 +188,36 @@ public class DeclarativeControllersTest {
         try {
             resolution.callAction(app);
             verify(app.controllerMock).actionInteger(666);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAQueryVarAsAInteger() {
+        String route = "get /users Controller.actionInt({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInt(13);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsAInteger() {
+        String route = "get /users Controller.actionInteger({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionInteger(27);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -150,10 +240,70 @@ public class DeclarativeControllersTest {
     }
 
     @Test
+    public void passesAQueryVarAsBoolForTrue() {
+        String route = "get /users Controller.actionBool({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBool(true);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsABoolForTrue() {
+        String route = "get /users Controller.actionBool({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBool(true);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void passesAPathVarAsABoolForFalse() {
         String route = "get /users/{id} Controller.actionBool({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBool(false);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAQueryVarAsBoolForFalse() {
+        String route = "get /users Controller.actionBool({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBool(false);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsABoolForFalse() {
+        String route = "get /users Controller.actionBool({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
         try {
@@ -181,8 +331,37 @@ public class DeclarativeControllersTest {
     }
 
     @Test
-    public void passesAPathVarAsABooleanForFalse() {
+    public void passesAQueryVarAsBooleanForTrue() {
+        String route = "get /users Controller.actionBoolean({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBoolean(true);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Test
+    public void passesAHeaderAsABooleanForTrue() {
+        String route = "get /users Controller.actionBoolean({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBoolean(true);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAPathVarAsABooleanForFalse() {
         String route = "get /users/{id} Controller.actionBoolean({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
@@ -191,6 +370,36 @@ public class DeclarativeControllersTest {
         try {
             resolution.callAction(app);
             verify(app.controllerMock).actionBoolean(Boolean.FALSE);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAQueryVarAsBooleanForFalse() {
+        String route = "get /users Controller.actionBoolean({req.param.id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBoolean(false);
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void passesAHeaderAsABooleanForFalse() {
+        String route = "get /users Controller.actionBoolean({req.header.x-id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        assertNotNull(resolution);
+        try {
+            resolution.callAction(app);
+            verify(app.controllerMock).actionBoolean(false);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
