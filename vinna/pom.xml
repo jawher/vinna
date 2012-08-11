@@ -70,7 +70,6 @@
                 <version>0.5.9.201207300726</version>
                 <configuration>
                     <detail>true</detail>
-                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                 </configuration>
                 <executions>
                     <execution>
@@ -81,7 +80,7 @@
                     </execution>
                     <execution>
                         <id>jacoco-site</id>
-                        <phase>package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
