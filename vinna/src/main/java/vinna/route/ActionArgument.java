@@ -1,5 +1,6 @@
 package vinna.route;
 
+import vinna.exception.VuntimeException;
 import vinna.request.Request;
 import vinna.util.Conversions;
 
@@ -59,7 +60,7 @@ public interface ActionArgument {
                     Object convertedValue = Conversions.convertString(value, typeArg);
                     return Collections.unmodifiableCollection(Arrays.asList(convertedValue));
                 } else {
-                    throw new RuntimeException("need an argType when the target is a collection");
+                    throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
 
@@ -81,7 +82,7 @@ public interface ActionArgument {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getParams(name), typeArg);
                 } else {
-                    throw new RuntimeException("need an argType when the target is a collection");
+                    throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
             return Conversions.convertString(env.request.getParam(name), targetType);
@@ -95,7 +96,7 @@ public interface ActionArgument {
             try {
                 return env.request.getInputStream();
             } catch (IOException e) {
-                throw new RuntimeException("unexpected exception while reading the request", e);
+                throw new VuntimeException("unexpected exception while reading the request", e);
             }
         }
 
@@ -125,7 +126,7 @@ public interface ActionArgument {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getHeaders(headerName), typeArg);
                 } else {
-                    throw new RuntimeException("need an argType when the target is a collection");
+                    throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);

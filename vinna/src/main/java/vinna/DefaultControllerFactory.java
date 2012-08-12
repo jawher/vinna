@@ -1,6 +1,9 @@
 package vinna;
 
+import vinna.exception.VuntimeException;
+
 public class DefaultControllerFactory implements ControllerFactory {
+
     @Override
     public Object create(String id, Class<?> clazz) {
         if (clazz == null) {
@@ -8,13 +11,13 @@ public class DefaultControllerFactory implements ControllerFactory {
                 //TODO: handle convention based class name resolution (basePackage + ".controllers" + id + "Controller)
                 clazz = Class.forName(id);
             } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("Invalid object id " + id);
+                throw new VuntimeException("Invalid object id " + id);
             }
         }
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Can't createController an instance of " + clazz, e);
+            throw new VuntimeException("Can't createController an instance of " + clazz, e);
         }
     }
 }

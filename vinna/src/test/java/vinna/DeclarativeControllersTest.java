@@ -3,24 +3,22 @@ package vinna;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 import vinna.route.RouteResolution;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static vinna.helpers.VinnaMatchers.eqColl;
 
 public class DeclarativeControllersTest {
-
 
     private static class MockFactoryVinna<T> extends Vinna {
         public T controllerMock;
@@ -64,7 +62,6 @@ public class DeclarativeControllersTest {
             return null;
         }
 
-
         public Outcome actionBool(boolean param) {
             return null;
         }
@@ -93,12 +90,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionString("a");
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionString("a");
     }
 
     @Test
@@ -108,12 +102,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "a").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionString("a");
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionString("a");
     }
 
     @Test
@@ -123,14 +114,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "a").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionString("a");
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
+        resolution.callAction(app);
+        verify(app.controllerMock).actionString("a");
+    }
 
     @Test
     public void passesAPathVarAsAnInt() {
@@ -140,12 +127,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInt(5);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInt(5);
     }
 
     @Test
@@ -155,12 +139,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInt(13);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInt(13);
     }
 
     @Test
@@ -170,12 +151,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInt(27);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInt(27);
     }
 
     @Test
@@ -185,12 +163,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(666);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(666);
     }
 
     @Test
@@ -200,12 +175,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInt(13);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInt(13);
     }
 
     @Test
@@ -215,14 +187,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(27);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(27);
+    }
 
     @Test
     public void passesAPathVarAsABoolForTrue() {
@@ -231,12 +199,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(true);
     }
 
     @Test
@@ -246,12 +211,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(true);
     }
 
     @Test
@@ -261,12 +223,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(true);
     }
 
     @Test
@@ -276,12 +235,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(false);
     }
 
     @Test
@@ -291,12 +247,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(false);
     }
 
     @Test
@@ -306,12 +259,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(false);
     }
 
     @Test
@@ -322,12 +272,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(Boolean.TRUE);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(Boolean.TRUE);
     }
 
     @Test
@@ -337,12 +284,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(true);
     }
 
     @Test
@@ -352,12 +296,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(true);
     }
 
     @Test
@@ -367,12 +308,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(Boolean.FALSE);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(Boolean.FALSE);
     }
 
     @Test
@@ -382,12 +320,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(false);
     }
 
     @Test
@@ -397,12 +332,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(false);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(false);
     }
 
     @Test
@@ -413,12 +345,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionString(ohai);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionString(ohai);
     }
 
     @Test
@@ -429,12 +358,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).action(ohai);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).action(ohai);
     }
 
     @Ignore("TODO")
@@ -445,12 +371,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBool(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBool(true);
     }
 
     @Test
@@ -460,12 +383,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionBoolean(true);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionBoolean(true);
     }
 
     @Test
@@ -475,12 +395,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(42);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(42);
     }
 
     @Test
@@ -490,12 +407,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionFloat(42.7f);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionFloat(42.7f);
     }
 
     @Test
@@ -505,15 +419,12 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionDouble(42.7);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionDouble(42.7);
     }
 
-    @Test
+    @Test(expected = VuntimeException.class)
     public void failsWithCollectionArgAndNoArgType() {
         String route = "get /users Controller.actionColl({req.param.names})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
@@ -523,15 +434,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
 
-        try {
-            resolution.callAction(app);
-            fail("Should have failed because no arg type was specified");
-        } catch (RuntimeException e) {
-            //Cool !
-            //FIXME: replace with the concrete exception type when one is added
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        resolution.callAction(app);
     }
 
     @Test
@@ -544,12 +447,8 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
 
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionColl(argThat(eqColl(params)));
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        resolution.callAction(app);
+        verify(app.controllerMock).actionColl(argThat(eqColl(params)));
     }
 
     @Test
@@ -562,13 +461,9 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
 
-        try {
-            ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
-            resolution.callAction(app);
-            verify(app.controllerMock).actionColl(argThat(eqColl(1, 2, 3)));
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
+        resolution.callAction(app);
+        verify(app.controllerMock).actionColl(argThat(eqColl(1, 2, 3)));
     }
 
     //TODO: test the other types (double, float, bigdecimal, etc.)
@@ -591,12 +486,9 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).action("w");
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).action("w");
     }
 
     public static class AmbiguousController {
@@ -610,21 +502,15 @@ public class DeclarativeControllersTest {
         }
     }
 
-    @Test
+    @Test(expected = VuntimeException.class)
     public void failsWithOverloadedActionsWithoutTypes() {
         String route = "GET /ambiguous/{id} AmbiguousController.action({id})";
         MockFactoryVinna<AmbiguousController> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            fail("Should fail due to ambiguous situation");
-        } catch (RuntimeException e) {
-            // TODO: to be updated when a custom and more precise exception is defined
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
     }
 
     @Test
@@ -634,12 +520,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).action("w");
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).action("w");
+
     }
 
     @Test
@@ -649,12 +533,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(5);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(5);
+
     }
 
     @Test
@@ -664,12 +546,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/actionInteger").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(5);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(5);
+
     }
 
     @Test
@@ -679,12 +559,10 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/Controller/actionInteger").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(5);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(5);
+
     }
 
     @Test
@@ -694,48 +572,34 @@ public class DeclarativeControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/Control/Integer").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            verify(app.controllerMock).actionInteger(5);
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+        verify(app.controllerMock).actionInteger(5);
+
     }
 
-    @Test
+    @Test(expected = VuntimeException.class)
     public void failsWhithAnUnknownVariablesInControllerId() {
         String route = "GET /{controller} {bad-controller}.actionInteger(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            fail("Should have failed with an unknow variable");
-        } catch (RuntimeException e) {
-            //FIXME: replace with a concrete exception type when one is defined
-            //all is good
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+
     }
 
-    @Test
+    @Test(expected = VuntimeException.class)
     public void failsWhithAnUnknownVariablesInMethodName() {
         String route = "GET /{action} Controller.{bad-action}(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/stuff").build();
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
-        try {
-            resolution.callAction(app);
-            fail("Should have failed with an unknow variable");
-        } catch (RuntimeException e) {
-            //FIXME: replace with a concrete exception type when one is defined
-            //all is good
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+
+        resolution.callAction(app);
+
     }
 
     //TODO: moar tests !

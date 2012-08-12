@@ -1,5 +1,6 @@
 package vinna;
 
+import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
 import vinna.request.Request;
 import vinna.request.ServletRequestWrapper;
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 
 public class VinnaFilter implements Filter {
 
@@ -35,7 +35,6 @@ public class VinnaFilter implements Filter {
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
                 throw new ServletException(e);
             } catch (NullPointerException e) {
-                // TODO load default configuration
                 vinna = new Vinna();
             }
         }
@@ -52,8 +51,8 @@ public class VinnaFilter implements Filter {
                 try {
                     Outcome outcome = resolvedRoute.callAction(vinna);
                     outcome.execute(vinnaRequest, vinnaResponse);
-                } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                    e.getCause().printStackTrace(vinnaResponse.getWriter());
+                } catch (VuntimeException e) {
+                    e.printStackTrace(vinnaResponse.getWriter());
                     vinnaResponse.setStatus(500);
                 }
             } else {

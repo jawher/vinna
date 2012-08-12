@@ -1,6 +1,7 @@
 package vinna.route;
 
 import vinna.Vinna;
+import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
 import vinna.request.Request;
 
@@ -24,8 +25,7 @@ public class RouteResolution {
         this.request = request;
     }
 
-
-    public Outcome callAction(Vinna vinna) throws IllegalAccessException, InstantiationException, InvocationTargetException {
+    public Outcome callAction(Vinna vinna) {
         String controllerId = action.controllerId;
         if (controllerId != null) {
             controllerId = evaluate(controllerId, paramValues);
@@ -40,10 +40,9 @@ public class RouteResolution {
         if (toCall == null) {
             toCall = selectMethod(controllerClz, methodName);
             if (toCall == null) {
-                throw new IllegalArgumentException("no methodName " + action.methodName + " in " + action.controllerId);
+                throw new VuntimeException("no methodName " + action.methodName + " in " + action.controllerId);
             }
         }
-
 
         List<Object> castedParams = new ArrayList<>();
         Class[] argTypes = toCall.getParameterTypes();
@@ -56,8 +55,12 @@ public class RouteResolution {
 
             castedParams.add(actionArgument.resolve(env, argType));
         }
-        // throw exception or return an ErrorOutcome ?
-        return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
+
+        try {
+            return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new VuntimeException(e);
+        }
     }
 
     private String evaluate(String s, Map<String, String> paramValues) {
@@ -65,8 +68,8 @@ public class RouteResolution {
         Matcher m = Pattern.compile("\\{(.+?)\\}").matcher(s);
         while (m.find()) {
             String key = m.group(1);
-            if(!paramValues.containsKey(key)) {
-                throw new RuntimeException("Unknown variable "+key);
+            if (!paramValues.containsKey(key)) {
+                throw new VuntimeException("Unknown variable " + key);
             }
             m.appendReplacement(res, paramValues.get(key));
         }
@@ -82,10 +85,10 @@ public class RouteResolution {
             }
         }
         if (matchingMethods.isEmpty()) {
-            throw new RuntimeException(String.format("The controller %s has no methods named '%s' and taking %d param(s) of the desired types",
+            throw new VuntimeException(String.format("The controller %s has no methods named '%s' and taking %d param(s) of the desired types",
                     controllerClz, action.methodName, action.methodParameters.size()));
         } else if (matchingMethods.size() > 1) {
-            throw new RuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
+            throw new VuntimeException(String.format("Ambiguous situation: The controller %s has %d methods named '%s' and taking %d param(s)",
                     controllerClz, matchingMethods.size(), action.methodName, action.methodParameters.size()));
         } else {
             return matchingMethods.get(0);

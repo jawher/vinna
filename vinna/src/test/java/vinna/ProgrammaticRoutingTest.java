@@ -1,6 +1,7 @@
 package vinna;
 
 import org.junit.Test;
+import vinna.exception.ConfigException;
 import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 
@@ -267,7 +268,7 @@ public class ProgrammaticRoutingTest {
         assertNotNull(app.match(mockedRequest));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ConfigException.class)
     public void failsToBuildARouteByPassingParametersWithoutUsingApi() {
         new Vinna() {
             @Override
@@ -277,7 +278,7 @@ public class ProgrammaticRoutingTest {
         };
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = ConfigException.class)
     public void failsToBuildARouteByUsingAMethodNotReturningOutcome() {
         new Vinna() {
             @Override
@@ -287,7 +288,7 @@ public class ProgrammaticRoutingTest {
         };
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ConfigException.class)
     public void failsToCallTwiceWithControllerIdMethod() {
         new Vinna() {
             @Override
@@ -297,7 +298,7 @@ public class ProgrammaticRoutingTest {
         };
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ConfigException.class)
     public void failsWithIncorrectMethodPattern() {
         new Vinna() {
             @Override

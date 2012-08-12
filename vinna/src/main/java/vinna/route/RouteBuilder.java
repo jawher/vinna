@@ -104,7 +104,7 @@ public final class RouteBuilder {
         try {
             proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw new ConfigException("Can't create controller", e);
         }
         return proxy;
     }

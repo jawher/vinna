@@ -2,6 +2,7 @@ package vinna.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import vinna.exception.VuntimeException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -82,44 +83,37 @@ public class ConversionsTest {
         Assert.assertEquals("a string", Conversions.convertString("a string", String.class));
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullLongPrimitive() {
         Conversions.convertString(null, Long.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullIntegerPrimitive() {
         Conversions.convertString(null, Integer.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullShortPrimitive() {
         Conversions.convertString(null, Short.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullBytePrimitive() {
         Conversions.convertString(null, Byte.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullDoublePrimitive() {
         Conversions.convertString(null, Double.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullFloatPrimitive() {
         Conversions.convertString(null, Float.TYPE);
     }
 
-    // TODO change expected exception according to Conversions.convertString
-    @Test(expected = NullPointerException.class)
+    @Test(expected = VuntimeException.class)
     public void convertANullBooleanPrimitive() {
         Conversions.convertString(null, Boolean.TYPE);
     }

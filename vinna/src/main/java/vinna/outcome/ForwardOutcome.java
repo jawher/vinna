@@ -1,5 +1,6 @@
 package vinna.outcome;
 
+import vinna.exception.VuntimeException;
 import vinna.request.Request;
 import vinna.response.Response;
 
@@ -37,8 +38,7 @@ public class ForwardOutcome implements Outcome {
         if (requestDispatcher != null) {
             requestDispatcher.forward(request.getHttpServletRequest(), response.getHttpServletResponse());
         } else {
-            // TODO
-            throw new RuntimeException("cannot retrieve requestDispatcher");
+            throw new VuntimeException("cannot retrieve requestDispatcher");
         }
 
     }
