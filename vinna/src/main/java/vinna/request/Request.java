@@ -1,5 +1,7 @@
 package vinna.request;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -23,5 +25,13 @@ public interface Request {
 
     Map<String, Collection<String>> getHeaders();
 
+    void setAttribute(String name, Object value);
+
+    Object getAttribute(String name);
+
     InputStream getInputStream() throws IOException;
+
+    RequestDispatcher getRequestDispatcher(String path);
+
+    HttpServletRequest getHttpServletRequest();
 }

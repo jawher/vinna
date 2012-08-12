@@ -2,6 +2,8 @@ package vinna.helpers;
 
 import vinna.request.Request;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.*;
 
@@ -75,6 +77,26 @@ public class MockedRequest implements Request {
 
     @Override
     public InputStream getInputStream() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public HttpServletRequest getHttpServletRequest() {
         throw new UnsupportedOperationException();
     }
 

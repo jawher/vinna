@@ -43,6 +43,11 @@ public class ServletResponseWrapper implements Response {
     }
 
     @Override
+    public HttpServletResponse getHttpServletResponse() {
+        return httpServletResponse;
+    }
+
+    @Override
     public int getStatus() {
         return status;
     }

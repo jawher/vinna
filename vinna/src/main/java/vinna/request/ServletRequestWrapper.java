@@ -1,5 +1,6 @@
 package vinna.request;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,5 +86,25 @@ public class ServletRequestWrapper implements Request {
     @Override
     public InputStream getInputStream() throws IOException {
         return servletRequest.getInputStream();
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(String path) {
+        return servletRequest.getRequestDispatcher(path);
+    }
+
+    @Override
+    public void setAttribute(String name, Object object) {
+        servletRequest.setAttribute(name, object);
+    }
+
+    @Override
+    public Object getAttribute(String name) {
+        return servletRequest.getAttribute(name);
+    }
+
+    @Override
+    public HttpServletRequest getHttpServletRequest() {
+        return servletRequest;
     }
 }
