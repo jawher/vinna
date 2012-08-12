@@ -124,7 +124,7 @@ public interface ActionArgument {
         public Object resolve(Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
-                    return Conversions.convertCollection(env.request.getHeaders(headerName), typeArg);
+                    return Conversions.convertCollection(env.request.getHeaderValues(headerName), typeArg);
                 } else {
                     throw new VuntimeException("need an argType when the target is a collection");
                 }

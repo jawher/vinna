@@ -1,6 +1,5 @@
 package vinna.response;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -19,6 +18,4 @@ public interface Response {
     void setContentType(String contentType);
 
     String getContentType();
-
-    HttpServletResponse getHttpServletResponse();
 }

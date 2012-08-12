@@ -2,10 +2,8 @@ package vinna;
 
 import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
-import vinna.request.Request;
-import vinna.request.ServletRequestWrapper;
-import vinna.response.Response;
-import vinna.response.ServletResponseWrapper;
+import vinna.request.VinnaRequestWrapper;
+import vinna.response.VinnaResponseWrapper;
 import vinna.route.RouteResolution;
 
 import javax.servlet.*;
@@ -43,8 +41,8 @@ public class VinnaFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            Request vinnaRequest = new ServletRequestWrapper((HttpServletRequest) request);
-            Response vinnaResponse = new ServletResponseWrapper((HttpServletResponse) response);
+            VinnaRequestWrapper vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
+            VinnaResponseWrapper vinnaResponse = new VinnaResponseWrapper((HttpServletResponse) response);
 
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {

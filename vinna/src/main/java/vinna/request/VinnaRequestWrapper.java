@@ -1,23 +1,20 @@
 package vinna.request;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class ServletRequestWrapper implements Request {
+public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Request {
 
     private final HttpServletRequest servletRequest;
 
-    public ServletRequestWrapper(HttpServletRequest servletRequest) {
+    public VinnaRequestWrapper(HttpServletRequest servletRequest) {
+        super(servletRequest);
         this.servletRequest = servletRequest;
     }
 
-    @Override
-    public String getVerb() {
-        return servletRequest.getMethod();
-    }
 
     @Override
     public String getPath() {
@@ -54,12 +51,7 @@ public class ServletRequestWrapper implements Request {
     }
 
     @Override
-    public String getHeader(String name) {
-        return servletRequest.getHeader(name);
-    }
-
-    @Override
-    public Collection<String> getHeaders(String name) {
+    public Collection<String> getHeaderValues(String name) {
         Enumeration<String> enumeration = servletRequest.getHeaders(name);
         if (enumeration != null) {
             return Collections.list(enumeration);
@@ -76,35 +68,11 @@ public class ServletRequestWrapper implements Request {
         if (enumeration != null) {
             while (enumeration.hasMoreElements()) {
                 String headerName = (String) enumeration.nextElement();
-                headers.put(headerName, getHeaders(headerName));
+                headers.put(headerName, getHeaderValues(headerName));
             }
         }
 
         return Collections.unmodifiableMap(headers);
     }
 
-    @Override
-    public InputStream getInputStream() throws IOException {
-        return servletRequest.getInputStream();
-    }
-
-    @Override
-    public RequestDispatcher getRequestDispatcher(String path) {
-        return servletRequest.getRequestDispatcher(path);
-    }
-
-    @Override
-    public void setAttribute(String name, Object object) {
-        servletRequest.setAttribute(name, object);
-    }
-
-    @Override
-    public Object getAttribute(String name) {
-        return servletRequest.getAttribute(name);
-    }
-
-    @Override
-    public HttpServletRequest getHttpServletRequest() {
-        return servletRequest;
-    }
 }

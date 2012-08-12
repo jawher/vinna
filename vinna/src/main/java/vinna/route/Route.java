@@ -64,7 +64,7 @@ public class Route {
 
 
     public RouteResolution match(Request request) {
-        if (request.getVerb().equalsIgnoreCase(verb)) {
+        if (request.getMethod().equalsIgnoreCase(verb)) {
 
             Matcher m = pathPattern.matcher(request.getPath());
             if (m.matches()) {
@@ -78,7 +78,7 @@ public class Route {
                 }
 
                 for (Map.Entry<String, Pattern> headerEntry : mandatoryRequestHeaders.entrySet()) {
-                    Collection<String> headers = request.getHeaders(headerEntry.getKey());
+                    Collection<String> headers = request.getHeaderValues(headerEntry.getKey());
                     if (!matchMandatoryCollectionWithPattern(headers, headerEntry.getValue())) {
                         return null;
                     }

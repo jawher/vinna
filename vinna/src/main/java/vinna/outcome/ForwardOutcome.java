@@ -2,7 +2,9 @@ package vinna.outcome;
 
 import vinna.exception.VuntimeException;
 import vinna.request.Request;
+import vinna.request.VinnaRequestWrapper;
 import vinna.response.Response;
+import vinna.response.VinnaResponseWrapper;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -29,14 +31,14 @@ public class ForwardOutcome implements Outcome {
     }
 
     @Override
-    public void execute(Request request, Response response) throws IOException, ServletException {
+    public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
         for (Map.Entry<String, Object> param : attributes.entrySet()) {
             request.setAttribute(param.getKey(), param.getValue());
         }
 
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(path);
         if (requestDispatcher != null) {
-            requestDispatcher.forward(request.getHttpServletRequest(), response.getHttpServletResponse());
+            requestDispatcher.forward(request, response);
         } else {
             throw new VuntimeException("cannot retrieve requestDispatcher");
         }

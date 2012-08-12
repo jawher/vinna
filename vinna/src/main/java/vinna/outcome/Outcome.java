@@ -1,11 +1,11 @@
 package vinna.outcome;
 
-import vinna.request.Request;
-import vinna.response.Response;
+import vinna.request.VinnaRequestWrapper;
+import vinna.response.VinnaResponseWrapper;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 
 public interface Outcome {
-    public void execute(Request request, Response response) throws IOException, ServletException;
+    public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException;
 }
