@@ -1,5 +1,6 @@
 package vinna.route;
 
+import vinna.exception.ConfigException;
 import vinna.util.Conversions;
 
 import java.io.BufferedReader;
@@ -78,7 +79,7 @@ public class RoutesParser {
             if (!ignoreLine(line)) {
                 Matcher rm = routeLine.matcher(line);
                 if (!rm.matches()) {
-                    throw new RuntimeException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
+                    throw new ConfigException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
                 } else {
                     String verb = rm.group("verb");
                     String path = rm.group("path");
@@ -115,7 +116,7 @@ public class RoutesParser {
                                 try {
                                     Pattern.compile(pat);
                                 } catch (PatternSyntaxException e) {
-                                    throw new RuntimeException("Invalid path variable pattern '" + pat + "'", e);
+                                    throw new ConfigException("Invalid path variable pattern '" + pat + "'", e);
                                 }
                                 pathVarsConstraints.put(m.group(1), pat);
                             } else {
@@ -169,7 +170,7 @@ public class RoutesParser {
             compiledPathPattern = Pattern.compile(pathPattern.toString());
             return new ParsedPath(compiledPathPattern, pathVariables);
         } catch (PatternSyntaxException e) {
-            throw new RuntimeException("Illegal path " + pathPattern);
+            throw new ConfigException("Illegal path " + pathPattern);
         }
     }
 
@@ -283,7 +284,7 @@ public class RoutesParser {
                     arg.type = Collection.class;
                     arg.typeArg = TYPES_NAMES.get(m.group(1));
                 } else {
-                    throw new IllegalArgumentException("Unknown type " + type);
+                    throw new ConfigException("Unknown type " + type);
                 }
             }
         }
@@ -326,12 +327,11 @@ public class RoutesParser {
                     try {
                         parameters.add(new NumConst(new BigDecimal(arg)));
                     } catch (NumberFormatException e) {
-                        throw new RuntimeException("Invalid action argument " + arg);
+                        throw new ConfigException("Invalid action argument " + arg);
                     }
                 }
             }
         }
-
 
         return parameters;
     }

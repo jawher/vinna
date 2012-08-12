@@ -3,6 +3,7 @@ package vinna.route;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import vinna.Vinna;
+import vinna.exception.ConfigException;
 import vinna.outcome.Outcome;
 
 import java.lang.reflect.InvocationTargetException;
@@ -70,7 +71,7 @@ public final class RouteBuilder {
 
     public RouteBuilder withControllerId(String controllerId) {
         if (this.controllerId != null) {
-            throw new RuntimeException("ControllerId already defined");
+            throw new ConfigException("ControllerId already defined");
         }
         this.controllerId = controllerId;
         return this;
@@ -88,7 +89,7 @@ public final class RouteBuilder {
             context.addRoute(route);
 
         } else {
-            throw new RuntimeException("Incorrect method pattern");
+            throw new ConfigException("Incorrect method pattern");
         }
     }
 
@@ -122,12 +123,12 @@ public final class RouteBuilder {
             if (method == null) {
                 if (Outcome.class.isAssignableFrom(thisMethod.getReturnType())) {
                     if (methodParameters.size() != args.length) {
-                        throw new IllegalStateException("Like, really ?");
+                        throw new ConfigException("Like, really ?");
                     }
                     method = thisMethod;
                     context.addRoute(createRoute());
                 } else {
-                    throw new IllegalStateException("Sorry, witchery is only available at Poudlard");
+                    throw new ConfigException("Sorry, witchery is only available at Poudlard");
                 }
             }
             return null;
