@@ -2,6 +2,7 @@ package vinna.samples.todo.controller;
 
 import vinna.outcome.ForwardOutcome;
 import vinna.outcome.Outcome;
+import vinna.outcome.RedirectOutcome;
 import vinna.samples.todo.model.Todo;
 
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -35,7 +36,6 @@ public class TodoController {
         newTodo.setDescription(description);
         todoRepository.put(newTodo.getId(), newTodo);
 
-        // TODO redirect
-        return list();
+        return new RedirectOutcome("");
     }
 }
