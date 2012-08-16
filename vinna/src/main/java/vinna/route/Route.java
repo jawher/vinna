@@ -84,9 +84,12 @@ public class Route {
                     }
                 }
 
-                for (String variablesName : pathVariableName) {
-                    //FIXME: check that the variable exists, or else that it is optional
-                    paramValues.put(variablesName, m.group(variablesName));
+                for (String variableName : pathVariableName) {
+                    if (m.group(variableName) != null) {
+                        paramValues.put(variableName, m.group(variableName));
+                    } else {
+                        return null;
+                    }
                 }
 
                 return new RouteResolution(action, paramValues, request);
