@@ -13,23 +13,32 @@ public class TodoController {
     private static final AtomicLong todoIdGenerator = new AtomicLong(0);
     private static final ConcurrentSkipListMap<Long, Todo> todoRepository = new ConcurrentSkipListMap<Long, Todo>();
 
+
     public Outcome list() {
-        ForwardOutcome forward = new ForwardOutcome("index.jsp");
+        ForwardOutcome forward = new ForwardOutcome("/WEB-INF/index.jsp");
         forward.setAttribute("todos", todoRepository.values());
         return forward;
     }
 
-    public Outcome getById(long id) {
-        Todo todo = todoRepository.get(id);
-        if (todo != null) {
-            ForwardOutcome forward = new ForwardOutcome("view.jsp");
-            forward.setAttribute("todo", todo);
-            return forward;
-        }
-        return new ForwardOutcome("404.html");
-    }
-
     public Outcome create(String title, String description) {
+        boolean hasTitleError = false;
+        boolean hasDescriptionError = false;
+
+        if (title == null || title.isEmpty()) {
+            hasTitleError = true;
+        }
+        if (description == null || description.isEmpty()) {
+            hasDescriptionError = true;
+        }
+        if (hasDescriptionError || hasTitleError) {
+            ForwardOutcome forwardOutcome = new ForwardOutcome("/WEB-INF/create.jsp");
+            forwardOutcome.setAttribute("titleError", hasTitleError);
+            forwardOutcome.setAttribute("title", title);
+            forwardOutcome.setAttribute("descriptionError", hasDescriptionError);
+            forwardOutcome.setAttribute("description", description);
+            return forwardOutcome;
+        }
+
         Todo newTodo = new Todo();
         newTodo.setId(todoIdGenerator.incrementAndGet());
         newTodo.setTitle(title);
@@ -37,5 +46,9 @@ public class TodoController {
         todoRepository.put(newTodo.getId(), newTodo);
 
         return new RedirectOutcome("");
+    }
+
+    public Outcome create() {
+        return new ForwardOutcome("/WEB-INF/create.jsp");
     }
 }
