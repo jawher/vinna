@@ -1,5 +1,7 @@
 package vinna;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
 import vinna.request.VinnaRequestWrapper;
@@ -14,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 public class VinnaFilter implements Filter {
+    private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
 
     private Vinna vinna;
 
@@ -50,6 +53,7 @@ public class VinnaFilter implements Filter {
                     Outcome outcome = resolvedRoute.callAction(vinna);
                     outcome.execute(vinnaRequest, vinnaResponse);
                 } catch (VuntimeException e) {
+                    logger.error("Error while processing the request", e);
                     e.printStackTrace(vinnaResponse.getWriter());
                     vinnaResponse.setStatus(500);
                 }
