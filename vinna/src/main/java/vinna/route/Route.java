@@ -39,7 +39,7 @@ public class Route {
 
         @Override
         public String toString() {
-            return controllerId + "." + (method == null ? methodName : method.getName());
+            return (controllerClass == null ? controllerId : controllerClass.getName()) + "." + (method == null ? methodName : method.getName());
         }
     }
 
@@ -61,7 +61,6 @@ public class Route {
         this.action = action;
         this.mandatoryRequestHeaders = mandatoryRequestHeaders;
     }
-
 
     public RouteResolution match(Request request) {
         if (request.getMethod().equalsIgnoreCase(verb)) {
