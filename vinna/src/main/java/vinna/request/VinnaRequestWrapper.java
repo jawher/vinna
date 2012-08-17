@@ -2,8 +2,6 @@ package vinna.request;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Request {
@@ -14,7 +12,6 @@ public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Re
         super(servletRequest);
         this.servletRequest = servletRequest;
     }
-
 
     @Override
     public String getPath() {

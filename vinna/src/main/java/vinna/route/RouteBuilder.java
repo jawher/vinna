@@ -28,10 +28,7 @@ public final class RouteBuilder {
 
     private Class controller;
     private Method method;
-
     private String controllerId;
-    private String methodName;
-    private String methodArgs;
 
     public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> methodParameters) {
         this.path = path;
@@ -80,8 +77,8 @@ public final class RouteBuilder {
     public void withMethod(String methodPattern) {
         Matcher methodMatcher = METHOD_PATTERN.matcher(methodPattern);
         if (methodMatcher.matches()) {
-            this.methodName = methodMatcher.group("method");
-            this.methodArgs = methodMatcher.group("args");
+            String methodName = methodMatcher.group("method");
+            String methodArgs = methodMatcher.group("args");
 
             RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
             Route.Action action = new Route.Action(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
