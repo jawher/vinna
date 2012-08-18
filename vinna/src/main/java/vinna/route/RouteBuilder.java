@@ -82,7 +82,7 @@ public final class RouteBuilder {
 
             RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
             Route.Action action = new Route.Action(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
-            Route route = new Route(this.verb, parsedPath.pathPattern, this.mandatoryQueryParameters, parsedPath.variableNames, mandatoryRequestHeaders, action);
+            Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
             context.addRoute(route);
 
         } else {
@@ -109,7 +109,7 @@ public final class RouteBuilder {
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
         Route.Action action = new Route.Action(controllerId, controller, method, methodParameters);
-        return new Route(this.verb, parsedPath.pathPattern, this.mandatoryQueryParameters, parsedPath.variableNames, mandatoryRequestHeaders, action);
+        return new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
     }
 
     private class RouteMethodHandler implements MethodHandler {

@@ -128,7 +128,7 @@ public class RoutesParser {
                         }
 
                         ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
-                        routes.add(new Route(verb, parsedPath.pathPattern, queryVars, parsedPath.variableNames, headers, new Route.Action(controller, method, parseArgs(args))));
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, new Route.Action(controller, method, parseArgs(args))));
                     }
                 }
             }

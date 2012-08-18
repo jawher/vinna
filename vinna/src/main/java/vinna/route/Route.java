@@ -45,19 +45,19 @@ public class Route {
 
     private final String verb;
     private final Pattern pathPattern;
-    private final Collection<String> pathVariableName;
+    private final Collection<String> pathVariableNames;
 
     private final Map<String, Pattern> mandatoryQueryParameters;
     private final Map<String, Pattern> mandatoryRequestHeaders;
 
     private final Action action;
 
-    public Route(String verb, Pattern pathPattern, Map<String, Pattern> mandatoryQueryParameters,
-                 Collection<String> pathVariableName, Map<String, Pattern> mandatoryRequestHeaders, Action action) {
+    public Route(String verb, Pattern pathPattern, Collection<String> pathVariableNames, Map<String, Pattern> mandatoryQueryParameters,
+                 Map<String, Pattern> mandatoryRequestHeaders, Action action) {
         this.verb = verb;
         this.pathPattern = pathPattern;
         this.mandatoryQueryParameters = mandatoryQueryParameters;
-        this.pathVariableName = pathVariableName;
+        this.pathVariableNames = pathVariableNames;
         this.action = action;
         this.mandatoryRequestHeaders = mandatoryRequestHeaders;
     }
@@ -83,7 +83,7 @@ public class Route {
                     }
                 }
 
-                for (String variableName : pathVariableName) {
+                for (String variableName : pathVariableNames) {
                     if (m.group(variableName) != null) {
                         paramValues.put(variableName, m.group(variableName));
                     } else {
