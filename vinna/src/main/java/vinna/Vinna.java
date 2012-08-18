@@ -27,10 +27,10 @@ public class Vinna {
     public Vinna(Map<String, Object> config) {
         this.config = new HashMap<>(config);
         this.basePackage = config.get(BASE_PACKAGE) == null ? getClass().getPackage().getName() : (String) config.get(BASE_PACKAGE);
-        this.controllerFactory = controllerFactory(config);
+        this.controllerFactory = controllerFactory(this.config);
 
         this.router = new Router();
-        routes(config);
+        routes(this.config);
     }
 
 
