@@ -74,61 +74,69 @@ public class RoutesParser {
         String pathp = "(?<path>.+?)";
         Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+" + actionp);
 
-        while ((line = readLine()) != null) {
-            lineNum++;
-            if (!ignoreLine(line)) {
-                Matcher rm = routeLine.matcher(line);
-                if (!rm.matches()) {
-                    throw new ConfigException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
-                } else {
-                    String verb = rm.group("verb");
-                    String path = rm.group("path");
-                    String controller = rm.group("controller");
-                    String method = rm.group("method");
-                    String args = rm.group("args").trim();
+        try {
+            while ((line = readLine()) != null) {
+                lineNum++;
+                if (!ignoreLine(line)) {
+                    Matcher rm = routeLine.matcher(line);
+                    if (!rm.matches()) {
+                        throw new ConfigException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
+                    } else {
+                        String verb = rm.group("verb");
+                        String path = rm.group("path");
+                        String controller = rm.group("controller");
+                        String method = rm.group("method");
+                        String args = rm.group("args").trim();
 
-                    //read constraints
-                    Map<String, Pattern> queryVars = new HashMap<>();
-                    Map<String, Pattern> headers = new HashMap<>();
-                    Map<String, String> pathVarsConstraints = new HashMap<>();
+                        //read constraints
+                        Map<String, Pattern> queryVars = new HashMap<>();
+                        Map<String, Pattern> headers = new HashMap<>();
+                        Map<String, String> pathVarsConstraints = new HashMap<>();
 
-                    Pattern constraintp = constraintWithPattern("");// Pattern.compile("\\s+(.+?)\\s*:\\s*(.+?)\\s*$");
-                    Pattern qvPatConstraintp = constraintWithPattern("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*:\\s*(.+?)\\s*$");
-                    Pattern qvConstraintp = constraint("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*$");
+                        Pattern constraintp = constraintWithPattern("");// Pattern.compile("\\s+(.+?)\\s*:\\s*(.+?)\\s*$");
+                        Pattern qvPatConstraintp = constraintWithPattern("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*:\\s*(.+?)\\s*$");
+                        Pattern qvConstraintp = constraint("req.param.");// Pattern.compile("\\s+req\\.param\\.(.+?)\\s*$");
 
-                    Pattern hConstraintp = constraint("req.header.");// Pattern.compile("\\s+req\\.header\\.(.+?)\\s*$");
-                    Pattern hPatConstraintp = constraintWithPattern("req.header.");//  Pattern.compile("\\s+req\\.header\\.(.+?)\\s*:\\s*(.+?)\\s*$");
+                        Pattern hConstraintp = constraint("req.header.");// Pattern.compile("\\s+req\\.header\\.(.+?)\\s*$");
+                        Pattern hPatConstraintp = constraintWithPattern("req.header.");//  Pattern.compile("\\s+req\\.header\\.(.+?)\\s*:\\s*(.+?)\\s*$");
 
-                    String cline;
-                    while ((cline = readLine()) != null) {
-                        if (!ignoreLine(cline)) {
-                            Matcher m;
-                            if ((m = qvPatConstraintp.matcher(cline)).matches()) {
-                                queryVars.put(m.group(1), Pattern.compile(m.group(2)));
-                            } else if ((m = qvConstraintp.matcher(cline)).matches()) {
-                                queryVars.put(m.group(1), null);
-                            } else if ((m = hPatConstraintp.matcher(cline)).matches()) {
-                                headers.put(m.group(1), Pattern.compile(m.group(2)));
-                            } else if ((m = hConstraintp.matcher(cline)).matches()) {
-                                headers.put(m.group(1), null);
-                            } else if ((m = constraintp.matcher(cline)).matches()) {
-                                String pat = m.group(2);
-                                try {
-                                    Pattern.compile(pat);
-                                } catch (PatternSyntaxException e) {
-                                    throw new ConfigException("Invalid path variable pattern '" + pat + "'", e);
+                        String cline;
+                        while ((cline = readLine()) != null) {
+                            if (!ignoreLine(cline)) {
+                                Matcher m;
+                                if ((m = qvPatConstraintp.matcher(cline)).matches()) {
+                                    queryVars.put(m.group(1), Pattern.compile(m.group(2)));
+                                } else if ((m = qvConstraintp.matcher(cline)).matches()) {
+                                    queryVars.put(m.group(1), null);
+                                } else if ((m = hPatConstraintp.matcher(cline)).matches()) {
+                                    headers.put(m.group(1), Pattern.compile(m.group(2)));
+                                } else if ((m = hConstraintp.matcher(cline)).matches()) {
+                                    headers.put(m.group(1), null);
+                                } else if ((m = constraintp.matcher(cline)).matches()) {
+                                    String pat = m.group(2);
+                                    try {
+                                        Pattern.compile(pat);
+                                    } catch (PatternSyntaxException e) {
+                                        throw new ConfigException("Invalid path variable pattern '" + pat + "'", e);
+                                    }
+                                    pathVarsConstraints.put(m.group(1), pat);
+                                } else {
+                                    pushBack(cline);
+                                    break;
                                 }
-                                pathVarsConstraints.put(m.group(1), pat);
-                            } else {
-                                pushBack(cline);
-                                break;
                             }
                         }
-                    }
 
-                    ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
-                    routes.add(new Route(verb, parsedPath.pathPattern, queryVars, parsedPath.variableNames, headers, new Route.Action(controller, method, parseArgs(args))));
+                        ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
+                        routes.add(new Route(verb, parsedPath.pathPattern, queryVars, parsedPath.variableNames, headers, new Route.Action(controller, method, parseArgs(args))));
+                    }
                 }
+            }
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                //warning
             }
         }
         return routes;
