@@ -19,13 +19,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VinnaFilter implements Filter {
+    public static final String APPLICATION_CLASS = "application-class";
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
 
     private Vinna vinna;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
         Map<String, Object> cfg = new HashMap<>();
         final Enumeration initParameterNames = filterConfig.getInitParameterNames();
         while (initParameterNames.hasMoreElements()) {
@@ -33,10 +33,10 @@ public class VinnaFilter implements Filter {
             cfg.put(name, filterConfig.getInitParameter(name));
         }
 
-        String appClass = (String) cfg.get("application-class");
+        String appClass = (String) cfg.get(APPLICATION_CLASS);
         if (appClass != null) {
             try {
-                Class<Vinna> clz = (Class<Vinna>) Class.forName(filterConfig.getInitParameter("application-class"));
+                Class<Vinna> clz = (Class<Vinna>) Class.forName(filterConfig.getInitParameter(APPLICATION_CLASS));
                 Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
                 vinna = cons.newInstance(cfg);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {

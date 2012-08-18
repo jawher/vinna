@@ -62,7 +62,7 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgSetsUpDefaultControllerFactoryWithCorrectPkg() {
-        Vinna app = new Vinna(Collections.<String, Object>singletonMap("base-package", "foo"));
+        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
         final Object controller = app.createController("empty3", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty3);
@@ -70,7 +70,7 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgSetsUpDefaultRoutesWhenNoCustomRoutesIsThere() {
-        SpyVinna<foo.controllers.Application> app = new SpyVinna<>(Collections.<String, Object>singletonMap("base-package", "foo"));
+        SpyVinna<foo.controllers.Application> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
 
         MockedRequest mockedRequest = MockedRequest.get("/").build();
         RouteResolution resolution = app.match(mockedRequest);
@@ -83,7 +83,7 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgPicksUpCustomRoutes() {
-        SpyVinna<Bar> app = new SpyVinna<>(Collections.<String, Object>singletonMap("base-package", "bar"));
+        SpyVinna<Bar> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
 
         MockedRequest mockedRequest = MockedRequest.get("/").build();
         RouteResolution resolution = app.match(mockedRequest);
@@ -96,7 +96,7 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgWithCustomRoutesDoesntSetUpDefaultRoutes() {
-        Vinna app = new Vinna(Collections.<String, Object>singletonMap("base-package", "bar"));
+        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
 
         MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
         RouteResolution resolution = app.match(mockedRequest);

@@ -9,6 +9,9 @@ import java.io.*;
 import java.util.*;
 
 public class Vinna {
+    public static final String BASE_PACKAGE = "base-package";
+    public static final String ROUTES = "routes";
+    public static final String CONTROLLER_FACTORY = "controller-factory";
     private Map<String, Object> config;
     protected final String basePackage;
     private Router router;
@@ -23,7 +26,7 @@ public class Vinna {
 
     public Vinna(Map<String, Object> config) {
         this.config = new HashMap<>(config);
-        this.basePackage = config.get("base-package") == null ? getClass().getPackage().getName() : (String) config.get("base-package");
+        this.basePackage = config.get(BASE_PACKAGE) == null ? getClass().getPackage().getName() : (String) config.get(BASE_PACKAGE);
         this.controllerFactory = controllerFactory(config);
 
         this.router = new Router();
@@ -38,7 +41,7 @@ public class Vinna {
      */
     protected void routes(Map<String, Object> config) {
         String[] routesPaths;
-        if (config.get("routes") == null) {
+        if (config.get(ROUTES) == null) {
             String path = this.basePackage.replace(".", "/") + "/routes";
             final Reader reader = getRoutesReader(path);
             if (reader == null) {
@@ -52,7 +55,7 @@ public class Vinna {
             }
             routesPaths = new String[]{path};
         } else {
-            routesPaths = ((String) config.get("routes")).trim().split("\\s*,\\s*");
+            routesPaths = ((String) config.get(ROUTES)).trim().split("\\s*,\\s*");
         }
         for (String routesPath : routesPaths) {
             Reader reader = getRoutesReader(routesPath);
@@ -102,11 +105,11 @@ public class Vinna {
      * @return a ... you guessed right, a controller factory
      */
     protected ControllerFactory controllerFactory(Map<String, Object> config) {
-        if (config.get("controller-factory") == null) {
+        if (config.get(CONTROLLER_FACTORY) == null) {
             return new DefaultControllerFactory(this.basePackage);
         } else {
             try {
-                Class<ControllerFactory> clz = (Class<ControllerFactory>) Thread.currentThread().getContextClassLoader().loadClass((String) config.get("controller-factory"));
+                Class<ControllerFactory> clz = (Class<ControllerFactory>) Thread.currentThread().getContextClassLoader().loadClass((String) config.get(CONTROLLER_FACTORY));
                 return clz.newInstance();
             } catch (ClassNotFoundException e) {
                 throw new ConfigException("Cannot find the controller factory class", e);
