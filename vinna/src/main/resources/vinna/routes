@@ -1,0 +1,10 @@
+GET / Application.index()
+
+GET /{action} Application.{action}()
+
+GET /{controller}/ {controller}.index()
+
+GET /{controller}/{action} {controller}.{action}()
+
+GET /{controller}/{action}/{param} {controller}.{action}({param})
+

@@ -10,6 +10,7 @@ import vinna.route.RouteResolution;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.*;
@@ -23,7 +24,7 @@ public class ProgrammaticControllersTest {
         public T controllerMock;
 
         @Override
-        protected ControllerFactory controllerFactory() {
+        protected ControllerFactory controllerFactory(Map<String, Object> config) {
             return new ControllerFactory() {
                 @Override
                 public Object create(String id, Class<?> clazz) {
@@ -182,7 +183,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAString() {
         MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(StringArgController.class).action(param("id").asString());
             }
         };
@@ -199,7 +200,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAnInt() {
         MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(IntArgController.class).action(param("id").asInt());
             }
         };
@@ -215,7 +216,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAnInteger() {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(IntegerArgController.class).action(param("id").asInt());
             }
         };
@@ -232,7 +233,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABoolForTrue() {
         MockFactoryVinna<BoolArgController> app = new MockFactoryVinna<BoolArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BoolArgController.class).action(param("id").asBoolean());
             }
         };
@@ -249,7 +250,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABoolForFalse() {
         MockFactoryVinna<BoolArgController> app = new MockFactoryVinna<BoolArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BoolArgController.class).action(param("id").asBoolean());
             }
         };
@@ -266,7 +267,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABooleanForTrue() {
         MockFactoryVinna<BooleanArgController> app = new MockFactoryVinna<BooleanArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BooleanArgController.class).action(param("id").asBoolean());
             }
         };
@@ -283,7 +284,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABooleanForFalse() {
         MockFactoryVinna<BooleanArgController> app = new MockFactoryVinna<BooleanArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BooleanArgController.class).action(param("id").asBoolean());
             }
         };
@@ -300,7 +301,7 @@ public class ProgrammaticControllersTest {
     public void passesARequestQueryAsAStringCollection() {
         MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(CollectionArgController.class).action(req.param("names").asCollection(String.class));
             }
         };
@@ -319,7 +320,7 @@ public class ProgrammaticControllersTest {
     public void passesARequestQueryAsAnIntegerCollection() {
         MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(CollectionArgController.class).action(req.param("ids").asCollection(Integer.class));
             }
         };
@@ -338,7 +339,7 @@ public class ProgrammaticControllersTest {
     public void passesARequestQueryAsAnInteger() {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
             }
         };
@@ -356,7 +357,7 @@ public class ProgrammaticControllersTest {
     public void passesARequestHeaderAsAnInteger() {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(IntegerArgController.class).action(req.header("x-id").asInt());
             }
         };
@@ -374,7 +375,7 @@ public class ProgrammaticControllersTest {
     public void passesARequestHeaderAsAnIntegerCollection() {
         MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(CollectionArgController.class).action(req.header("x-ids").asCollection(Integer.class));
             }
         };
@@ -393,7 +394,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsALongPrimitive() {
         MockFactoryVinna<LongPrimitiveArgController> app = new MockFactoryVinna<LongPrimitiveArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(LongPrimitiveArgController.class).action(param("id").asLong());
             }
         };
@@ -410,7 +411,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsALong() {
         MockFactoryVinna<LongArgController> app = new MockFactoryVinna<LongArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(LongArgController.class).action(param("id").asLong());
             }
         };
@@ -427,7 +428,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAShortPrimitive() {
         MockFactoryVinna<ShortPrimitiveArgController> app = new MockFactoryVinna<ShortPrimitiveArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(ShortPrimitiveArgController.class).action(param("id").asShort());
             }
         };
@@ -444,7 +445,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAShort() {
         MockFactoryVinna<ShortArgController> app = new MockFactoryVinna<ShortArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(ShortArgController.class).action(param("id").asShort());
             }
         };
@@ -461,7 +462,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABytePrimitive() {
         MockFactoryVinna<BytePrimitiveArgController> app = new MockFactoryVinna<BytePrimitiveArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BytePrimitiveArgController.class).action(param("id").asByte());
             }
         };
@@ -478,7 +479,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAByte() {
         MockFactoryVinna<ByteArgController> app = new MockFactoryVinna<ByteArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(ByteArgController.class).action(param("id").asByte());
             }
         };
@@ -495,7 +496,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAFloatPrimitive() {
         MockFactoryVinna<FloatPrimitiveArgController> app = new MockFactoryVinna<FloatPrimitiveArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(FloatPrimitiveArgController.class).action(param("id").asFloat());
             }
         };
@@ -511,7 +512,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAFloat() {
         MockFactoryVinna<FloatArgController> app = new MockFactoryVinna<FloatArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(FloatArgController.class).action(param("id").asFloat());
             }
         };
@@ -528,7 +529,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsADoublePrimitive() {
         MockFactoryVinna<DoublePrimitiveArgController> app = new MockFactoryVinna<DoublePrimitiveArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(DoublePrimitiveArgController.class).action(param("id").asDouble());
             }
         };
@@ -545,7 +546,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsADouble() {
         MockFactoryVinna<DoubleArgController> app = new MockFactoryVinna<DoubleArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(DoubleArgController.class).action(param("id").asDouble());
             }
         };
@@ -562,7 +563,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABigDecimal() {
         MockFactoryVinna<BigDecimalArgController> app = new MockFactoryVinna<BigDecimalArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BigDecimalArgController.class).action(param("id").asBigDecimal());
             }
         };
@@ -579,7 +580,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsABigInteger() {
         MockFactoryVinna<BigIntegerArgController> app = new MockFactoryVinna<BigIntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withController(BigIntegerArgController.class).action(param("id").asBigInteger());
             }
         };
@@ -596,7 +597,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAIntWithANullValue() {
         MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(IntArgController.class).action(req.param("id").asInt());
             }
         };
@@ -612,7 +613,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarAsAIntegerWithANullValue() {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
             }
         };
@@ -629,7 +630,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarToAMethodDefinedByWithMethod() {
         MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgController").withMethod("action({id})");
             }
         };
@@ -646,7 +647,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathIntegerVarToAMethodWithAmbiguousMethod() {
         MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id: \\d+}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
                         .withMethod("action({id:Integer})");
             }
@@ -665,7 +666,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathStringVarToAMethodWithAmbiguousMethod() {
         MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
                         .withMethod("action({id:String})");
             }
@@ -684,7 +685,7 @@ public class ProgrammaticControllersTest {
     public void passesAPathVarToAMethodWithUnsolvableAmbiguousMethod() {
         MockFactoryVinna<StringArgAndIntegerArgController> app = new MockFactoryVinna<StringArgAndIntegerArgController>() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users/{id}").withControllerId("vinna.ProgrammaticControllersTest$StringArgAndIntegerArgController")
                         .withMethod("action({id})");
             }

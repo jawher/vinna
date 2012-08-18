@@ -2,10 +2,12 @@ package vinna.samples.programmatic;
 
 import vinna.Vinna;
 
+import java.util.Map;
+
 public class ProgrammaticSampleApp extends Vinna {
 
     @Override
-    protected void routes() {
+    protected void routes(Map<String, Object> config) {
         get("/user/{id: \\d+}")
                 .withController(Controller.class)
                 .test(param("id").asInt());

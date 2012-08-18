@@ -12,8 +12,11 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VinnaFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
@@ -22,22 +25,27 @@ public class VinnaFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO
-        String routesPath = filterConfig.getInitParameter("routes");
-        if (routesPath != null) {
+
+        Map<String, Object> cfg = new HashMap<>();
+        final Enumeration initParameterNames = filterConfig.getInitParameterNames();
+        while (initParameterNames.hasMoreElements()) {
+            final String name = (String) initParameterNames.nextElement();
+            cfg.put(name, filterConfig.getInitParameter(name));
+        }
+
+        String appClass = (String) cfg.get("application-class");
+        if (appClass != null) {
             try {
-                vinna = new Vinna(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(routesPath), "utf-8"));
-            } catch (UnsupportedEncodingException e) {
-                throw new ServletException("shit !", e);
-            }
-        } else {
-            try {
-                vinna = (Vinna) Class.forName(filterConfig.getInitParameter("application-class")).newInstance();
+                Class<Vinna> clz = (Class<Vinna>) Class.forName(filterConfig.getInitParameter("application-class"));
+                Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
+                vinna = cons.newInstance(cfg);
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
                 throw new ServletException(e);
-            } catch (NullPointerException e) {
-                vinna = new Vinna();
+            } catch (NoSuchMethodException | InvocationTargetException e) {
+                throw new ServletException(e);
             }
+        } else {
+            vinna = new Vinna(cfg);
         }
     }
 

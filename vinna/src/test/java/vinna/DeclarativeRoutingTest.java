@@ -4,9 +4,9 @@ import org.junit.Test;
 import vinna.outcome.Outcome;
 import vinna.helpers.MockedRequest;
 
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -19,26 +19,27 @@ public class DeclarativeRoutingTest {
         }
     }
 
+
+    private Vinna oneRouteApp(final String routesContent) {
+        return new Vinna(Collections.<String, Object>emptyMap()) {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                loadRoutes(new StringReader(routesContent));
+            }
+        };
+    }
+
     private Vinna oneRouteApp(final String verb, final String path) {
-        return new Vinna(new StringReader(verb + " " + path + " foo.bar()"));
+        return oneRouteApp(verb + " " + path + " foo.bar()");
     }
 
     private Vinna oneRouteAppWithAConstraint(final String verb, final String path, final String var) {
-        return new Vinna(new StringReader(verb + " " + path + " foo.bar()\n  "+var));
+        return oneRouteApp(verb + " " + path + " foo.bar()\n  " + var);
     }
 
     private Vinna oneRouteAppWithAConstraint(final String verb, final String path, final String var, final String pattern) {
-        return new Vinna(new StringReader(verb + " " + path + " foo.bar()\n  "+var+" : "+pattern));
+        return oneRouteApp(verb + " " + path + " foo.bar()\n  " + var + " : " + pattern);
     }
-
-    private Vinna app(final String path) {
-        try {
-            return new Vinna(new InputStreamReader(DeclarativeRoutingTest.class.getResourceAsStream("routing/" + path), "utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Test
     public void failsWithAPostVerbInRouteButNotInRequest() {

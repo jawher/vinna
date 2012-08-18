@@ -8,9 +8,10 @@ import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 import vinna.route.RouteResolution;
 
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.argThat;
@@ -20,19 +21,21 @@ import static vinna.helpers.VinnaMatchers.eqColl;
 
 public class DeclarativeControllersTest {
 
+
     private static class MockFactoryVinna<T> extends Vinna {
         public T controllerMock;
 
         private MockFactoryVinna(String routes) {
-            super(new StringReader(routes));
-        }
-
-        private MockFactoryVinna(Reader routesReader) {
-            super(routesReader);
+            super(Collections.<String, Object>singletonMap("routes-def", routes));
         }
 
         @Override
-        protected ControllerFactory controllerFactory() {
+        protected void routes(Map<String, Object> config) {
+            loadRoutes(new StringReader((String) config.get("routes-def")));
+        }
+
+        @Override
+        protected ControllerFactory controllerFactory(Map<String, Object> config) {
             return new ControllerFactory() {
                 @Override
                 public Object create(String id, Class<?> clazz) {
@@ -116,6 +119,7 @@ public class DeclarativeControllersTest {
         assertNotNull(resolution);
 
         resolution.callAction(app);
+
         verify(app.controllerMock).actionString("a");
     }
 

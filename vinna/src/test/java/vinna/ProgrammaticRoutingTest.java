@@ -5,6 +5,8 @@ import vinna.exception.ConfigException;
 import vinna.helpers.MockedRequest;
 import vinna.outcome.Outcome;
 
+import java.util.Map;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -27,7 +29,7 @@ public class ProgrammaticRoutingTest {
     private Vinna oneRouteApp(final String path) {
         return new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get(path).withController(NoOpcontroller.class).process();
             }
         };
@@ -40,7 +42,7 @@ public class ProgrammaticRoutingTest {
     private Vinna oneRouteAppWithParamAndPattern(final String path, final String param, final String pattern) {
         return new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get(path).hasParam(param, pattern).withController(NoOpcontroller.class).process();
             }
         };
@@ -53,7 +55,7 @@ public class ProgrammaticRoutingTest {
     private Vinna oneRouteAppWithHeaderAndPattern(final String path, final String header, final String pattern) {
         return new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get(path).hasHeader(header, pattern).withController(NoOpcontroller.class).process();
             }
         };
@@ -62,7 +64,7 @@ public class ProgrammaticRoutingTest {
     private Vinna onePostRouteApp(final String path) {
         return new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 post(path).withController(NoOpcontroller.class).process();
             }
         };
@@ -260,7 +262,7 @@ public class ProgrammaticRoutingTest {
     public void matchesAConstantRouteDefinedByWithMethod() {
         Vinna app = new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("vinna.ProgrammaticRoutingTest.NoOpcontroller").withMethod("process()");
             }
         };
@@ -272,7 +274,7 @@ public class ProgrammaticRoutingTest {
     public void failsToBuildARouteByPassingParametersWithoutUsingApi() {
         new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process("passing an arg");
             }
         };
@@ -282,7 +284,7 @@ public class ProgrammaticRoutingTest {
     public void failsToBuildARouteByUsingAMethodNotReturningOutcome() {
         new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process(constant(0));
             }
         };
@@ -292,7 +294,7 @@ public class ProgrammaticRoutingTest {
     public void failsToCallTwiceWithControllerIdMethod() {
         new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withControllerId("controllerId").withMethod("method()");
             }
         };
@@ -302,7 +304,7 @@ public class ProgrammaticRoutingTest {
     public void failsWithIncorrectMethodPattern() {
         new Vinna() {
             @Override
-            protected void routes() {
+            protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withMethod("i am not a method");
             }
         };
