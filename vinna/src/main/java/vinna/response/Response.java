@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+@Deprecated
+/**
+ * Should be deleted. Doesn't serve any purpose.
+ */
 public interface Response {
     // TODO define methods
 

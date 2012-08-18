@@ -1,9 +1,7 @@
 package vinna.outcome;
 
 import vinna.exception.VuntimeException;
-import vinna.request.Request;
 import vinna.request.VinnaRequestWrapper;
-import vinna.response.Response;
 import vinna.response.VinnaResponseWrapper;
 
 import javax.servlet.RequestDispatcher;
