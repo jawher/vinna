@@ -33,15 +33,18 @@ public class VinnaFilter implements Filter {
             cfg.put(name, filterConfig.getInitParameter(name));
         }
 
-        String appClass = (String) cfg.get(APPLICATION_CLASS);
-        if (appClass != null) {
+
+        if (cfg.get(APPLICATION_CLASS) != null) {
+            String appClass = (String) cfg.get(APPLICATION_CLASS);
             try {
                 Class<Vinna> clz = (Class<Vinna>) Class.forName(filterConfig.getInitParameter(APPLICATION_CLASS));
-                Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
-                vinna = cons.newInstance(cfg);
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
-                throw new ServletException(e);
-            } catch (NoSuchMethodException | InvocationTargetException e) {
+                try {
+                    Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
+                    vinna = cons.newInstance(cfg);
+                } catch (NoSuchMethodException e) {
+                    vinna = clz.newInstance();
+                }
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException | InvocationTargetException e) {
                 throw new ServletException(e);
             }
         } else {
