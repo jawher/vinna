@@ -37,7 +37,7 @@ public class VinnaFilter implements Filter {
         if (cfg.get(APPLICATION_CLASS) != null) {
             String appClass = (String) cfg.get(APPLICATION_CLASS);
             try {
-                Class<Vinna> clz = (Class<Vinna>) Class.forName(filterConfig.getInitParameter(APPLICATION_CLASS));
+                Class<Vinna> clz = (Class<Vinna>) Thread.currentThread().getContextClassLoader().loadClass(appClass);
                 try {
                     Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
                     vinna = cons.newInstance(cfg);
