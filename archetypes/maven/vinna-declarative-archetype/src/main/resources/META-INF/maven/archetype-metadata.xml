@@ -15,10 +15,10 @@
       </includes>
     </fileSet>
 
-    <fileSet filtered="true">
+    <fileSet filtered="true" packaged="true">
       <directory>src/main/resources</directory>
       <includes>
-        <include>vinnApp.route</include>
+        <include>routes</include>
       </includes>
     </fileSet>
   </fileSets>

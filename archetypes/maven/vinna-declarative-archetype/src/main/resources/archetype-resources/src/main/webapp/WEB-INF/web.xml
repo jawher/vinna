@@ -6,8 +6,8 @@
         <filter-name>vinnaFilter</filter-name>
         <filter-class>vinna.VinnaFilter</filter-class>
         <init-param>
-            <param-name>routes</param-name>
-            <param-value>vinnApp.route</param-value>
+            <param-name>base-package</param-name>
+            <param-value>${package}</param-value>
         </init-param>
     </filter>
 

@@ -1,1 +1,0 @@
-GET /hello/{name} ${package}.controllers.HelloControler.sayHello({name}, {req.param.ohai})
