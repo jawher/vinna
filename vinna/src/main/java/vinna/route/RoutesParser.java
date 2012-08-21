@@ -307,6 +307,8 @@ public class RoutesParser {
         Pattern pvar = argPattern("");
         Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
         Pattern pbool = Pattern.compile("(true|false)");
+        Pattern pnull = Pattern.compile("null");
+
         if (!argsString.isEmpty()) {
             String[] args = argsString.split("\\s*,\\s*");
             for (String arg : args) {
@@ -331,6 +333,8 @@ public class RoutesParser {
                     parameters.add(new ActionArgument.Const<String>(pm.group(1)));
                 } else if ((pm = pbool.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
+                } else if ((pm = pnull.matcher(arg)).matches()) {
+                    parameters.add(new ActionArgument.Const<Object>(null));
                 } else {
                     try {
                         parameters.add(new NumConst(new BigDecimal(arg)));
