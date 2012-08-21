@@ -58,6 +58,8 @@ public class VinnaFilter implements Filter {
             VinnaRequestWrapper vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
             VinnaResponseWrapper vinnaResponse = new VinnaResponseWrapper((HttpServletResponse) response);
 
+            VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse));
+
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {

@@ -131,6 +131,10 @@ public class Vinna {
         this.router.addRoute(route);
     }
 
+    public String getBasePackage() {
+        return basePackage;
+    }
+
     protected void loadRoutes(Reader reader) {
         List<Route> routes = new RoutesParser(reader).load();
         router.addRoutes(routes);
