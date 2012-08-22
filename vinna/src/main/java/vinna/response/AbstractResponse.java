@@ -1,4 +1,4 @@
-package vinna.outcome;
+package vinna.response;
 
 import vinna.exception.VuntimeException;
 import vinna.http.VinnaRequestWrapper;
@@ -7,7 +7,7 @@ import vinna.http.VinnaResponseWrapper;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public abstract class AbstractOutcome implements Outcome {
+public abstract class AbstractResponse implements Response {
 
     private ResponseBuilder responseBuilder;
 

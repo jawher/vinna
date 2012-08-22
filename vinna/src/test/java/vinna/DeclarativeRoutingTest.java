@@ -1,7 +1,7 @@
 package vinna;
 
 import org.junit.Test;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 import vinna.helpers.MockedRequest;
 
 import java.io.StringReader;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 public class DeclarativeRoutingTest {
 
     public static class NoOpcontroller {
-        public Outcome process() {
+        public Response process() {
             return null;
         }
     }

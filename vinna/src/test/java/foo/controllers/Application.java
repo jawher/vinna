@@ -1,9 +1,9 @@
 package foo.controllers;
 
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 
 public class Application {
-    public Outcome index() {
+    public Response index() {
         return null;
     }
 }

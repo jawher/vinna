@@ -3,7 +3,7 @@ package vinna;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.exception.VuntimeException;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
 import vinna.route.RouteResolution;
@@ -62,7 +62,7 @@ public class VinnaFilter implements Filter {
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
-                    Outcome outcome = resolvedRoute.callAction(vinna);
+                    Response outcome = resolvedRoute.callAction(vinna);
                     outcome.execute(vinnaRequest, vinnaResponse);
                 } catch (VuntimeException e) {
                     logger.error("Error while processing the request", e);

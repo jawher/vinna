@@ -2,7 +2,7 @@ package vinna.route;
 
 import vinna.Vinna;
 import vinna.exception.VuntimeException;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 import vinna.http.Request;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +25,7 @@ public class RouteResolution {
         this.request = request;
     }
 
-    public Outcome callAction(Vinna vinna) {
+    public Response callAction(Vinna vinna) {
         String controllerId = action.controllerId;
         if (controllerId != null) {
             controllerId = evaluate(controllerId, paramValues);
@@ -57,7 +57,7 @@ public class RouteResolution {
         }
 
         try {
-            return (Outcome) toCall.invoke(controllerInstance, castedParams.toArray());
+            return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new VuntimeException(e);
         }

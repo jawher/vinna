@@ -1,4 +1,4 @@
-package vinna.outcome;
+package vinna.response;
 
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
@@ -89,8 +89,8 @@ public class ResponseBuilder {
         return this;
     }
 
-    public final Outcome build() {
-        return new Outcome() {
+    public final Response build() {
+        return new Response() {
             @Override
             public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
                 response.setStatus(status);

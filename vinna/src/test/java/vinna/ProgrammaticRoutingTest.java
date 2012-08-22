@@ -3,7 +3,7 @@ package vinna;
 import org.junit.Test;
 import vinna.exception.ConfigException;
 import vinna.helpers.MockedRequest;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 
 import java.util.Map;
 
@@ -13,11 +13,11 @@ import static org.junit.Assert.assertNull;
 public class ProgrammaticRoutingTest {
 
     public static class NoOpcontroller {
-        public Outcome process() {
+        public Response process() {
             return null;
         }
 
-        public Outcome process(String param) {
+        public Response process(String param) {
             return null;
         }
 

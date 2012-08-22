@@ -1,9 +1,9 @@
 package bar.controllers;
 
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 
 public class Bar {
-    public Outcome action() {
+    public Response action() {
         return null;
     }
 }

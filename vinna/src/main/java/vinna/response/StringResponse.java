@@ -1,4 +1,4 @@
-package vinna.outcome;
+package vinna.response;
 
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
@@ -6,16 +6,16 @@ import vinna.http.VinnaResponseWrapper;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-public class StringOutcome extends AbstractOutcome {
+public class StringResponse extends AbstractResponse {
 
     private final String content;
     private final String encoding;
 
-    public StringOutcome(String content) {
+    public StringResponse(String content) {
         this(content, "UTF-8");
     }
 
-    public StringOutcome(String content, String encoding) {
+    public StringResponse(String content, String encoding) {
         withResponseBuilder(ResponseBuilder.ok()).type("text/plain");
 
         this.content = content;

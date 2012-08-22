@@ -1,4 +1,4 @@
-package vinna.outcome;
+package vinna.response;
 
 import vinna.exception.VuntimeException;
 import vinna.http.VinnaRequestWrapper;
@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ForwardOutcome implements Outcome {
+public class ForwardResponse implements Response {
 
     private final String path;
     private final Map<String, Object> attributes;
 
-    public ForwardOutcome(String path) {
+    public ForwardResponse(String path) {
         this.path = path;
         this.attributes = new HashMap<>();
     }
