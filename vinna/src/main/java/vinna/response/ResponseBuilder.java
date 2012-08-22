@@ -88,13 +88,13 @@ public class ResponseBuilder implements Response {
         return this;
     }
 
+    //FIXME: split into addHeader and setHeader (maybe call the latter header)
     public final ResponseBuilder header(String name, Object value) {
         headers.add(name, value);
         return this;
     }
 
     // TODO define parameters
-
     public final ResponseBuilder cookie() {
         // TODO
         return this;
@@ -107,7 +107,7 @@ public class ResponseBuilder implements Response {
 
     protected void writeBody(ServletOutputStream out) throws IOException {
         if (body != null) {
-            int size = 512;
+            int size = 512;//FIXME: make this configurable ?
             byte[] buffer = new byte[size];
             int len;
             while ((len = body.read(buffer)) == size) {
@@ -116,7 +116,7 @@ public class ResponseBuilder implements Response {
             try {
                 body.close();
             } catch (IOException e) {
-                //warn
+                //FIXME: issue warning
             }
         }
     }
@@ -143,13 +143,16 @@ public class ResponseBuilder implements Response {
 
         for (Map.Entry<String, List<Object>> header : headers.entrySet()) {
             for (Object value : header.getValue()) {
+                //FIXME: properly handle multi-valued headers (using servletResponse.(add|set)Header)
                 response.addHeader(header.getKey(), value.toString());
             }
         }
 
         // FIXME convert the Location to an absolute URL
+        //FIXME: investigate how to properly handle redirect
         if (location != null) {
             response.setHeader("Location", response.encodeRedirectURL(location));
+            //FIXME: should return here right ?
         }
 
         if (encoding != null) {
