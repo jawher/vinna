@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ResponseBuilder {
+public class ResponseBuilder implements Response {
 
     private int status;
     private MultivaluedHashMap<String, Object> headers = new MultivaluedHashMap<>();
@@ -125,29 +125,7 @@ public class ResponseBuilder {
         }
     }
 
-    public final Response build() {
-        return new Response() {
-            
-            public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
-                response.setStatus(status);
 
-                for (Map.Entry<String, List<Object>> header : headers.entrySet()) {
-                    for (Object value : header.getValue()) {
-                        response.addHeader(header.getKey(), value.toString());
-                    }
-                }
-
-                // FIXME convert the Location to an absolute URL
-                if (location != null) {
-                    response.setHeader("Location", response.encodeRedirectURL(location));
-                }
-
-                writeBody(response.getOutputStream());
-                response.getOutputStream().flush();
-
-            }
-        };
-    }
 
     
     public final int getStatus() {
@@ -163,4 +141,22 @@ public class ResponseBuilder {
         return headers.get(header);
     }
 
+    @Override
+    public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
+        response.setStatus(status);
+
+        for (Map.Entry<String, List<Object>> header : headers.entrySet()) {
+            for (Object value : header.getValue()) {
+                response.addHeader(header.getKey(), value.toString());
+            }
+        }
+
+        // FIXME convert the Location to an absolute URL
+        if (location != null) {
+            response.setHeader("Location", response.encodeRedirectURL(location));
+        }
+
+        writeBody(response.getOutputStream());
+        response.getOutputStream().flush();
+    }
 }

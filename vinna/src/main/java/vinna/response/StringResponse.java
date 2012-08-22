@@ -5,7 +5,7 @@ import vinna.exception.VuntimeException;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
-public class StringResponse extends AbstractResponse {
+public class StringResponse extends ResponseBuilder {
 
     public StringResponse(String content) {
         this(content, "UTF-8");
