@@ -101,6 +101,7 @@ public class ResponseBuilder {
                     }
                 }
 
+                // FIXME convert the Location to an absolute URL
                 if (location != null) {
                     response.setHeader("Location", response.encodeRedirectURL(location));
                 }
