@@ -1,4 +1,4 @@
-package vinna.request;
+package vinna.http;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,6 +1,6 @@
 package vinna.helpers;
 
-import vinna.request.Request;
+import vinna.http.Request;
 
 import java.io.InputStream;
 import java.util.*;

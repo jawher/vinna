@@ -2,7 +2,7 @@ package vinna.route;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vinna.request.Request;
+import vinna.http.Request;
 
 import java.util.ArrayList;
 import java.util.List;

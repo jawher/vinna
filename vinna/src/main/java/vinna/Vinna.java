@@ -2,7 +2,7 @@ package vinna;
 
 import vinna.exception.ConfigException;
 import vinna.exception.VuntimeException;
-import vinna.request.Request;
+import vinna.http.Request;
 import vinna.route.*;
 
 import java.io.*;

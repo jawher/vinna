@@ -1,10 +1,11 @@
 package vinna.route;
 
+import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import vinna.Vinna;
 import vinna.exception.ConfigException;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -91,10 +92,21 @@ public final class RouteBuilder {
     }
 
     public <T> T withController(Class<T> controller) {
+        if (controller.getPackage().getName().startsWith("java.")) {
+            throw new ConfigException("Can't create controller");
+        }
+
         this.controller = controller;
 
         ProxyFactory factory = new ProxyFactory();
         factory.setSuperclass(controller);
+        factory.setFilter(new MethodFilter() {
+            @Override
+            public boolean isHandled(Method m) {
+                // ignore finalize()
+                return !m.getName().equals("finalize");
+            }
+        });
 
         // TODO constructor with params
         T proxy = null;
@@ -118,7 +130,7 @@ public final class RouteBuilder {
         public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
             // be careful with the method finalize
             if (method == null) {
-                if (Outcome.class.isAssignableFrom(thisMethod.getReturnType())) {
+                if (Response.class.isAssignableFrom(thisMethod.getReturnType())) {
                     if (methodParameters.size() != args.length) {
                         throw new ConfigException("Like, really ?");
                     }

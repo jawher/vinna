@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 import vinna.route.RouteResolution;
 
 import java.math.BigDecimal;
@@ -44,137 +44,137 @@ public class ProgrammaticControllersTest {
 
     public static class StringArgController {
 
-        public Outcome action(String param) {
+        public Response action(String param) {
             return null;
         }
     }
 
     public static class StringArgAndIntegerArgController {
 
-        public Outcome action(String param) {
+        public Response action(String param) {
             return null;
         }
 
-        public Outcome action(Integer param) {
+        public Response action(Integer param) {
             return null;
         }
     }
 
     public static class IntArgController {
 
-        public Outcome action(int param) {
+        public Response action(int param) {
             return null;
         }
     }
 
     public static class IntegerArgController {
 
-        public Outcome action(Integer param) {
+        public Response action(Integer param) {
             return null;
         }
     }
 
     public static class BoolArgController {
 
-        public Outcome action(boolean param) {
+        public Response action(boolean param) {
             return null;
         }
     }
 
     public static class BooleanArgController {
 
-        public Outcome action(Boolean param) {
+        public Response action(Boolean param) {
             return null;
         }
     }
 
     public static class LongPrimitiveArgController {
 
-        public Outcome action(long param) {
+        public Response action(long param) {
             return null;
         }
     }
 
     public static class LongArgController {
 
-        public Outcome action(Long param) {
+        public Response action(Long param) {
             return null;
         }
     }
 
     public static class ShortPrimitiveArgController {
 
-        public Outcome action(short param) {
+        public Response action(short param) {
             return null;
         }
     }
 
     public static class ShortArgController {
 
-        public Outcome action(Short param) {
+        public Response action(Short param) {
             return null;
         }
     }
 
     public static class BytePrimitiveArgController {
 
-        public Outcome action(byte param) {
+        public Response action(byte param) {
             return null;
         }
     }
 
     public static class ByteArgController {
 
-        public Outcome action(Byte param) {
+        public Response action(Byte param) {
             return null;
         }
     }
 
     public static class FloatPrimitiveArgController {
 
-        public Outcome action(float param) {
+        public Response action(float param) {
             return null;
         }
     }
 
     public static class FloatArgController {
 
-        public Outcome action(Float param) {
+        public Response action(Float param) {
             return null;
         }
     }
 
     public static class DoublePrimitiveArgController {
 
-        public Outcome action(double param) {
+        public Response action(double param) {
             return null;
         }
     }
 
     public static class DoubleArgController {
 
-        public Outcome action(Double param) {
+        public Response action(Double param) {
             return null;
         }
     }
 
     public static class BigDecimalArgController {
 
-        public Outcome action(BigDecimal param) {
+        public Response action(BigDecimal param) {
             return null;
         }
     }
 
     public static class BigIntegerArgController {
 
-        public Outcome action(BigInteger param) {
+        public Response action(BigInteger param) {
             return null;
         }
     }
 
     public static class CollectionArgController {
 
-        public Outcome action(Collection<?> param) {
+        public Response action(Collection<?> param) {
             return null;
         }
     }

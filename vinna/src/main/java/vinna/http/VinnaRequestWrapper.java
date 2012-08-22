@@ -1,4 +1,4 @@
-package vinna.request;
+package vinna.http;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;

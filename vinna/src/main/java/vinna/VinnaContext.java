@@ -1,7 +1,7 @@
 package vinna;
 
-import vinna.request.VinnaRequestWrapper;
-import vinna.response.VinnaResponseWrapper;
+import vinna.http.VinnaRequestWrapper;
+import vinna.http.VinnaResponseWrapper;
 
 public class VinnaContext {
     private static ThreadLocal<VinnaContext> context = new ThreadLocal<>();

@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
-import vinna.outcome.Outcome;
+import vinna.response.Response;
 import vinna.route.RouteResolution;
 
 import java.io.StringReader;
@@ -53,35 +53,35 @@ public class DeclarativeControllersTest {
 
     public static class Controller {
 
-        public Outcome actionString(String param) {
+        public Response actionString(String param) {
             return null;
         }
 
-        public Outcome actionInt(int param) {
+        public Response actionInt(int param) {
             return null;
         }
 
-        public Outcome actionInteger(Integer param) {
+        public Response actionInteger(Integer param) {
             return null;
         }
 
-        public Outcome actionBool(boolean param) {
+        public Response actionBool(boolean param) {
             return null;
         }
 
-        public Outcome actionBoolean(Boolean param) {
+        public Response actionBoolean(Boolean param) {
             return null;
         }
 
-        public Outcome actionColl(Collection<?> param) {
+        public Response actionColl(Collection<?> param) {
             return null;
         }
 
-        public Outcome actionFloat(Float param) {
+        public Response actionFloat(Float param) {
             return null;
         }
 
-        public Outcome actionDouble(Double param) {
+        public Response actionDouble(Double param) {
             return null;
         }
     }
@@ -474,11 +474,11 @@ public class DeclarativeControllersTest {
 
     public static class ControllerWithOverloadedAndDiffArgCountMethods {
 
-        public Outcome action(Boolean param, int x) {
+        public Response action(Boolean param, int x) {
             return null;
         }
 
-        public Outcome action(String param) {
+        public Response action(String param) {
             return null;
         }
     }
@@ -497,11 +497,11 @@ public class DeclarativeControllersTest {
 
     public static class AmbiguousController {
 
-        public Outcome action(Boolean param) {
+        public Response action(Boolean param) {
             return null;
         }
 
-        public Outcome action(String param) {
+        public Response action(String param) {
             return null;
         }
     }

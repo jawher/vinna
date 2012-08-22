@@ -1,6 +1,6 @@
 package vinna.route;
 
-import vinna.request.Request;
+import vinna.http.Request;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
