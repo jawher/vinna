@@ -134,6 +134,17 @@ public class Vinna {
         return basePackage;
     }
 
+    /**
+     * Default user locale detection strategy. Use the container's {@link javax.servlet.ServletRequest#getLocale()}.
+     * Override to use a different strategy, like retrieving the locale from a cookie or from the path.
+     *
+     * @return a locale that'll be used by various parts of the framework, like the validation subsystem.
+     */
+    public Locale getUserLocale() {
+        return VinnaContext.get().request.getLocale();
+    }
+
+
     protected void loadRoutes(Reader reader) {
         List<Route> routes = new RoutesParser(reader).load();
         router.addRoutes(routes);
