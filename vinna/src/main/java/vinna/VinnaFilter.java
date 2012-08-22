@@ -33,7 +33,6 @@ public class VinnaFilter implements Filter {
             cfg.put(name, filterConfig.getInitParameter(name));
         }
 
-
         if (cfg.get(APPLICATION_CLASS) != null) {
             String appClass = (String) cfg.get(APPLICATION_CLASS);
             try {

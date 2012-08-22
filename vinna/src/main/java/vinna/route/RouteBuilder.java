@@ -1,5 +1,6 @@
 package vinna.route;
 
+import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import vinna.Vinna;
@@ -91,10 +92,21 @@ public final class RouteBuilder {
     }
 
     public <T> T withController(Class<T> controller) {
+        if (controller.getPackage().getName().startsWith("java.")) {
+            throw new ConfigException("Can't create controller");
+        }
+
         this.controller = controller;
 
         ProxyFactory factory = new ProxyFactory();
         factory.setSuperclass(controller);
+        factory.setFilter(new MethodFilter() {
+            @Override
+            public boolean isHandled(Method m) {
+                // ignore finalize()
+                return !m.getName().equals("finalize");
+            }
+        });
 
         // TODO constructor with params
         T proxy = null;
