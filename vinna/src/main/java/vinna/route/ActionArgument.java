@@ -1,7 +1,7 @@
 package vinna.route;
 
 import vinna.exception.VuntimeException;
-import vinna.request.Request;
+import vinna.http.Request;
 import vinna.util.Conversions;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package vinna.outcome;
 
-import vinna.request.VinnaRequestWrapper;
-import vinna.response.VinnaResponseWrapper;
+import vinna.http.VinnaRequestWrapper;
+import vinna.http.VinnaResponseWrapper;
 
 import javax.servlet.ServletException;
 import java.io.IOException;

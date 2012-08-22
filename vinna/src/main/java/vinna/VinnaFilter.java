@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
-import vinna.request.VinnaRequestWrapper;
-import vinna.response.VinnaResponseWrapper;
+import vinna.http.VinnaRequestWrapper;
+import vinna.http.VinnaResponseWrapper;
 import vinna.route.RouteResolution;
 
 import javax.servlet.*;

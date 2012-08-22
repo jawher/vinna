@@ -3,7 +3,7 @@ package vinna.route;
 import vinna.Vinna;
 import vinna.exception.VuntimeException;
 import vinna.outcome.Outcome;
-import vinna.request.Request;
+import vinna.http.Request;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
