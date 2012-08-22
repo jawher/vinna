@@ -13,12 +13,11 @@ public class Vinna {
     public static final String ROUTES = "routes";
     public static final String CONTROLLER_FACTORY = "controller-factory";
     private Map<String, Object> config;
-    protected final String basePackage;
+    private final String basePackage;
     private Router router;
     private ControllerFactory controllerFactory;
     private List<ActionArgument> routeParameters;
     protected final RequestBuilder req = new RequestBuilder();
-
 
     public Vinna() {
         this(Collections.<String, Object>emptyMap());
@@ -134,6 +133,17 @@ public class Vinna {
     public String getBasePackage() {
         return basePackage;
     }
+
+    /**
+     * Default user locale detection strategy. Use the container's {@link javax.servlet.ServletRequest#getLocale()}.
+     * Override to use a different strategy, like retrieving the locale from a cookie or from the path.
+     *
+     * @return a locale that'll be used by various parts of the framework, like the validation subsystem.
+     */
+    public Locale getUserLocale() {
+        return VinnaContext.get().request.getLocale();
+    }
+
 
     protected void loadRoutes(Reader reader) {
         List<Route> routes = new RoutesParser(reader).load();

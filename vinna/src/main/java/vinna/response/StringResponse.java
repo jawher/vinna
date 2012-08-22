@@ -1,30 +1,22 @@
 package vinna.response;
 
-import vinna.http.VinnaRequestWrapper;
-import vinna.http.VinnaResponseWrapper;
+import vinna.exception.VuntimeException;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
-public class StringResponse extends AbstractResponse {
-
-    private final String content;
-    private final String encoding;
+public class StringResponse extends ResponseBuilder {
 
     public StringResponse(String content) {
         this(content, "UTF-8");
     }
 
     public StringResponse(String content, String encoding) {
-        withResponseBuilder(ResponseBuilder.ok()).type("text/plain");
-
-        this.content = content;
-        this.encoding = encoding;
-    }
-
-    @Override
-    public void writeResponse(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
-        response.setCharacterEncoding(encoding);
-        response.getOutputStream().write(((String) content).getBytes(encoding));
+        super(200);
+        try {
+            body(new ByteArrayInputStream(content.getBytes(encoding)));
+        } catch (UnsupportedEncodingException e) {
+            throw new VuntimeException("Invalid encoding", e);
+        }
     }
 }
