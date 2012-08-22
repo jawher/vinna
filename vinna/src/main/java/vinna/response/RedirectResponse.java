@@ -14,11 +14,8 @@ public class RedirectResponse extends AbstractResponse {
     }
 
     public RedirectResponse(String location, int status) {
-        withResponseBuilder(ResponseBuilder.withStatus(status)).location(location);
+        super(status);
+        location(location);
     }
 
-    @Override
-    public void writeResponse(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
-        // nothing to do
-    }
 }
