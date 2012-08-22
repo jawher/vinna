@@ -8,20 +8,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public interface ActionArgument {
 
     public static class Environment {
         protected final Map<String, String> matchedVars;
         protected final Request request;
+        protected final List<String> unusedSymbols;
 
         public Environment(Request request, Map<String, String> matchedVars) {
             this.matchedVars = matchedVars;
             this.request = request;
+            this.unusedSymbols = new ArrayList<>();
+            this.unusedSymbols.addAll(matchedVars.keySet());
+            this.unusedSymbols.addAll(request.getParams().keySet());
+        }
+
+        private void markAsUsed(String symbolName) {
+            this.unusedSymbols.remove(symbolName);
+        }
+
+        public Collection<String> getUnusedSymbolsName() {
+            return Collections.unmodifiableCollection(unusedSymbols);
         }
     }
 
@@ -51,6 +60,10 @@ public interface ActionArgument {
             this.name = name;
         }
 
+        protected void markAsUsed(Environment env) {
+            env.markAsUsed(name);
+        }
+
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
@@ -58,12 +71,13 @@ public interface ActionArgument {
                 //TODO: simply do not expose asCollection for path variables ?
                 if (typeArg != null) {
                     Object convertedValue = Conversions.convertString(value, typeArg);
+                    markAsUsed(env);
                     return Collections.unmodifiableCollection(Arrays.asList(convertedValue));
                 } else {
                     throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
-
+            markAsUsed(env);
             return Conversions.convertString(value, targetType);
         }
     }
@@ -76,15 +90,21 @@ public interface ActionArgument {
             this.name = name;
         }
 
+        protected void markAsUsed(Environment env) {
+            env.markAsUsed(name);
+        }
+
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
+                    markAsUsed(env);
                     return Conversions.convertCollection(env.request.getParams(name), typeArg);
                 } else {
                     throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
+            markAsUsed(env);
             return Conversions.convertString(env.request.getParam(name), targetType);
         }
     }
@@ -114,6 +134,10 @@ public interface ActionArgument {
             this.headerName = headerName;
         }
 
+        protected void markAsUsed(Environment env) {
+            env.markAsUsed(headerName);
+        }
+
         public Header(String headerName, Class<?> collectionType) {
             type = Collection.class;
             typeArg = collectionType;
@@ -124,11 +148,13 @@ public interface ActionArgument {
         public Object resolve(Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
+                    markAsUsed(env);
                     return Conversions.convertCollection(env.request.getHeaderValues(headerName), typeArg);
                 } else {
                     throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
+            markAsUsed(env);
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
     }
@@ -162,6 +188,8 @@ public interface ActionArgument {
     public static abstract class ChameleonArgument implements ActionArgument {
         protected Class<?> type;
         protected Class<?> typeArg;
+
+        protected abstract void markAsUsed(Environment env);
 
         public final long asLong() {
             return 42;

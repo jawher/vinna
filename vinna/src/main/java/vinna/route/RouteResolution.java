@@ -1,5 +1,7 @@
 package vinna.route;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vinna.Vinna;
 import vinna.exception.VuntimeException;
 import vinna.response.Response;
@@ -14,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RouteResolution {
+    private final static Logger logger = LoggerFactory.getLogger(RouteResolution.class);
 
     private final Map<String, String> paramValues;
     private final Route.Action action;
@@ -55,6 +58,8 @@ public class RouteResolution {
 
             castedParams.add(actionArgument.resolve(env, argType));
         }
+
+        warnForUnusedSymbols(env);
 
         try {
             return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
@@ -108,6 +113,12 @@ public class RouteResolution {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void warnForUnusedSymbols(ActionArgument.Environment environment) {
+        for (String symbolName : environment.getUnusedSymbolsName()) {
+            logger.warn("Symbol {} is not used.", symbolName);
         }
     }
 }
