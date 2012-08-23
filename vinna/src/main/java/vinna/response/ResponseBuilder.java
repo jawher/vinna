@@ -150,6 +150,7 @@ public class ResponseBuilder implements Response {
 
         // FIXME convert the Location to an absolute URL <-- is this really needed ?
         // FIXME: investigate how to properly handle redirect
+        // FIXME: should use a proper redirect flag instead of just location presence
         if (location != null) {
             response.setHeader("Location", response.encodeRedirectURL(location));
             return;
