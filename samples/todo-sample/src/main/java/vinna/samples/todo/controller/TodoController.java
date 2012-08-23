@@ -45,7 +45,7 @@ public class TodoController {
         newTodo.setDescription(description);
         todoRepository.put(newTodo.getId(), newTodo);
 
-        return new RedirectResponse("");
+        return RedirectResponse.found("");
     }
 
     public Response create() {

@@ -1,7 +1,7 @@
 package vinna.response;
 
 public class RedirectResponse extends ResponseBuilder {
-    public enum Kind {
+    private static enum Kind {
         MOVED_PERMANENTLY(301),
         FOUND(302),
         SEE_OTHER(303),
@@ -11,17 +11,40 @@ public class RedirectResponse extends ResponseBuilder {
 
         public final int status;
 
-        Kind(int status) {
+        private Kind(int status) {
             this.status = status;
         }
     }
 
-    public RedirectResponse(String location) {
-        this(location, Kind.FOUND);
+    public static RedirectResponse found(String location) {
+        return new RedirectResponse(location, Kind.FOUND);
     }
 
-    public RedirectResponse(String location, Kind kind) {
+    public static RedirectResponse seeOther(String location) {
+        return new RedirectResponse(location, Kind.SEE_OTHER);
+    }
+
+    public static RedirectResponse temporary(String location) {
+        return new RedirectResponse(location, Kind.TEMPORARY_REDIRECT);
+    }
+
+    public static RedirectResponse permanently(String location) {
+        return new RedirectResponse(location, Kind.PERMANENT_REDIRECT);
+    }
+
+    public static RedirectResponse moved(String location) {
+        return new RedirectResponse(location, Kind.MOVED_PERMANENTLY);
+    }
+
+    public static RedirectResponse notModified() {
+        return new RedirectResponse(null, Kind.NOT_MODIFIED);
+    }
+
+    private RedirectResponse(String location, Kind kind) {
         super(kind.status);
-        location(location);
+
+        if (location != null) {
+            location(location);
+        }
     }
 }
