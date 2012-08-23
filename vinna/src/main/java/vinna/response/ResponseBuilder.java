@@ -148,11 +148,11 @@ public class ResponseBuilder implements Response {
             }
         }
 
-        // FIXME convert the Location to an absolute URL
-        //FIXME: investigate how to properly handle redirect
+        // FIXME convert the Location to an absolute URL <-- is this really needed ?
+        // FIXME: investigate how to properly handle redirect
         if (location != null) {
             response.setHeader("Location", response.encodeRedirectURL(location));
-            //FIXME: should return here right ?
+            return;
         }
 
         if (encoding != null) {
