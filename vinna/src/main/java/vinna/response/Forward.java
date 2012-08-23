@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ForwardResponse implements Response {
+public class Forward implements Response {
 
     private final String path;
     private final Map<String, Object> attributes;
 
-    public ForwardResponse(String path) {
+    public Forward(String path) {
         this.path = path;
         this.attributes = new HashMap<>();
     }

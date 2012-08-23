@@ -5,6 +5,7 @@ import vinna.exception.VuntimeException;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 
+// FIXME rename me
 public class StringResponse extends ResponseBuilder {
 
     public StringResponse(String content) {

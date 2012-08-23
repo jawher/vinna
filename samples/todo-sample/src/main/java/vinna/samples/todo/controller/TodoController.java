@@ -1,7 +1,7 @@
 package vinna.samples.todo.controller;
 
-import vinna.response.ForwardResponse;
-import vinna.response.RedirectResponse;
+import vinna.response.Forward;
+import vinna.response.Redirect;
 import vinna.response.Response;
 import vinna.samples.todo.model.Todo;
 
@@ -15,7 +15,7 @@ public class TodoController {
 
 
     public Response list() {
-        ForwardResponse forward = new ForwardResponse("/WEB-INF/index.jsp");
+        Forward forward = new Forward("/WEB-INF/index.jsp");
         forward.setAttribute("todos", todoRepository.values());
         return forward;
     }
@@ -31,7 +31,7 @@ public class TodoController {
             hasDescriptionError = true;
         }
         if (hasDescriptionError || hasTitleError) {
-            ForwardResponse forwardResponse = new ForwardResponse("/WEB-INF/create.jsp");
+            Forward forwardResponse = new Forward("/WEB-INF/create.jsp");
             forwardResponse.setAttribute("titleError", hasTitleError);
             forwardResponse.setAttribute("title", title);
             forwardResponse.setAttribute("descriptionError", hasDescriptionError);
@@ -45,10 +45,10 @@ public class TodoController {
         newTodo.setDescription(description);
         todoRepository.put(newTodo.getId(), newTodo);
 
-        return RedirectResponse.found("");
+        return Redirect.found("");
     }
 
     public Response create() {
-        return new ForwardResponse("/WEB-INF/create.jsp");
+        return new Forward("/WEB-INF/create.jsp");
     }
 }
