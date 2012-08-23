@@ -2,10 +2,12 @@ package vinna;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vinna.exception.InternalVinnaException;
+import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
-import vinna.response.Response;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
+import vinna.response.Response;
 import vinna.route.RouteResolution;
 
 import javax.servlet.*;
@@ -68,6 +70,12 @@ public class VinnaFilter implements Filter {
                     logger.error("Error while processing the request", e);
                     e.printStackTrace(vinnaResponse.getWriter());
                     vinnaResponse.setStatus(500);
+                } catch (PassException e) {
+                    logger.info("Response delegated to FilterChain.doChain");
+                    chain.doFilter(request, response);
+                } catch (InternalVinnaException e) {
+                    logger.error("Vinna internal error occurred !", e);
+                    throw new ServletException(e);
                 }
             } else {
                 chain.doFilter(request, response);

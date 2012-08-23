@@ -1,5 +1,6 @@
 package vinna.response;
 
+import vinna.exception.PassException;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
 import vinna.util.MultivaluedHashMap;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ResponseBuilder implements Response {
+
+    private static final Response PASS_RESPONSE = new DoPass();
 
     private int status;
     private MultivaluedHashMap<String, Object> headers = new MultivaluedHashMap<>();
@@ -31,6 +34,10 @@ public class ResponseBuilder implements Response {
 
     public static ResponseBuilder notFound() {
         return new ResponseBuilder(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    public static Response pass() {
+        return PASS_RESPONSE;
     }
 
     public ResponseBuilder(int status) {
@@ -162,5 +169,12 @@ public class ResponseBuilder implements Response {
 
         writeBody(response.getOutputStream());
         response.getOutputStream().flush();
+    }
+
+    private static class DoPass implements Response {
+        @Override
+        public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
+            throw new PassException();
+        }
     }
 }
