@@ -100,7 +100,7 @@ public class ResponseBuilder implements Response {
         return this;
     }
 
-    public ResponseBuilder body(InputStream body) {
+    public final ResponseBuilder body(InputStream body) {
         this.body = body;
         return this;
     }
@@ -133,12 +133,12 @@ public class ResponseBuilder implements Response {
         return headers.get(header);
     }
 
-    public String getEncoding() {
+    public final String getEncoding() {
         return encoding;
     }
 
     @Override
-    public void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
+    public final void execute(VinnaRequestWrapper request, VinnaResponseWrapper response) throws IOException, ServletException {
         response.setStatus(status);
 
         for (Map.Entry<String, List<Object>> header : headers.entrySet()) {
