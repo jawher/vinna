@@ -7,8 +7,7 @@ import vinna.Vinna;
 import vinna.exception.ConfigException;
 import vinna.response.Response;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,30 +91,40 @@ public final class RouteBuilder {
     }
 
     public <T> T withController(Class<T> controller) {
-        if (controller.getPackage().getName().startsWith("java.")) {
-            throw new ConfigException("Can't create controller");
-        }
-
         this.controller = controller;
 
-        ProxyFactory factory = new ProxyFactory();
-        factory.setSuperclass(controller);
-        factory.setFilter(new MethodFilter() {
-            @Override
-            public boolean isHandled(Method m) {
-                // ignore finalize()
-                return !m.getName().equals("finalize");
-            }
-        });
+        Class<?>[] interfaces = controller.getInterfaces();
+        if (!controller.isInterface()) {
+            // The controller is not an interface. Trying to create a proxy with javassist
+            // Final class cannot be extend and we cannot intercept call to final method
 
-        // TODO constructor with params
-        T proxy = null;
-        try {
-            proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new ConfigException("Can't create controller", e);
+            if (Modifier.isFinal(controller.getModifiers())) {
+                throw new ConfigException("Cannot create proxy of final controller");
+            }
+
+            ProxyFactory factory = new ProxyFactory();
+            factory.setSuperclass(controller);
+            factory.setFilter(new MethodFilter() {
+                @Override
+                public boolean isHandled(Method m) {
+                    // ignore finalize()
+                    return !m.getName().equals("finalize");
+                }
+            });
+
+            // TODO constructor with params
+            T proxy = null;
+            try {
+                proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new ConfigException("Can't create controller", e);
+            }
+            return proxy;
         }
-        return proxy;
+
+        // trying to create a proxy with JDK dynamic proxy
+        Object obj = Proxy.newProxyInstance(controller.getClassLoader(), new Class<?>[]{controller}, new RouteMethodHandler());
+        return (T) obj;
     }
 
     private Route createRoute() {
@@ -124,14 +133,30 @@ public final class RouteBuilder {
         return new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
     }
 
-    private class RouteMethodHandler implements MethodHandler {
+    private class RouteMethodHandler implements MethodHandler, InvocationHandler {
 
         @Override
         public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+            methodHandler(thisMethod, args);
+            return null;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            methodHandler(method, args);
+            return null;
+        }
+
+        private void methodHandler(Method thisMethod, Object[] args) {
+            int argsSize = 0;
+            if (args != null) {
+                argsSize = args.length;
+            }
+
             // be careful with the method finalize
             if (method == null) {
                 if (Response.class.isAssignableFrom(thisMethod.getReturnType())) {
-                    if (methodParameters.size() != args.length) {
+                    if (methodParameters.size() != argsSize) {
                         throw new ConfigException("Like, really ?");
                     }
                     method = thisMethod;
@@ -140,7 +165,6 @@ public final class RouteBuilder {
                     throw new ConfigException("Sorry, witchery is only available at Poudlard");
                 }
             }
-            return null;
         }
     }
 

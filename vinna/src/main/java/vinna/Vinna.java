@@ -1,5 +1,7 @@
 package vinna;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vinna.exception.ConfigException;
 import vinna.exception.VuntimeException;
 import vinna.http.Request;
@@ -9,6 +11,8 @@ import java.io.*;
 import java.util.*;
 
 public class Vinna {
+    private static final Logger logger = LoggerFactory.getLogger(Vinna.class);
+
     public static final String BASE_PACKAGE = "base-package";
     public static final String ROUTES = "routes";
     public static final String CONTROLLER_FACTORY = "controller-factory";
@@ -18,6 +22,9 @@ public class Vinna {
     private Router router;
     private ControllerFactory controllerFactory;
     private List<ActionArgument> routeParameters;
+
+    // is true when a route is created with the programmatic API without specify a controller and/or a method
+    private boolean isDirtyState = false;
 
     protected final RequestBuilder req = new RequestBuilder();
 
@@ -32,8 +39,12 @@ public class Vinna {
 
         this.router = new Router();
         routes(this.config);
-    }
 
+        if (isDirtyState) {
+            // TODO enhance the message
+            throw new ConfigException("Something is going wrong");
+        }
+    }
 
     /**
      * Override to define the app routes
@@ -51,7 +62,7 @@ public class Vinna {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    //warning ("Cannot close routes file '" + path + "'", e);
+                    logger.warn("Cannot close routes file '" + path + "'", e);
                 }
             }
             routesPaths = new String[]{path};
@@ -129,6 +140,8 @@ public class Vinna {
     }
 
     public final void addRoute(Route route) {
+        logger.debug("Route created: {}", route);
+        this.isDirtyState = false;
         this.router.addRoute(route);
     }
 
@@ -146,20 +159,27 @@ public class Vinna {
         return VinnaContext.get().request.getLocale();
     }
 
-
     protected void loadRoutes(Reader reader) {
         List<Route> routes = new RoutesParser(reader).load();
         router.addRoutes(routes);
     }
 
     protected final RouteBuilder get(String path) {
-        routeParameters = new ArrayList<>();
-        return new RouteBuilder("GET", path, this, routeParameters);
+        return createRoute("GET", path);
     }
 
     protected final RouteBuilder post(String path) {
+        return createRoute("POST", path);
+    }
+
+    protected final RouteBuilder createRoute(String verb, String path) {
+        if (isDirtyState) {
+            // TODO enhance the message
+            throw new ConfigException("Something is going wrong.");
+        }
         routeParameters = new ArrayList<>();
-        return new RouteBuilder("POST", path, this, routeParameters);
+        isDirtyState = true;
+        return new RouteBuilder(verb.toUpperCase(), path, this, routeParameters);
     }
 
     protected final ActionArgument.Variable param(String name) {
