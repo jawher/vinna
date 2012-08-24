@@ -12,11 +12,13 @@ public class Vinna {
     public static final String BASE_PACKAGE = "base-package";
     public static final String ROUTES = "routes";
     public static final String CONTROLLER_FACTORY = "controller-factory";
+
     private Map<String, Object> config;
     private final String basePackage;
     private Router router;
     private ControllerFactory controllerFactory;
     private List<ActionArgument> routeParameters;
+
     protected final RequestBuilder req = new RequestBuilder();
 
     public Vinna() {

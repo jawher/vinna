@@ -3,9 +3,11 @@ package vinna.route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.Vinna;
+import vinna.exception.ConversionException;
 import vinna.exception.VuntimeException;
-import vinna.response.Response;
 import vinna.http.Request;
+import vinna.response.Response;
+import vinna.response.ResponseBuilder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,19 +52,23 @@ public class RouteResolution {
         List<Object> castedParams = new ArrayList<>();
         Class[] argTypes = toCall.getParameterTypes();
 
-        ActionArgument.Environment env = new ActionArgument.Environment(request, paramValues);
-        for (int i = 0; i < argTypes.length; i++) {
-            //FIXME: handle conversion errors in resolve: what to do ? 404 ?
-            final Class argType = argTypes[i];
-            final ActionArgument actionArgument = action.methodParameters.get(i);
-
-            castedParams.add(actionArgument.resolve(env, argType));
-        }
-
-        warnForUnusedSymbols(env);
-
         try {
+            ActionArgument.Environment env = new ActionArgument.Environment(request, paramValues);
+            for (int i = 0; i < argTypes.length; i++) {
+
+                final Class argType = argTypes[i];
+                final ActionArgument actionArgument = action.methodParameters.get(i);
+
+                castedParams.add(actionArgument.resolve(env, argType));
+            }
+
+            warnForUnusedSymbols(env);
+
             return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
+        } catch (ConversionException e) {
+            //FIXME: handle conversion errors in resolve: what to do ? 404 ?
+            return ResponseBuilder.withStatus(500);
+
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new VuntimeException(e);
         }

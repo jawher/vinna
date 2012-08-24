@@ -1,6 +1,6 @@
 package vinna.util;
 
-import vinna.exception.VuntimeException;
+import vinna.exception.ConversionException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,7 +13,7 @@ public class Conversions {
     public static Object convertString(String value, Class<?> targetType) {
         if (value == null) {
             if (targetType.isPrimitive()) {
-                throw new VuntimeException("Primitive cannot be null");
+                throw new ConversionException("Primitive cannot be null");
             }
             return null;
         }
@@ -47,7 +47,7 @@ public class Conversions {
     public static Object convertNumeric(BigDecimal value, Class<?> targetType) {
         if (value == null) {
             if (targetType.isPrimitive()) {
-                throw new VuntimeException("Primitive cannot be null");
+                throw new ConversionException("Primitive cannot be null");
             }
             return null;
         }

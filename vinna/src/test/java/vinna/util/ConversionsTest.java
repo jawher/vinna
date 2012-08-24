@@ -2,7 +2,7 @@ package vinna.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import vinna.exception.VuntimeException;
+import vinna.exception.ConversionException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -83,37 +83,37 @@ public class ConversionsTest {
         Assert.assertEquals("a string", Conversions.convertString("a string", String.class));
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullLongPrimitive() {
         Conversions.convertString(null, Long.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullIntegerPrimitive() {
         Conversions.convertString(null, Integer.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullShortPrimitive() {
         Conversions.convertString(null, Short.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullBytePrimitive() {
         Conversions.convertString(null, Byte.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullDoublePrimitive() {
         Conversions.convertString(null, Double.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullFloatPrimitive() {
         Conversions.convertString(null, Float.TYPE);
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test(expected = ConversionException.class)
     public void convertANullBooleanPrimitive() {
         Conversions.convertString(null, Boolean.TYPE);
     }

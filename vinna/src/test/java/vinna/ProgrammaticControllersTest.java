@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
+import vinna.response.ResponseBuilder;
 import vinna.route.RouteResolution;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -593,7 +595,7 @@ public class ProgrammaticControllersTest {
 
     }
 
-    @Test(expected = VuntimeException.class)
+    @Test
     public void passesAPathVarAsAIntWithANullValue() {
         MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
             @Override
@@ -605,7 +607,8 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        Response response = resolution.callAction(app);
+        assertEquals(500, ((ResponseBuilder) response).getStatus());
 
     }
 
