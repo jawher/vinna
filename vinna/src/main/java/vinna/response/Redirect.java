@@ -42,9 +42,6 @@ public class Redirect extends ResponseBuilder {
 
     private Redirect(String location, Kind kind) {
         super(kind.status);
-
-        if (location != null) {
-            location(location);
-        }
+        redirect(location);
     }
 }

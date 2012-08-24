@@ -1,5 +1,7 @@
 package vinna.response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vinna.exception.PassException;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
@@ -15,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ResponseBuilder implements Response {
-
+    private static final Logger logger = LoggerFactory.getLogger(ResponseBuilder.class);
     private static final Response PASS_RESPONSE = new DoPass();
 
     private int status;
@@ -23,6 +25,7 @@ public class ResponseBuilder implements Response {
     private String location;
     private InputStream body;
     private String encoding;
+    private boolean isRedirect = false;
 
     public static ResponseBuilder withStatus(int status) {
         return new ResponseBuilder(status);
@@ -49,6 +52,12 @@ public class ResponseBuilder implements Response {
         return this;
     }
 
+    public final ResponseBuilder redirect(String location) {
+        this.location = location;
+        this.isRedirect = true;
+        return this;
+    }
+
     public final ResponseBuilder type(String type) {
         header("Content-Type", type);
         return this;
@@ -71,7 +80,7 @@ public class ResponseBuilder implements Response {
     }
 
     public final ResponseBuilder location(String location) {
-        this.location = location;
+        header("Location", location);
         return this;
     }
 
@@ -123,7 +132,7 @@ public class ResponseBuilder implements Response {
             try {
                 body.close();
             } catch (IOException e) {
-                //FIXME: issue warning
+                logger.warn(e.getMessage(), e);
             }
         }
     }
@@ -155,11 +164,22 @@ public class ResponseBuilder implements Response {
             }
         }
 
-        // FIXME convert the Location to an absolute URL <-- is this really needed ?
         // FIXME: investigate how to properly handle redirect
-        // FIXME: should use a proper redirect flag instead of just location presence
-        if (location != null) {
-            response.setHeader("Location", response.encodeRedirectURL(location));
+        if (isRedirect) {
+            if (this.location != null) {
+                String locationUrl = response.encodeRedirectURL(location);
+                if (!hasScheme(locationUrl)) {
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(":").append(request.getServerPort());
+                    if (!locationUrl.startsWith("/")) {
+                        buffer.append(request.getContextPath()).append("/");
+                    }
+                    buffer.append(locationUrl);
+                    locationUrl = buffer.toString();
+                }
+
+                response.setHeader("Location", locationUrl);
+            }
             return;
         }
 
@@ -169,6 +189,17 @@ public class ResponseBuilder implements Response {
 
         writeBody(response.getOutputStream());
         response.getOutputStream().flush();
+    }
+
+    private boolean hasScheme(String uri) {
+        for (int i = 0; i < uri.length(); i++) {
+            char c = uri.charAt(i);
+            if (c == ':')
+                return true;
+            if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || (i > 0 && (c >= '0' && c <= '9' || c == '.' || c == '+' || c == '-'))))
+                break;
+        }
+        return false;
     }
 
     private static class DoPass implements Response {
