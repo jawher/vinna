@@ -132,7 +132,7 @@ public class ResponseBuilder implements Response {
             try {
                 body.close();
             } catch (IOException e) {
-                logger.warn(e.getMessage(), e);
+                logger.warn("Cannot close the response body input stream", e);
             }
         }
     }
