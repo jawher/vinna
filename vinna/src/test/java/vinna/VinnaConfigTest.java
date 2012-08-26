@@ -5,6 +5,7 @@ import foo.controllers.Empty3;
 import org.junit.Assert;
 import org.junit.Test;
 import vinna.controllers.Application;
+import vinna.controllers.Baz;
 import vinna.controllers.sub.Empty2;
 import vinna.helpers.MockedRequest;
 import vinna.route.RouteResolution;
@@ -101,6 +102,60 @@ public class VinnaConfigTest {
         MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
         RouteResolution resolution = app.match(mockedRequest);
         Assert.assertNull(resolution);
+    }
+
+    @Test
+    public void testCustomRoutes() {
+        SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1"));
+
+        MockedRequest mockedRequest = MockedRequest.get("/custom1").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        Assert.assertNotNull(resolution);
+
+        resolution.callAction(app);
+
+        verify(app.controllerSpy).action();
+    }
+
+    @Test
+    public void testMultipleCustomRoutes() {
+        SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1, vinna/routes2"));
+
+        MockedRequest mockedRequest = MockedRequest.get("/custom1").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        Assert.assertNotNull(resolution);
+        resolution.callAction(app);
+        verify(app.controllerSpy).action();
+
+        mockedRequest = MockedRequest.get("/custom2").build();
+        resolution = app.match(mockedRequest);
+        Assert.assertNotNull(resolution);
+        resolution.callAction(app);
+        verify(app.controllerSpy).action();
+    }
+
+    @Test
+    public void testCustomRoutesDoesntSetUpDefaultRoutes() {
+        SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1"));
+
+        MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        Assert.assertNull(resolution);
+    }
+
+    public static class MyControllerFactory implements ControllerFactory {
+
+        @Override
+        public Object create(String id, Class<?> clazz) {
+            return new Baz();
+        }
+    }
+    @Test
+    public void testCustomControllerFactory() {
+        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.CONTROLLER_FACTORY, "vinna.VinnaConfigTest$MyControllerFactory"));
+
+        final Object controller = app.createController("anything", null);
+        assertTrue(controller instanceof Baz);
     }
 
     //moar tests !
