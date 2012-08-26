@@ -10,6 +10,7 @@ import vinna.controllers.sub.Empty2;
 import vinna.helpers.MockedRequest;
 import vinna.route.RouteResolution;
 
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.Map;
 
@@ -150,6 +151,7 @@ public class VinnaConfigTest {
             return new Baz();
         }
     }
+
     @Test
     public void testCustomControllerFactory() {
         Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.CONTROLLER_FACTORY, "vinna.VinnaConfigTest$MyControllerFactory"));
@@ -158,5 +160,24 @@ public class VinnaConfigTest {
         assertTrue(controller instanceof Baz);
     }
 
+    @Test
+    public void testMixingDeclarativeAndProgrammaticRoutes() {
+        Vinna app = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                loadRoutes(new StringReader("GET /declarative foo.bar()"));
+                get("/programmatic").withController(Baz.class).action();
+            }
+        };
+
+        MockedRequest mockedRequest = MockedRequest.get("/declarative").build();
+        RouteResolution resolution = app.match(mockedRequest);
+        Assert.assertNotNull(resolution);
+
+        mockedRequest = MockedRequest.get("/programmatic").build();
+        resolution = app.match(mockedRequest);
+        Assert.assertNotNull(resolution);
+    }
+    
     //moar tests !
 }
