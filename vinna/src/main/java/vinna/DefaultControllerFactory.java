@@ -19,16 +19,16 @@ public class DefaultControllerFactory implements ControllerFactory {
             try {
                 clazz = Class.forName(id);
             } catch (ClassNotFoundException e) {
-                id = basePackage + ".controllers." + id;
-                Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(id);
+                String id2 = basePackage + ".controllers." + id;
+                Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(id2);
                 if (!m.matches()) {
-                    throw new VuntimeException("Something really fishy here: " + id);
+                    throw new VuntimeException("Something really fishy here: " + id2);
                 }
-                id = m.group(1) + m.group(2).toUpperCase() + m.group(3);
+                id2 = m.group(1) + m.group(2).toUpperCase() + m.group(3);
                 try {
-                    clazz = Class.forName(id);
+                    clazz = Class.forName(id2);
                 } catch (ClassNotFoundException e1) {
-                    throw new VuntimeException("Invalid object id " + id);
+                    throw new VuntimeException("Invalid object id '" + id+"' : Tried classes "+id+" and "+id2+" but none were found");
                 }
             }
         }
