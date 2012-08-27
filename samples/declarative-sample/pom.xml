@@ -9,6 +9,10 @@
     <name>Vinna Declarative Sample Application</name>
     <url>https://github.com/jawher/vinna</url>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

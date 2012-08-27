@@ -6,7 +6,11 @@
     <packaging>war</packaging>
     <version>1.0</version>
 
-    <name>Vinna Programmatic Sample Application</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <name>Todo Sample Application</name>
     <url>https://github.com/jawher/vinna</url>
     <dependencies>
         <dependency>
