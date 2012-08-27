@@ -14,5 +14,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <vinna.version>${project.version}</vinna.version>
     </properties>
 </project>

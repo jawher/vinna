@@ -24,7 +24,7 @@
         <dependency>
             <groupId>vinna</groupId>
             <artifactId>vinna</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>${vinna.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
