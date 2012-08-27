@@ -110,12 +110,6 @@ public class ResponseBuilder implements Response {
         return this;
     }
 
-    // TODO define parameters
-    public final ResponseBuilder cookie() {
-        // TODO
-        return this;
-    }
-
     public final ResponseBuilder body(InputStream body) {
         this.body = body;
         return this;
