@@ -1,15 +1,15 @@
 package ${package}.controllers;
 
-import vinna.outcome.Outcome;
-import vinna.outcome.StringOutcome;
+import vinna.response.Response;
+import vinna.response.StringResponse;
 
 public class HelloControler {
 
-    public Outcome index() {
-        return new StringOutcome("Go to /hello/{your name} for a free hug !");
+    public Response index() {
+        return new StringResponse("Go to /hello/{your name} for a free hug !");
     }
 
-    public Outcome sayHello(String name, String ohai) {
-        return new StringOutcome(String.format("%s %s !", (ohai == null ? "Ohai" : ohai), name));
+    public Response sayHello(String name, String ohai) {
+        return new StringResponse(String.format("%s %s !", (ohai == null ? "Ohai" : ohai), name));
     }
 }
