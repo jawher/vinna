@@ -1,11 +1,11 @@
 package ${package}.controllers;
 
-import vinna.outcome.Outcome;
-import vinna.outcome.StringOutcome;
+import vinna.response.ResponseBuilder;
+import vinna.response.StringResponse;
 
 public class HelloControler {
 
-  public Outcome sayHello(String name) {
-    return new StringOutcome(String.format("Hello %s !", name));
+  public ResponseBuilder sayHello(String name) {
+    return new StringResponse(String.format("Hello %s !", name));
   }
 }

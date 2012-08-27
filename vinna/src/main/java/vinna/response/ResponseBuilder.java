@@ -126,7 +126,7 @@ public class ResponseBuilder implements Response {
             int size = 512;//FIXME: make this configurable ?
             byte[] buffer = new byte[size];
             int len;
-            while ((len = body.read(buffer)) == size) {
+            while ((len = body.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
             try {

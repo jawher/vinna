@@ -1,5 +1,7 @@
 package ${package};
 
+import java.util.Map;
+
 import ${package}.controllers.HelloControler;
 
 import vinna.Vinna;
