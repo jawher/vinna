@@ -62,8 +62,6 @@ public class RouteResolution {
                 castedParams.add(actionArgument.resolve(env, argType));
             }
 
-            warnForUnusedSymbols(env);
-
             return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
         } catch (ConversionException e) {
             //FIXME: handle conversion errors in resolve: what to do ? 404 ?
@@ -119,12 +117,6 @@ public class RouteResolution {
             return true;
         } else {
             return false;
-        }
-    }
-
-    private void warnForUnusedSymbols(ActionArgument.Environment environment) {
-        for (String symbolName : environment.getUnusedSymbolsName()) {
-            logger.warn("Symbol {} is not used.", symbolName);
         }
     }
 }
