@@ -1,11 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>vinna</groupId>
+        <artifactId>vinna-parent</artifactId>
+        <relativePath>../../pom.xml</relativePath>
+        <version>0.0.3-SNAPSHOT</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>vinna</groupId>
     <artifactId>declarative-sample-app</artifactId>
     <packaging>war</packaging>
-
-    <version>1.0</version>
     <name>Vinna Declarative Sample Application</name>
     <url>https://github.com/jawher/vinna</url>
 
@@ -23,7 +28,7 @@
         <dependency>
             <groupId>vinna</groupId>
             <artifactId>vinna</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
