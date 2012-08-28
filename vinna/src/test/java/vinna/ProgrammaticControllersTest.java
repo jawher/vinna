@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -323,7 +324,7 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<CollectionArgController> app = new MockFactoryVinna<CollectionArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users").withController(CollectionArgController.class).action(req.param("ids").asCollection(Integer.class));
+                get("/users").hasParam("ids", "\\d+").withController(CollectionArgController.class).action(req.param("ids").asCollection(Integer.class));
             }
         };
 
@@ -342,7 +343,7 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
+                get("/users").hasParam("id", "\\d+").withController(IntegerArgController.class).action(req.param("id").asInt());
             }
         };
 
@@ -600,16 +601,12 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users").withController(IntArgController.class).action(req.param("id").asInt());
+                get("/users").hasParam("id", "\\d+").withController(IntArgController.class).action(req.param("id").asInt());
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
-        assertNotNull(resolution);
-
-        Response response = resolution.callAction(app);
-        assertEquals(500, ((ResponseBuilder) response).getStatus());
-
+        assertNull(resolution); // Resolution must fail now (an optional primitive param is passed to the controller)
     }
 
     @Test
@@ -617,16 +614,12 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<IntegerArgController> app = new MockFactoryVinna<IntegerArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users").withController(IntegerArgController.class).action(req.param("id").asInt());
+                get("/users").hasParam("id", "\\d+").withController(IntegerArgController.class).action(req.param("id").asInt());
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         RouteResolution resolution = app.match(mockedRequest);
-        assertNotNull(resolution);
-
-        resolution.callAction(app);
-        verify(app.controllerMock).action(null);
-
+        assertNull(resolution); // Resolution must fail now (an optional primitive param is passed to the controller)
     }
 
     @Test

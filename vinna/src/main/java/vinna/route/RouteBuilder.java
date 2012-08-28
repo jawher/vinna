@@ -8,9 +8,7 @@ import vinna.exception.ConfigException;
 import vinna.response.Response;
 
 import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +70,39 @@ public final class RouteBuilder {
         }
         this.controllerId = controllerId;
         return this;
+    }
+
+    private Collection<ActionArgument.RequestParameter> getPrimitiveTypeRequestParameter() {
+        ArrayList<ActionArgument.RequestParameter> parameters = new ArrayList<>();
+        for (ActionArgument parameter : methodParameters) {
+            if (parameter instanceof ActionArgument.RequestParameter) {
+                ActionArgument.RequestParameter requestParameter = (ActionArgument.RequestParameter) parameter;
+                /**
+                 * I can't use requestParameter.getClass().isPrimitive() since it accepts Char, Byte and Void.
+                 * They aren't supported yet.
+                 */
+                if (requestParameter.compatibleWith(Long.class) ||
+                        requestParameter.compatibleWith(Integer.class) ||
+                        requestParameter.compatibleWith(Short.class) ||
+                        requestParameter.compatibleWith(Byte.class) ||
+                        requestParameter.compatibleWith(Float.class) ||
+                        requestParameter.compatibleWith(Double.class) ||
+                        requestParameter.compatibleWith(Boolean.class)) {
+                    parameters.add(requestParameter);
+                }
+            }
+        }
+        return parameters;
+    }
+
+    private void checkUsedRequestParametersAreMandatory() {
+        for (ActionArgument.RequestParameter requestParameter : getPrimitiveTypeRequestParameter()) {
+            if (!mandatoryQueryParameters.containsKey(requestParameter.getName())) {
+                String message = String.format("Query param '%s' is not defined as mandatory, please use #hasParam",
+                        requestParameter.getName());
+                throw new ConfigException(message);
+            }
+        }
     }
 
     public void withMethod(String methodPattern) {
@@ -160,6 +191,7 @@ public final class RouteBuilder {
                         throw new ConfigException("Like, really ?");
                     }
                     method = thisMethod;
+                    checkUsedRequestParametersAreMandatory();
                     context.addRoute(createRoute());
                 } else {
                     throw new ConfigException("Sorry, witchery is only available at Poudlard");
