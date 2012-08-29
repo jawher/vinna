@@ -26,7 +26,7 @@ public class DeclarativeControllersTest {
         public T controllerMock;
 
         private MockFactoryVinna(String routes) {
-            super(Collections.<String, Object>singletonMap("routes-def", routes));
+            init(Collections.<String, Object>singletonMap("routes-def", routes));
         }
 
         @Override

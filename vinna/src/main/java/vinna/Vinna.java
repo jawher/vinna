@@ -19,7 +19,7 @@ public class Vinna {
     public static final String CONTROLLER_FACTORY = "controller-factory";
 
     private Map<String, Object> config;
-    private final String basePackage;
+    private String basePackage;
     private Router router;
     private ControllerFactory controllerFactory;
     private List<ActionArgument> routeParameters;
@@ -29,7 +29,7 @@ public class Vinna {
 
     protected final RequestBuilder req = new RequestBuilder();
 
-    public Vinna(Map<String, Object> config) {
+    public void init(Map<String, Object> config) {
         this.config = new HashMap<>(config);
         if (config.get(BASE_PACKAGE) == null) {
             basePackage = getClass().getPackage().getName();
@@ -74,7 +74,7 @@ public class Vinna {
         } else {
             String[] userConfPaths = ((String) config.get(CONF)).trim().split("\\s*,\\s*");
             for (String userConfPath : userConfPaths) {
-                if(!confPaths.contains(userConfPath)) {
+                if (!confPaths.contains(userConfPath)) {
                     confPaths.add(userConfPath);
                 }
             }

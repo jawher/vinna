@@ -27,7 +27,7 @@ public class ProgrammaticControllersTest {
         public T controllerMock;
 
         private MockFactoryVinna() {
-            super(Collections.<String, Object>emptyMap());
+            init(Collections.<String, Object>emptyMap());
         }
 
         @Override

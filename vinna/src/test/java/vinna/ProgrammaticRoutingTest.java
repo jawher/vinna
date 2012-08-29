@@ -28,12 +28,15 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteApp(final String path) {
-        return new Vinna(Collections.<String, Object>emptyMap()) {
+        final Vinna vinna = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).withController(NoOpcontroller.class).process();
             }
         };
+        vinna.init(Collections.<String, Object>emptyMap());
+
+        return vinna;
     }
 
     private Vinna oneRouteAppWithParam(final String path, final String param) {
@@ -41,12 +44,15 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteAppWithParamAndPattern(final String path, final String param, final String pattern) {
-        return new Vinna(Collections.<String, Object>emptyMap()) {
+        final Vinna vinna = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).hasParam(param, pattern).withController(NoOpcontroller.class).process();
             }
         };
+        vinna.init(Collections.<String, Object>emptyMap());
+
+        return vinna;
     }
 
     private Vinna oneRouteAppWithHeader(final String path, final String header) {
@@ -54,21 +60,27 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteAppWithHeaderAndPattern(final String path, final String header, final String pattern) {
-        return new Vinna(Collections.<String, Object>emptyMap()) {
+        final Vinna vinna = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).hasHeader(header, pattern).withController(NoOpcontroller.class).process();
             }
         };
+        vinna.init(Collections.<String, Object>emptyMap());
+
+        return vinna;
     }
 
     private Vinna onePostRouteApp(final String path) {
-        return new Vinna(Collections.<String, Object>emptyMap()) {
+        final Vinna vinna = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 post(path).withController(NoOpcontroller.class).process();
             }
         };
+        vinna.init(Collections.<String, Object>emptyMap());
+
+        return vinna;
     }
 
     @Test
@@ -261,54 +273,56 @@ public class ProgrammaticRoutingTest {
 
     @Test
     public void matchesAConstantRouteDefinedByWithMethod() {
-        Vinna app = new Vinna(Collections.<String, Object>emptyMap()) {
+        Vinna app = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("vinna.ProgrammaticRoutingTest.NoOpcontroller").withMethod("process()");
             }
         };
+        app.init(Collections.<String, Object>emptyMap());
+
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
         assertNotNull(app.match(mockedRequest));
     }
 
     @Test(expected = ConfigException.class)
     public void failsToBuildARouteByPassingParametersWithoutUsingApi() {
-        new Vinna(Collections.<String, Object>emptyMap()) {
+        new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process("passing an arg");
             }
-        };
+        }.init(Collections.<String, Object>emptyMap());
     }
 
     @Test(expected = ConfigException.class)
     public void failsToBuildARouteByUsingAMethodNotReturningOutcome() {
-        new Vinna(Collections.<String, Object>emptyMap()) {
+        new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process(constant(0));
             }
-        };
+        }.init(Collections.<String, Object>emptyMap());
     }
 
     @Test(expected = ConfigException.class)
     public void failsToCallTwiceWithControllerIdMethod() {
-        new Vinna(Collections.<String, Object>emptyMap()) {
+        new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withControllerId("controllerId").withMethod("method()");
             }
-        };
+        }.init(Collections.<String, Object>emptyMap());
     }
 
     @Test(expected = ConfigException.class)
     public void failsWithIncorrectMethodPattern() {
-        new Vinna(Collections.<String, Object>emptyMap()) {
+        new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withMethod("i am not a method");
             }
-        };
+        }.init(Collections.<String, Object>emptyMap());
     }
 
     //TODO: moar test !

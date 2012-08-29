@@ -7,10 +7,6 @@ import java.util.Map;
 
 public class TodoApp extends Vinna {
 
-    public TodoApp(Map<String, Object> config) {
-        super(config);
-    }
-
     @Override
     protected void routes(Map<String, Object> config) {
         get("/").withController(TodoController.class).list();

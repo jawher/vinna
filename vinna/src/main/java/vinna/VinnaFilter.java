@@ -14,8 +14,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,19 +37,19 @@ public class VinnaFilter implements Filter {
 
         if (cfg.get(APPLICATION_CLASS) != null) {
             String appClass = (String) cfg.get(APPLICATION_CLASS);
-            try {
-                Class<Vinna> clz = (Class<Vinna>) Thread.currentThread().getContextClassLoader().loadClass(appClass);
-                try {
-                    Constructor<Vinna> cons = clz.getDeclaredConstructor(Map.class);
-                    vinna = cons.newInstance(cfg);
-                } catch (NoSuchMethodException e) {
-                    vinna = clz.newInstance();
-                }
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException | InvocationTargetException e) {
-                throw new ServletException(e);
-            }
+            vinna = createUserVinnaApp(appClass, cfg);
         } else {
-            vinna = new Vinna(cfg);
+            vinna = new Vinna();
+        }
+        vinna.init(cfg);
+    }
+
+    protected Vinna createUserVinnaApp(String appClass, Map<String, Object> cfg) throws ServletException {
+        try {
+            Class<Vinna> clz = (Class<Vinna>) Thread.currentThread().getContextClassLoader().loadClass(appClass);
+            return clz.newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | ClassCastException e) {
+            throw new ServletException(e);
         }
     }
 

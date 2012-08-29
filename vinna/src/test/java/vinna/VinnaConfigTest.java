@@ -25,7 +25,7 @@ public class VinnaConfigTest {
         public T controllerSpy;
 
         private SpyVinna(Map<String, Object> config) {
-            super(config);
+            init(config);
         }
 
         @Override
@@ -43,7 +43,8 @@ public class VinnaConfigTest {
 
     @Test
     public void test0ConfigSetsUpDefaultControllerFactoryWithVinnaAsBasePkg() {
-        Vinna app = new Vinna(Collections.<String, Object>emptyMap());
+        Vinna app = new Vinna();
+        app.init(Collections.<String, Object>emptyMap());
         final Object controller = app.createController("sub.empty2", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty2);
@@ -64,7 +65,8 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgSetsUpDefaultControllerFactoryWithCorrectPkg() {
-        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
+        Vinna app = new Vinna();
+        app.init(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
         final Object controller = app.createController("empty3", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty3);
@@ -98,7 +100,8 @@ public class VinnaConfigTest {
 
     @Test
     public void testBasePkgWithCustomRoutesDoesntSetUpDefaultRoutes() {
-        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
+        Vinna app = new Vinna();
+        app.init(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
 
         MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
         RouteResolution resolution = app.match(mockedRequest);
@@ -154,7 +157,8 @@ public class VinnaConfigTest {
 
     @Test
     public void testCustomControllerFactory() {
-        Vinna app = new Vinna(Collections.<String, Object>singletonMap(Vinna.CONTROLLER_FACTORY, "vinna.VinnaConfigTest$MyControllerFactory"));
+        Vinna app = new Vinna();
+        app.init(Collections.<String, Object>singletonMap(Vinna.CONTROLLER_FACTORY, "vinna.VinnaConfigTest$MyControllerFactory"));
 
         final Object controller = app.createController("anything", null);
         assertTrue(controller instanceof Baz);
@@ -162,13 +166,14 @@ public class VinnaConfigTest {
 
     @Test
     public void testMixingDeclarativeAndProgrammaticRoutes() {
-        Vinna app = new Vinna(Collections.<String, Object>emptyMap()) {
+        Vinna app = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 loadRoutes(new StringReader("GET /declarative foo.bar()"));
                 get("/programmatic").withController(Baz.class).action();
             }
         };
+        app.init(Collections.<String, Object>emptyMap());
 
         MockedRequest mockedRequest = MockedRequest.get("/declarative").build();
         RouteResolution resolution = app.match(mockedRequest);
@@ -178,6 +183,6 @@ public class VinnaConfigTest {
         resolution = app.match(mockedRequest);
         Assert.assertNotNull(resolution);
     }
-    
+
     //moar tests !
 }

@@ -21,12 +21,14 @@ public class DeclarativeRoutingTest {
 
 
     private Vinna oneRouteApp(final String routesContent) {
-        return new Vinna(Collections.<String, Object>emptyMap()) {
+        final Vinna vinna = new Vinna() {
             @Override
             protected void routes(Map<String, Object> config) {
                 loadRoutes(new StringReader(routesContent));
             }
         };
+        vinna.init(Collections.<String, Object>emptyMap());
+        return vinna;
     }
 
     private Vinna oneRouteApp(final String verb, final String path) {

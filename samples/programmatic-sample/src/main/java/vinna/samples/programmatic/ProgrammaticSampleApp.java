@@ -8,10 +8,6 @@ import java.util.Map;
 
 public class ProgrammaticSampleApp extends Vinna {
 
-    public ProgrammaticSampleApp(Map<String, Object> config) {
-        super(config);
-    }
-
     @Override
     protected void routes(Map<String, Object> config) {
         get("/user/{id: \\d+}")
