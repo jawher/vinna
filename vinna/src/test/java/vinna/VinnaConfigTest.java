@@ -43,7 +43,7 @@ public class VinnaConfigTest {
 
     @Test
     public void test0ConfigSetsUpDefaultControllerFactoryWithVinnaAsBasePkg() {
-        Vinna app = new Vinna();
+        Vinna app = new Vinna(Collections.<String, Object>emptyMap());
         final Object controller = app.createController("sub.empty2", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty2);
@@ -162,7 +162,7 @@ public class VinnaConfigTest {
 
     @Test
     public void testMixingDeclarativeAndProgrammaticRoutes() {
-        Vinna app = new Vinna() {
+        Vinna app = new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 loadRoutes(new StringReader("GET /declarative foo.bar()"));

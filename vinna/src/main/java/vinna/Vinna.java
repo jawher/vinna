@@ -29,10 +29,6 @@ public class Vinna {
 
     protected final RequestBuilder req = new RequestBuilder();
 
-    public Vinna() {
-        this(Collections.<String, Object>emptyMap());
-    }
-
     public Vinna(Map<String, Object> config) {
         this.config = new HashMap<>(config);
         if (config.get(BASE_PACKAGE) == null) {

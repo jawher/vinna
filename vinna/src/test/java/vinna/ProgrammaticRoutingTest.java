@@ -5,6 +5,7 @@ import vinna.exception.ConfigException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,7 +28,7 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteApp(final String path) {
-        return new Vinna() {
+        return new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).withController(NoOpcontroller.class).process();
@@ -40,7 +41,7 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteAppWithParamAndPattern(final String path, final String param, final String pattern) {
-        return new Vinna() {
+        return new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).hasParam(param, pattern).withController(NoOpcontroller.class).process();
@@ -53,7 +54,7 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna oneRouteAppWithHeaderAndPattern(final String path, final String header, final String pattern) {
-        return new Vinna() {
+        return new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get(path).hasHeader(header, pattern).withController(NoOpcontroller.class).process();
@@ -62,7 +63,7 @@ public class ProgrammaticRoutingTest {
     }
 
     private Vinna onePostRouteApp(final String path) {
-        return new Vinna() {
+        return new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 post(path).withController(NoOpcontroller.class).process();
@@ -260,7 +261,7 @@ public class ProgrammaticRoutingTest {
 
     @Test
     public void matchesAConstantRouteDefinedByWithMethod() {
-        Vinna app = new Vinna() {
+        Vinna app = new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("vinna.ProgrammaticRoutingTest.NoOpcontroller").withMethod("process()");
@@ -272,7 +273,7 @@ public class ProgrammaticRoutingTest {
 
     @Test(expected = ConfigException.class)
     public void failsToBuildARouteByPassingParametersWithoutUsingApi() {
-        new Vinna() {
+        new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process("passing an arg");
@@ -282,7 +283,7 @@ public class ProgrammaticRoutingTest {
 
     @Test(expected = ConfigException.class)
     public void failsToBuildARouteByUsingAMethodNotReturningOutcome() {
-        new Vinna() {
+        new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withController(NoOpcontroller.class).process(constant(0));
@@ -292,7 +293,7 @@ public class ProgrammaticRoutingTest {
 
     @Test(expected = ConfigException.class)
     public void failsToCallTwiceWithControllerIdMethod() {
-        new Vinna() {
+        new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withControllerId("controllerId").withMethod("method()");
@@ -302,7 +303,7 @@ public class ProgrammaticRoutingTest {
 
     @Test(expected = ConfigException.class)
     public void failsWithIncorrectMethodPattern() {
-        new Vinna() {
+        new Vinna(Collections.<String, Object>emptyMap()) {
             @Override
             protected void routes(Map<String, Object> config) {
                 get("/users").withControllerId("controllerId").withMethod("i am not a method");

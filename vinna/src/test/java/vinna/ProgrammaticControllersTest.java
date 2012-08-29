@@ -11,6 +11,7 @@ import vinna.route.RouteResolution;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,10 @@ public class ProgrammaticControllersTest {
 
     private static class MockFactoryVinna<T> extends Vinna {
         public T controllerMock;
+
+        private MockFactoryVinna() {
+            super(Collections.<String, Object>emptyMap());
+        }
 
         @Override
         protected ControllerFactory controllerFactory(Map<String, Object> config) {
