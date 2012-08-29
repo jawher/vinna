@@ -313,5 +313,11 @@ public class Vinna {
             routeParameters.add(bodyActionArgument);
             return null;
         }
+
+        public final InputStream part(String name) {
+            ActionArgument.RequestPart partActionArgument = new ActionArgument.RequestPart(name);
+            routeParameters.add(partActionArgument);
+            return null;
+        }
     }
 }

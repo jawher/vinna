@@ -65,8 +65,23 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
         try {
             return files.get(name).getInputStream();
         } catch (IOException e) {
-            logger.error("Error while retrieving the multipart data", e);
+            logger.error("unexpected exception while reading the multipart data", e);
             throw new VuntimeException(e);
         }
+    }
+
+    @Override
+    public String getParameter(String name) {
+        return this.parameters.getFirst(name);
+    }
+
+    @Override
+    public Collection<String> getParameters(String name) {
+        return Collections.unmodifiableCollection(this.parameters.get(name));
+    }
+
+    @Override
+    public Map<String, Collection<String>> getParameters() {
+        return Collections.<String, Collection<String>>unmodifiableMap(this.parameters);
     }
 }
