@@ -15,6 +15,7 @@ public class Vinna {
 
     public static final String BASE_PACKAGE = "base-package";
     public static final String ROUTES = "routes";
+    public static final String CONF = "conf";
     public static final String CONTROLLER_FACTORY = "controller-factory";
 
     private Map<String, Object> config;
@@ -34,7 +35,15 @@ public class Vinna {
 
     public Vinna(Map<String, Object> config) {
         this.config = new HashMap<>(config);
-        this.basePackage = config.get(BASE_PACKAGE) == null ? getClass().getPackage().getName() : (String) config.get(BASE_PACKAGE);
+        if (config.get(BASE_PACKAGE) == null) {
+            basePackage = getClass().getPackage().getName();
+            this.config.put(BASE_PACKAGE, basePackage);
+        } else {
+            basePackage = (String) config.get(BASE_PACKAGE);
+        }
+
+        conf(this.config);
+
         this.controllerFactory = controllerFactory(this.config);
 
         this.router = new Router();
@@ -43,6 +52,78 @@ public class Vinna {
         if (isDirtyState) {
             // TODO enhance the message
             throw new ConfigException("Something is going wrong");
+        }
+    }
+
+    public Map<String, Object> getConfig() {
+        return Collections.unmodifiableMap(config);
+    }
+
+    protected void conf(Map<String, Object> config) {
+        List<String> confPaths = new ArrayList<>();
+        confPaths.add("vinna/conf.properties");
+        if (config.get(CONF) == null) {
+            String path = this.basePackage.replace(".", "/") + "/conf.properties";
+            if (!confPaths.contains(path)) {
+                final Reader reader = getRoutesReader(path);
+                if (reader != null) {
+                    confPaths.add(path);
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        logger.warn("Cannot close conf file '" + path + "'", e);
+                    }
+                }
+            }
+        } else {
+            String[] userConfPaths = ((String) config.get(CONF)).trim().split("\\s*,\\s*");
+            for (String userConfPath : userConfPaths) {
+                if(!confPaths.contains(userConfPath)) {
+                    confPaths.add(userConfPath);
+                }
+            }
+        }
+        for (String confPath : confPaths) {
+            logger.info("loading conf file {}", confPath);
+            Reader reader = getConfReader(confPath);
+            if (reader == null) {
+                throw new VuntimeException("Cannot open conf file '" + confPath + "'");
+            }
+            try {
+                loadConf(reader, config);
+            } catch (IOException e) {
+                throw new VuntimeException("Error while reading conf file " + confPath, e);
+            }
+        }
+    }
+
+    protected void loadConf(Reader reader, Map<String, Object> config) throws IOException {
+        Properties props = new Properties();
+        props.load(reader);
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            config.put(entry.getKey().toString(), injectVariables((String) entry.getValue(), config));
+        }
+    }
+
+    protected String injectVariables(String s, Map<String, Object> values) {
+        for (Map.Entry<String, Object> e : values.entrySet()) {
+            if (e.getValue() != null) {
+                s = s.replace("{" + e.getKey() + "}", e.getValue().toString());
+            }
+        }
+        return s;
+    }
+
+    protected Reader getConfReader(String confPath) {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(confPath);
+        if (stream == null) {
+            return null;
+        } else {
+            try {
+                return new InputStreamReader(stream, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new VuntimeException("Error opening conf file '" + confPath + "'", e);
+            }
         }
     }
 
