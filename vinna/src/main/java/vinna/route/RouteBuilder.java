@@ -90,7 +90,6 @@ public final class RouteBuilder {
     public <T> T withController(Class<T> controller) {
         this.controller = controller;
 
-        Class<?>[] interfaces = controller.getInterfaces();
         if (!controller.isInterface()) {
             // The controller is not an interface. Trying to create a proxy with javassist
             // Final class cannot be extend and we cannot intercept call to final method
@@ -109,7 +108,6 @@ public final class RouteBuilder {
                 }
             });
 
-            // TODO constructor with params
             T proxy = null;
             try {
                 proxy = (T) factory.create(new Class<?>[0], new Object[0], new RouteMethodHandler());

@@ -9,7 +9,6 @@ import vinna.util.MultivaluedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -29,14 +28,6 @@ public class ResponseBuilder implements Response {
 
     public static ResponseBuilder withStatus(int status) {
         return new ResponseBuilder(status);
-    }
-
-    public static ResponseBuilder ok() {
-        return new ResponseBuilder(HttpServletResponse.SC_OK);
-    }
-
-    public static ResponseBuilder notFound() {
-        return new ResponseBuilder(HttpServletResponse.SC_NOT_FOUND);
     }
 
     public static Response pass() {
@@ -59,54 +50,58 @@ public class ResponseBuilder implements Response {
     }
 
     public final ResponseBuilder type(String type) {
-        header("Content-Type", type);
+        setHeader("Content-Type", type);
         return this;
     }
 
     public final ResponseBuilder encoding(String encoding) {
         this.encoding = encoding;
-        header("Content-Encoding", encoding);
+        setHeader("Content-Encoding", encoding);
         return this;
     }
 
     public final ResponseBuilder language(String language) {
-        header("Content-Language", language);
+        setHeader("Content-Language", language);
         return this;
     }
 
     public final ResponseBuilder variant(String variant) {
-        header("Vary", variant);
+        setHeader("Vary", variant);
         return this;
     }
 
     public final ResponseBuilder location(String location) {
-        header("Location", location);
+        setHeader("Location", location);
         return this;
     }
 
     public final ResponseBuilder etag(String etag) {
-        header("ETag", etag);
+        setHeader("ETag", etag);
         return this;
     }
 
     public final ResponseBuilder lastModified(Date lastModified) {
-        header("Last-Modified", lastModified);
+        setHeader("Last-Modified", lastModified);
         return this;
     }
 
     public final ResponseBuilder cacheControl(String cacheControl) {
-        header("Cache-Control", cacheControl);
+        setHeader("Cache-Control", cacheControl);
         return this;
     }
 
     public final ResponseBuilder expires(Date expires) {
-        header("Expires", expires);
+        setHeader("Expires", expires);
         return this;
     }
 
-    //FIXME: split into addHeader and setHeader (maybe call the latter header)
-    public final ResponseBuilder header(String name, Object value) {
+    public final ResponseBuilder addHeader(String name, Object value) {
         headers.add(name, value);
+        return this;
+    }
+
+    public final ResponseBuilder setHeader(String name, Object value) {
+        headers.putSingle(name, value);
         return this;
     }
 
