@@ -237,7 +237,11 @@ public class Vinna {
     }
 
     protected void loadRoutes(Reader reader) {
-        List<Route> routes = new RoutesParser(reader).load();
+        String prefix = (String) config.get("routes-prefix");
+        if (prefix == null) {
+            prefix = "";
+        }
+        List<Route> routes = new RoutesParser(reader).load(prefix);
         router.addRoutes(routes);
     }
 
@@ -256,7 +260,11 @@ public class Vinna {
         }
         routeParameters = new ArrayList<>();
         isDirtyState = true;
-        return new RouteBuilder(verb.toUpperCase(), path, this, routeParameters);
+        String prefix = (String) config.get("routes-prefix");
+        if (prefix == null) {
+            prefix = "";
+        }
+        return new RouteBuilder(verb.toUpperCase(), prefix + path, this, routeParameters);
     }
 
     protected final ActionArgument.Variable param(String name) {

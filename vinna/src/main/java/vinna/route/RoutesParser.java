@@ -64,7 +64,7 @@ public class RoutesParser {
         }
     }
 
-    public List<Route> load() {
+    public List<Route> load(String prefix) {
         List<Route> routes = new ArrayList<>();
         String line;
         int lineNum = 0;
@@ -83,7 +83,7 @@ public class RoutesParser {
                         throw new ConfigException("Invalid syntax in routes file (line " + lineNum + ")\n" + line);
                     } else {
                         String verb = rm.group("verb");
-                        String path = rm.group("path");
+                        String path = prefix + rm.group("path");
                         String controller = rm.group("controller");
                         String method = rm.group("method");
                         String args = rm.group("args").trim();
