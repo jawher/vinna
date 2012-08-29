@@ -1,4 +1,4 @@
-package vinna.samples.declarative;
+package vinna.samples.declarative.controllers;
 
 import vinna.response.Response;
 import vinna.response.StringResponse;

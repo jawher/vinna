@@ -9,8 +9,8 @@
         <filter-name>vinnaFilter</filter-name>
         <filter-class>vinna.VinnaFilter</filter-class>
         <init-param>
-            <param-name>routes</param-name>
-            <param-value>vinna/samples/declarative/sample.routes</param-value>
+            <param-name>base-package</param-name>
+            <param-value>vinna.samples.declarative</param-value>
         </init-param>
     </filter>
 

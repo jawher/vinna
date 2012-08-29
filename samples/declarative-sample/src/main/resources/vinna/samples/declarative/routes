@@ -1,0 +1,15 @@
+
+GET /user/{id} Controller.test({id})
+  id: \d+
+
+GET /user/{id}/{name} Controller.test2({name}, {id})
+  id: \d+
+
+GET /hello/{hello}/{id}/{name} Controller.test2({name}, {hello}, {id})
+  hello: true|false
+
+GET /constant/{test} Controller.test2({test}, 17)
+
+GET /header Controller.writeHeader({req.header.Accept})
+
+GET /headers Controller.writeHeaders({req.header.Accept})
