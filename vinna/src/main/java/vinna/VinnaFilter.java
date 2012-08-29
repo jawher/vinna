@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import vinna.exception.InternalVinnaException;
 import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
+import vinna.http.VinnaMultipartWrapper;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
 import vinna.response.Response;
@@ -13,6 +14,7 @@ import vinna.route.RouteResolution;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -56,7 +58,15 @@ public class VinnaFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-            VinnaRequestWrapper vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
+            VinnaRequestWrapper vinnaRequest;
+            if (isMultipartContent((HttpServletRequest) request)) {
+                // FIXME use properties file for the temporary directory
+                // TODO add support for max size file
+                // TODO add support for multipart/replace response ?
+                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, new File("/tmp"));
+            } else {
+                vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
+            }
             VinnaResponseWrapper vinnaResponse = new VinnaResponseWrapper((HttpServletResponse) response);
 
             VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext));
@@ -83,6 +93,20 @@ public class VinnaFilter implements Filter {
         } else {
             chain.doFilter(request, response);
         }
+    }
+
+    private final boolean isMultipartContent(HttpServletRequest request) {
+        if (!"POST".equals(request.getMethod().toUpperCase())) {
+            return false;
+        }
+        String contentType = request.getContentType();
+        if (contentType == null) {
+            return false;
+        }
+        if (contentType.toLowerCase().startsWith("multipart/")) {
+            return true;
+        }
+        return false;
     }
 
     @Override
