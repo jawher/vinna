@@ -1,6 +1,7 @@
 package vinna.route;
 
 import vinna.exception.VuntimeException;
+import vinna.http.MultipartRequest;
 import vinna.http.Request;
 import vinna.util.Conversions;
 
@@ -85,6 +86,24 @@ public interface ActionArgument {
                 }
             }
             return Conversions.convertString(env.request.getParameter(name), targetType);
+        }
+    }
+
+    public static class RequestPart implements ActionArgument {
+        private final String name;
+
+        public RequestPart(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            return ((MultipartRequest) env.request).getParts(name);
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(InputStream.class);
         }
     }
 
