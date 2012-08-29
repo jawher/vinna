@@ -70,7 +70,7 @@ public class Route {
                 Map<String, String> paramValues = new HashMap<>();
 
                 for (Map.Entry<String, Pattern> paramEntry : mandatoryQueryParameters.entrySet()) {
-                    Collection<String> params = request.getParams(paramEntry.getKey());
+                    Collection<String> params = request.getParameters(paramEntry.getKey());
                     if (!matchMandatoryCollectionWithPattern(params, paramEntry.getValue())) {
                         return null;
                     }

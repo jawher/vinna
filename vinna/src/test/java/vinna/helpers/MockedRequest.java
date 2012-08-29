@@ -30,8 +30,8 @@ public class MockedRequest implements Request {
     }
 
     @Override
-    public String getParam(String name) {
-        Collection<String> param = getParams(name);
+    public String getParameter(String name) {
+        Collection<String> param = getParameters(name);
         if (param.size() == 0) {
             return null;
         }
@@ -39,7 +39,7 @@ public class MockedRequest implements Request {
     }
 
     @Override
-    public Collection<String> getParams(String name) {
+    public Collection<String> getParameters(String name) {
         if (params.get(name) == null) {
             return Collections.emptyList();
         }
@@ -47,7 +47,7 @@ public class MockedRequest implements Request {
     }
 
     @Override
-    public Map<String, Collection<String>> getParams() {
+    public Map<String, Collection<String>> getParameters() {
         return Collections.unmodifiableMap(params);
     }
 

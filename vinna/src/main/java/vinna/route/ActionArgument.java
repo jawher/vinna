@@ -79,12 +79,12 @@ public interface ActionArgument {
         public Object resolve(Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
-                    return Conversions.convertCollection(env.request.getParams(name), typeArg);
+                    return Conversions.convertCollection(env.request.getParameters(name), typeArg);
                 } else {
                     throw new VuntimeException("need an argType when the target is a collection");
                 }
             }
-            return Conversions.convertString(env.request.getParam(name), targetType);
+            return Conversions.convertString(env.request.getParameter(name), targetType);
         }
     }
 
@@ -149,7 +149,7 @@ public interface ActionArgument {
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            return env.request.getParams();
+            return env.request.getParameters();
         }
 
         @Override

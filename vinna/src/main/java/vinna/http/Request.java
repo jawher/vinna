@@ -11,11 +11,11 @@ public interface Request {
 
     String getPath();
 
-    String getParam(String name);
+    String getParameter(String name);
 
-    Collection<String> getParams(String name);
+    Collection<String> getParameters(String name);
 
-    Map<String, Collection<String>> getParams();
+    Map<String, Collection<String>> getParameters();
 
     String getHeader(String name);
 

@@ -19,12 +19,12 @@ public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Re
     }
 
     @Override
-    public String getParam(String name) {
+    public String getParameter(String name) {
         return servletRequest.getParameter(name);
     }
 
     @Override
-    public Collection<String> getParams(String name) {
+    public Collection<String> getParameters(String name) {
         String[] parameterValues = servletRequest.getParameterValues(name);
         if (parameterValues != null) {
             return Arrays.asList(parameterValues);
@@ -33,14 +33,14 @@ public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Re
     }
 
     @Override
-    public Map<String, Collection<String>> getParams() {
+    public Map<String, Collection<String>> getParameters() {
         Map<String, Collection<String>> params = new HashMap<>();
 
         Enumeration enumeration = servletRequest.getParameterNames();
         if (enumeration != null) {
             while (enumeration.hasMoreElements()) {
                 String paramName = (String) enumeration.nextElement();
-                params.put(paramName, getParams(paramName));
+                params.put(paramName, getParameters(paramName));
             }
         }
 

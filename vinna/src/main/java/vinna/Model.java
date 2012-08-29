@@ -16,7 +16,7 @@ public class Model extends HashMap<String, Object> {
     }
 
     public Model addReqParams() {
-        Map<String, Collection<String>> params = VinnaContext.get().request.getParams();
+        Map<String, Collection<String>> params = VinnaContext.get().request.getParameters();
         for (Map.Entry<String, Collection<String>> entry : params.entrySet()) {
             if(entry.getValue().size()==1) {
                 put(entry.getKey(), entry.getValue().iterator().next());
