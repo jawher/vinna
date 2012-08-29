@@ -25,9 +25,11 @@ public class VinnaFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
 
     private Vinna vinna;
+    protected ServletContext servletContext;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        this.servletContext = filterConfig.getServletContext();
         Map<String, Object> cfg = new HashMap<>();
         final Enumeration initParameterNames = filterConfig.getInitParameterNames();
         while (initParameterNames.hasMoreElements()) {
@@ -59,7 +61,7 @@ public class VinnaFilter implements Filter {
             VinnaRequestWrapper vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
             VinnaResponseWrapper vinnaResponse = new VinnaResponseWrapper((HttpServletResponse) response);
 
-            VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse));
+            VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext));
 
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
