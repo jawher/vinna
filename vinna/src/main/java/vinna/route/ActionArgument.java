@@ -71,10 +71,6 @@ public interface ActionArgument {
 
         private final String name;
 
-        public String getName() {
-            return name;
-        }
-
         public RequestParameter(String name) {
             this.name = name;
         }

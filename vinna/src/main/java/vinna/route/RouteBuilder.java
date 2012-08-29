@@ -72,39 +72,6 @@ public final class RouteBuilder {
         return this;
     }
 
-    private Collection<ActionArgument.RequestParameter> getPrimitiveTypeRequestParameter() {
-        ArrayList<ActionArgument.RequestParameter> parameters = new ArrayList<>();
-        for (ActionArgument parameter : methodParameters) {
-            if (parameter instanceof ActionArgument.RequestParameter) {
-                ActionArgument.RequestParameter requestParameter = (ActionArgument.RequestParameter) parameter;
-                /**
-                 * I can't use requestParameter.getClass().isPrimitive() since it accepts Char, Byte and Void.
-                 * They aren't supported yet.
-                 */
-                if (requestParameter.compatibleWith(Long.class) ||
-                        requestParameter.compatibleWith(Integer.class) ||
-                        requestParameter.compatibleWith(Short.class) ||
-                        requestParameter.compatibleWith(Byte.class) ||
-                        requestParameter.compatibleWith(Float.class) ||
-                        requestParameter.compatibleWith(Double.class) ||
-                        requestParameter.compatibleWith(Boolean.class)) {
-                    parameters.add(requestParameter);
-                }
-            }
-        }
-        return parameters;
-    }
-
-    private void checkUsedRequestParametersAreMandatory() {
-        for (ActionArgument.RequestParameter requestParameter : getPrimitiveTypeRequestParameter()) {
-            if (!mandatoryQueryParameters.containsKey(requestParameter.getName())) {
-                String message = String.format("Query param '%s' is not defined as mandatory, please use #hasParam",
-                        requestParameter.getName());
-                throw new ConfigException(message);
-            }
-        }
-    }
-
     public void withMethod(String methodPattern) {
         Matcher methodMatcher = METHOD_PATTERN.matcher(methodPattern);
         if (methodMatcher.matches()) {
@@ -115,7 +82,6 @@ public final class RouteBuilder {
             Route.Action action = new Route.Action(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
             Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
             context.addRoute(route);
-
         } else {
             throw new ConfigException("Incorrect method pattern");
         }
@@ -191,7 +157,6 @@ public final class RouteBuilder {
                         throw new ConfigException("Like, really ?");
                     }
                     method = thisMethod;
-                    checkUsedRequestParametersAreMandatory();
                     context.addRoute(createRoute());
                 } else {
                     throw new ConfigException("Sorry, witchery is only available at Poudlard");
@@ -199,5 +164,4 @@ public final class RouteBuilder {
             }
         }
     }
-
 }
