@@ -29,6 +29,7 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
         this.parameters = new MultivaluedHashMap<>();
         this.files = new HashMap<>();
 
+        // FIXME do this only if the route is resolved
         try {
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(temporaryDirectory);
@@ -42,6 +43,7 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
                     // FIXME use request.getCharacterEncoding as encoding ?
                     parameters.add(part.getFieldName(), part.getString(request.getCharacterEncoding()));
                 } else {
+                    logger.debug("Receive file {}", part.getFieldName());
                     files.put(part.getFieldName(), part);
                 }
             }
@@ -63,7 +65,12 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
     @Override
     public InputStream getParts(String name) {
         try {
-            return files.get(name).getInputStream();
+            FileItem fileItem = files.get(name);
+            if (fileItem != null) {
+                return fileItem.getInputStream();
+            } else {
+                throw new VuntimeException("Cannot find file with the name " + name);
+            }
         } catch (IOException e) {
             logger.error("unexpected exception while reading the multipart data", e);
             throw new VuntimeException(e);

@@ -304,6 +304,7 @@ public class RoutesParser {
         Pattern pbody = Pattern.compile("\\{" + Pattern.quote("req.body") + "\\}");
         Pattern pqvar = argPattern("req.param.");
         Pattern pheader = argPattern("req.header.");
+        Pattern pPart = Pattern.compile("\\{" + Pattern.quote("req.part.") + "(.+?)\\}");
         Pattern pvar = argPattern("");
         Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
         Pattern pbool = Pattern.compile("(true|false)");
@@ -335,6 +336,9 @@ public class RoutesParser {
                     parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
                 } else if ((pm = pnull.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<Object>(null));
+                } else if ((pm = pPart.matcher(arg)).matches()) {
+                    // TODO check that the method is POST
+                    parameters.add(new ActionArgument.RequestPart(pm.group(1)));
                 } else {
                     try {
                         parameters.add(new NumConst(new BigDecimal(arg)));
