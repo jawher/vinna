@@ -63,7 +63,7 @@ public class Route {
     }
 
     public RouteResolution match(Request request) {
-        if (request.getMethod().equalsIgnoreCase(verb)) {
+        if (request.getMethod().equalsIgnoreCase(verb) || request.getMethod().equalsIgnoreCase("HEAD") && verb.equals("GET")) {
 
             Matcher m = pathPattern.matcher(request.getPath());
             if (m.matches()) {
@@ -95,6 +95,10 @@ public class Route {
             }
         }
         return null;
+    }
+
+    public String getVerb() {
+        return this.verb;
     }
 
     private boolean matchMandatoryCollectionWithPattern(Collection<String> collection, Pattern pattern) {

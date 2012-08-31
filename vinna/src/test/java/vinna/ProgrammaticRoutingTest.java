@@ -325,5 +325,38 @@ public class ProgrammaticRoutingTest {
         }.init(Collections.<String, Object>emptyMap());
     }
 
+    @Test
+    public void headMatchingGetRoute() {
+        Vinna app = oneRouteApp("/users");
+        MockedRequest mockedRequest = MockedRequest.head("/users").build();
+        assertNotNull(app.match(mockedRequest));
+    }
+
+    @Test
+    public void headNotMatchingPostRoute() {
+        Vinna vinna = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                post("/users").withController(NoOpcontroller.class).process();
+            }
+        };
+        vinna.init(Collections.<String, Object>emptyMap());
+        MockedRequest mockedRequest = MockedRequest.head("/users").build();
+        assertNull(vinna.match(mockedRequest));
+    }
+
+    @Test
+    public void headMatchingHeadRoute() {
+        Vinna vinna = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                head("/users").withController(NoOpcontroller.class).process();
+            }
+        };
+        vinna.init(Collections.<String, Object>emptyMap());
+        MockedRequest mockedRequest = MockedRequest.head("/users").build();
+        assertNotNull(vinna.match(mockedRequest));
+    }
+
     //TODO: moar test !
 }

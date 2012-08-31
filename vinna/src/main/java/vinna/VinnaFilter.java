@@ -87,6 +87,7 @@ public class VinnaFilter implements Filter {
 
             VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext));
 
+            logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
             RouteResolution resolvedRoute = vinna.match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
@@ -104,6 +105,7 @@ public class VinnaFilter implements Filter {
                     throw new ServletException(e);
                 }
             } else {
+                logger.debug("Unable to resolve '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
                 chain.doFilter(request, response);
             }
         } else {

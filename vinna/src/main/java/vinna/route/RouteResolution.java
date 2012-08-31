@@ -1,7 +1,5 @@
 package vinna.route;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import vinna.Vinna;
 import vinna.exception.ConversionException;
 import vinna.exception.VuntimeException;
@@ -18,8 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RouteResolution {
-    private final static Logger logger = LoggerFactory.getLogger(RouteResolution.class);
-
     private final Map<String, String> paramValues;
     private final Route.Action action;
     private final Request request;
@@ -66,7 +62,6 @@ public class RouteResolution {
         } catch (ConversionException e) {
             //FIXME: handle conversion errors in resolve: what to do ? 404 ?
             return ResponseBuilder.withStatus(500);
-
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new VuntimeException(e);
         }

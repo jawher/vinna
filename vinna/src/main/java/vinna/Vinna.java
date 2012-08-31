@@ -254,6 +254,10 @@ public class Vinna {
         return createRoute("POST", path);
     }
 
+    protected final RouteBuilder head(String path) {
+        return createRoute("HEAD", path);
+    }
+
     protected final RouteBuilder createRoute(String verb, String path) {
         if (isDirtyState) {
             // TODO enhance the message

@@ -96,6 +96,10 @@ public class MockedRequest implements Request {
         return new Builder("POST", path);
     }
 
+    public static Builder head(String path) {
+        return new Builder("HEAD", path);
+    }
+
     public static class Builder {
         private final String verb;
         private final String path;

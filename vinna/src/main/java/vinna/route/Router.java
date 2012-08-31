@@ -17,16 +17,22 @@ public class Router {
     }
 
     public RouteResolution match(Request request) {
-        logger.debug("Resolving '{} {}'", request.getMethod(), request.getPath());
+        RouteResolution headResolution = null;
         for (Route route : routes) {
             RouteResolution routeResolution = route.match(request);
             if (routeResolution != null) {
-                logger.debug("Route matched {}", route);
-                return routeResolution;
+                if (route.getVerb().equalsIgnoreCase(request.getMethod())) {
+                    logger.debug("Route matched {}", route);
+                    return routeResolution;
+                } else if (route.getVerb().equalsIgnoreCase("GET") && request.getMethod().equalsIgnoreCase("HEAD")
+                        && headResolution == null) {
+                    logger.debug("Potential route matched {}", route);
+                    headResolution = routeResolution;
+                }
             }
         }
-        logger.debug("Unable to resolve '{} {}'", request.getMethod(), request.getPath());
-        return null;
+
+        return headResolution;
     }
 
     public void addRoutes(List<Route> routes) {
