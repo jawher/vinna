@@ -14,10 +14,12 @@ public class StringResponse extends ResponseBuilder {
 
     public StringResponse(String content, String encoding) {
         super(200);
-        try {
-            body(new ByteArrayInputStream(content.getBytes(encoding)));
-        } catch (UnsupportedEncodingException e) {
-            throw new VuntimeException("Invalid encoding", e);
+        if (content != null) {
+            try {
+                body(new ByteArrayInputStream(content.getBytes(encoding)));
+            } catch (UnsupportedEncodingException e) {
+                throw new VuntimeException("Invalid encoding", e);
+            }
         }
     }
 }
