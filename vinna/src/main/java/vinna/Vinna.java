@@ -313,6 +313,12 @@ public class Vinna {
             return null;
         }
 
+        public final ActionArgument.CookieArgument cookie(String name) {
+            ActionArgument.CookieArgument param = new ActionArgument.CookieArgument(name);
+            routeParameters.add(param);
+            return param;
+        }
+
         public final InputStream body() {
             ActionArgument.RequestBody bodyActionArgument = new ActionArgument.RequestBody();
             routeParameters.add(bodyActionArgument);

@@ -28,4 +28,6 @@ public interface Request {
     Object getAttribute(String name);
 
     InputStream getInputStream() throws IOException;
+
+    Map<String, Cookie> getCookiesMap();
 }

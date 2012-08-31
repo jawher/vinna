@@ -54,7 +54,6 @@ public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Re
             return Collections.list(enumeration);
         }
         return Collections.emptyList();
-
     }
 
     @Override
@@ -72,4 +71,18 @@ public class VinnaRequestWrapper extends HttpServletRequestWrapper implements Re
         return Collections.unmodifiableMap(headers);
     }
 
+    @Override
+    public Map<String, Cookie> getCookiesMap() {
+        Map<String, Cookie> cookies = new HashMap<>();
+        for (javax.servlet.http.Cookie cookie : getCookies()) {
+            cookies.put(cookie.getName(), new Cookie(cookie.getName(), cookie.getValue())
+                    .withComment(cookie.getComment())
+                    .withDomain(cookie.getDomain())
+                    .withMaxAge(cookie.getMaxAge())
+                    .withPath(cookie.getPath())
+                    .withSecure(cookie.getSecure())
+                    .withVersion(cookie.getVersion()));
+        }
+        return Collections.unmodifiableMap(cookies);
+    }
 }

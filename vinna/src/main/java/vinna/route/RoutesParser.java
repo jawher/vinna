@@ -100,6 +100,8 @@ public class RoutesParser {
                         Pattern hConstraintp = constraint("req.header.");// Pattern.compile("\\s+req\\.header\\.(.+?)\\s*$");
                         Pattern hPatConstraintp = constraintWithPattern("req.header.");//  Pattern.compile("\\s+req\\.header\\.(.+?)\\s*:\\s*(.+?)\\s*$");
 
+                        //think: should we add constraints for cookies ?
+
                         String cline;
                         while ((cline = readLine()) != null) {
                             if (!ignoreLine(cline)) {
@@ -304,8 +306,10 @@ public class RoutesParser {
         Pattern pbody = Pattern.compile("\\{" + Pattern.quote("req.body") + "\\}");
         Pattern pqvar = argPattern("req.param.");
         Pattern pheader = argPattern("req.header.");
+        Pattern pcookie = argPattern("req.cookie.");
         Pattern pPart = Pattern.compile("\\{" + Pattern.quote("req.part.") + "(.+?)\\}");
         Pattern pvar = argPattern("");
+
         Pattern pstr = Pattern.compile("\"((\\.|.)*)\"");
         Pattern pbool = Pattern.compile("(true|false)");
         Pattern pnull = Pattern.compile("null");
@@ -324,6 +328,10 @@ public class RoutesParser {
                     parameters.add(res);
                 } else if ((pm = pheader.matcher(arg)).matches()) {
                     final ActionArgument.Header res = new ActionArgument.Header(pm.group(1));
+                    fillInTypes(res, pm.group(2));
+                    parameters.add(res);
+                } else if ((pm = pcookie.matcher(arg)).matches()) {
+                    final ActionArgument.CookieArgument res = new ActionArgument.CookieArgument(pm.group(1));
                     fillInTypes(res, pm.group(2));
                     parameters.add(res);
                 } else if ((pm = pvar.matcher(arg)).matches()) {

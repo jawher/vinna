@@ -3,6 +3,7 @@ package vinna.response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.exception.PassException;
+import vinna.http.Cookie;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
 import vinna.util.MultivaluedHashMap;
@@ -12,6 +13,7 @@ import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ public class ResponseBuilder implements Response {
 
     private int status;
     private MultivaluedHashMap<String, Object> headers = new MultivaluedHashMap<>();
+    private Map<String, Cookie> cookies = new HashMap<>();
     private String location;
     private InputStream body;
     private String encoding;
@@ -105,6 +108,11 @@ public class ResponseBuilder implements Response {
         return this;
     }
 
+    public final ResponseBuilder cookie(Cookie cookie) {
+        cookies.put(cookie.getName(), cookie);
+        return this;
+    }
+
     public final ResponseBuilder body(InputStream body) {
         this.body = body;
         return this;
@@ -151,6 +159,23 @@ public class ResponseBuilder implements Response {
                 //FIXME: properly handle multi-valued headers (using servletResponse.(add|set)Header)
                 response.addHeader(header.getKey(), value.toString());
             }
+        }
+
+        for (Cookie cookie : cookies.values()) {
+            final javax.servlet.http.Cookie servletCookie = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+            if (cookie.getComment() != null) {
+                servletCookie.setComment(cookie.getComment());
+            }
+            if (cookie.getDomain() != null) {
+                servletCookie.setDomain(cookie.getDomain());
+            }
+            servletCookie.setMaxAge(cookie.getMaxAge());
+            if (cookie.getPath() != null) {
+                servletCookie.setPath(cookie.getPath());
+            }
+            servletCookie.setSecure(cookie.isSecure());
+            servletCookie.setVersion(cookie.getVersion());
+            response.addCookie(servletCookie);
         }
 
         // FIXME: investigate how to properly handle redirect

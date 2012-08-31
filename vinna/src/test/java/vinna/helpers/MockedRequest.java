@@ -1,5 +1,6 @@
 package vinna.helpers;
 
+import vinna.http.Cookie;
 import vinna.http.Request;
 
 import java.io.InputStream;
@@ -11,12 +12,14 @@ public class MockedRequest implements Request {
     private final String path;
     private final Map<String, Collection<String>> params;
     private final Map<String, Collection<String>> headers;
+    private final Map<String, Cookie> cookies;
 
-    private MockedRequest(String verb, String path, Map<String, Collection<String>> params, Map<String, Collection<String>> headers) {
+    private MockedRequest(String verb, String path, Map<String, Collection<String>> params, Map<String, Collection<String>> headers, Map<String, Cookie> cookies) {
         this.verb = verb;
         this.path = path;
         this.params = params;
         this.headers = headers;
+        this.cookies = cookies;
     }
 
     @Override
@@ -74,6 +77,12 @@ public class MockedRequest implements Request {
     }
 
     @Override
+    public Map<String, Cookie> getCookiesMap() {
+
+        return Collections.unmodifiableMap(cookies);
+    }
+
+    @Override
     public InputStream getInputStream() {
         throw new UnsupportedOperationException();
     }
@@ -105,6 +114,8 @@ public class MockedRequest implements Request {
         private final String path;
         private final Map<String, Collection<String>> params = new HashMap<>();
         private final Map<String, Collection<String>> headers = new HashMap<>();
+        private final Map<String, Cookie> cookies = new HashMap<>();
+
 
         private Builder(String verb, String path) {
             this.verb = verb;
@@ -131,8 +142,13 @@ public class MockedRequest implements Request {
             return this;
         }
 
+        public Builder cookie(Cookie cookie) {
+            cookies.put(cookie.getName(), cookie);
+            return this;
+        }
+
         public MockedRequest build() {
-            return new MockedRequest(verb, path, params, headers);
+            return new MockedRequest(verb, path, params, headers, cookies);
         }
     }
 }

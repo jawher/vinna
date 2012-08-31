@@ -2,6 +2,7 @@ package vinna.route;
 
 import vinna.exception.VuntimeException;
 import vinna.http.MultipartRequest;
+import vinna.http.Cookie;
 import vinna.http.Request;
 import vinna.http.UploadedFile;
 import vinna.util.Conversions;
@@ -178,6 +179,32 @@ public interface ActionArgument {
         }
     }
 
+    public static class CookieArgument extends ChameleonArgument {
+
+        private final String cookieName;
+
+        public CookieArgument(String cookieName) {
+            this.cookieName = cookieName;
+        }
+
+        @Override
+        public Object resolve(Environment env, Class<?> targetType) {
+            final Cookie cookie = env.request.getCookiesMap().get(cookieName);
+            if (targetType.isAssignableFrom(Cookie.class)) {
+                return cookie;
+            } else if (cookie == null) {
+                return null;//FIXME: beware the primitive types
+            } else {
+                return Conversions.convertString(cookie.getValue(), targetType);
+            }
+        }
+
+        public Cookie asCookie() {
+            this.type = Cookie.class;
+            return null;
+        }
+    }
+
     public static abstract class ChameleonArgument implements ActionArgument {
         protected Class<?> type;
         protected Class<?> typeArg;
@@ -237,5 +264,4 @@ public interface ActionArgument {
     Object resolve(Environment env, Class<?> targetType);
 
     boolean compatibleWith(Class<?> type);
-
 }
