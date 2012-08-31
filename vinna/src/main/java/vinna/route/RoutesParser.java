@@ -337,7 +337,7 @@ public class RoutesParser {
                 } else if ((pm = pnull.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<Object>(null));
                 } else if ((pm = pPart.matcher(arg)).matches()) {
-                    // TODO check that the method is POST
+                    // FIXME check that the method of the path is not GET
                     parameters.add(new ActionArgument.RequestPart(pm.group(1)));
                 } else {
                     try {

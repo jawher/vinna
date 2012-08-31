@@ -32,7 +32,6 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
         try {
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setRepository(temporaryDirectory);
-            //factory.setSizeThreshold(1234); // TODO
             ServletFileUpload upload = new ServletFileUpload(factory);
             upload.setSizeMax(maxSize);
 
@@ -48,12 +47,9 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
                 }
             }
 
-        } catch (FileUploadException e) {
+        } catch (FileUploadException | UnsupportedEncodingException e) {
             logger.error("Error while parsing a multipart request", e);
             throw new VuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
-            // TODO
-            e.printStackTrace();
         }
     }
 
