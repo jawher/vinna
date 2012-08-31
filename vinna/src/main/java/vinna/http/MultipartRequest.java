@@ -7,5 +7,5 @@ public interface MultipartRequest extends Request {
 
     public Collection<String> getPartsName();
 
-    public InputStream getParts(String name);
+    public UploadedFile getParts(String name);
 }

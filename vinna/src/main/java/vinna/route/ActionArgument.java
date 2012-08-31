@@ -3,6 +3,7 @@ package vinna.route;
 import vinna.exception.VuntimeException;
 import vinna.http.MultipartRequest;
 import vinna.http.Request;
+import vinna.http.UploadedFile;
 import vinna.util.Conversions;
 
 import java.io.IOException;
@@ -103,7 +104,7 @@ public interface ActionArgument {
 
         @Override
         public boolean compatibleWith(Class<?> type) {
-            return type.isAssignableFrom(InputStream.class);
+            return type.isAssignableFrom(UploadedFile.class);
         }
     }
 

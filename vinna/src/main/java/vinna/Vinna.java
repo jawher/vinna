@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import vinna.exception.ConfigException;
 import vinna.exception.VuntimeException;
 import vinna.http.Request;
+import vinna.http.UploadedFile;
 import vinna.route.*;
 
 import java.io.*;
@@ -314,7 +315,7 @@ public class Vinna {
             return null;
         }
 
-        public final InputStream part(String name) {
+        public final UploadedFile part(String name) {
             ActionArgument.RequestPart partActionArgument = new ActionArgument.RequestPart(name);
             routeParameters.add(partActionArgument);
             return null;

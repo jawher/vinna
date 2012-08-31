@@ -11,8 +11,6 @@ import vinna.util.MultivaluedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -46,7 +44,7 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
                     parameters.add(part.getFieldName(), encoding == null ? part.getString() : part.getString(encoding));
                 } else {
                     logger.debug("Receive file {}", part.getFieldName());
-                    files.put(part.getFieldName(), part);
+                    files.put(part.getFieldName(), new UploadedFile(part));
                 }
             }
 
@@ -65,17 +63,12 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
     }
 
     @Override
-    public InputStream getParts(String name) {
-        try {
-            FileItem fileItem = files.get(name);
-            if (fileItem != null) {
-                return fileItem.getInputStream();
-            } else {
-                throw new VuntimeException("Cannot find file with the name " + name);
-            }
-        } catch (IOException e) {
-            logger.error("unexpected exception while reading the multipart data", e);
-            throw new VuntimeException(e);
+    public UploadedFile getParts(String name) {
+        UploadedFile fileItem = files.get(name);
+        if (fileItem != null) {
+            return fileItem;
+        } else {
+            throw new VuntimeException("Cannot find file with the name " + name);
         }
     }
 
