@@ -25,6 +25,8 @@ public class VinnaFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
 
     private Vinna vinna;
+    private File uploadDirectory;
+    private int uploadMaxSize;
     protected ServletContext servletContext;
 
     @Override
@@ -44,6 +46,23 @@ public class VinnaFilter implements Filter {
             vinna = new Vinna();
         }
         vinna.init(cfg);
+
+        String confUploadTemporaryDirectory = (String) vinna.getConfig().get("upload-directory");
+        if (confUploadTemporaryDirectory != null && !confUploadTemporaryDirectory.isEmpty()) {
+            uploadDirectory = new File(confUploadTemporaryDirectory).getAbsoluteFile();
+        } else {
+            uploadDirectory = (File) filterConfig.getServletContext().getAttribute("javax.servlet.context.tempdir");
+            if (uploadDirectory == null) {
+                String tmpdir = System.getProperty("java.io.tmpdir");
+                if (tmpdir != null) {
+                    uploadDirectory = new File(tmpdir).getAbsoluteFile();
+                } else {
+                    logger.warn("Cannot find a temporary directory for upload.");
+                }
+            }
+        }
+
+        uploadMaxSize = Integer.parseInt((String) vinna.getConfig().get("upload-max-size"));
     }
 
     protected Vinna createUserVinnaApp(String appClass, Map<String, Object> cfg) throws ServletException {
@@ -60,10 +79,7 @@ public class VinnaFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             VinnaRequestWrapper vinnaRequest;
             if (isMultipartContent((HttpServletRequest) request)) {
-                // FIXME use properties file for the temporary directory
-                // TODO add support for max size file
-                // TODO add support for multipart/replace response ?
-                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, new File("/tmp"));
+                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, uploadDirectory, uploadMaxSize);
             } else {
                 vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
             }
@@ -96,7 +112,7 @@ public class VinnaFilter implements Filter {
     }
 
     private final boolean isMultipartContent(HttpServletRequest request) {
-        if (!"POST".equals(request.getMethod().toUpperCase())) {
+        if ("GET".equals(request.getMethod().toUpperCase())) {
             return false;
         }
         String contentType = request.getContentType();

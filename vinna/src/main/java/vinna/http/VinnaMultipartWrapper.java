@@ -21,10 +21,11 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
 
     private final HttpServletRequest request;
     private final MultivaluedHashMap<String, String> parameters;
-    private final Map<String, FileItem> files;
+    private final Map<String, UploadedFile> files;
 
-    public VinnaMultipartWrapper(HttpServletRequest servletRequest, File temporaryDirectory) {
+    public VinnaMultipartWrapper(HttpServletRequest servletRequest, File temporaryDirectory, int maxSize) {
         super(servletRequest);
+
         this.request = servletRequest;
         this.parameters = new MultivaluedHashMap<>();
         this.files = new HashMap<>();
@@ -35,13 +36,14 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
             factory.setRepository(temporaryDirectory);
             //factory.setSizeThreshold(1234); // TODO
             ServletFileUpload upload = new ServletFileUpload(factory);
-            //upload.setSizeMax(1234); // TODO
+            upload.setSizeMax(maxSize);
 
+            final String encoding = request.getCharacterEncoding();
             List<FileItem> parts = upload.parseRequest(request);
+
             for (FileItem part : parts) {
                 if (part.isFormField()) {
-                    // FIXME use request.getCharacterEncoding as encoding ?
-                    parameters.add(part.getFieldName(), part.getString(request.getCharacterEncoding()));
+                    parameters.add(part.getFieldName(), encoding == null ? part.getString() : part.getString(encoding));
                 } else {
                     logger.debug("Receive file {}", part.getFieldName());
                     files.put(part.getFieldName(), part);
