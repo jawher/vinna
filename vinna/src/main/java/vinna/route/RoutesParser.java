@@ -60,7 +60,6 @@ public class RoutesParser {
             return Pattern.compile("\\s+" + Pattern.quote(prefix) + "(.+?)\\s*:\\s*(.+?)" + eolOrComment + "$");
         } else {
             return Pattern.compile("\\s+(.+?)\\s*:\\s*(.+?)" + eolOrComment + "$");
-
         }
     }
 
@@ -142,7 +141,6 @@ public class RoutesParser {
             }
         }
         return routes;
-
     }
 
     private static ParsedPath parsePath(String path, Map<String, String> pathVarsConstraints) {
@@ -298,7 +296,6 @@ public class RoutesParser {
                 }
             }
         }
-
     }
 
     public static List<ActionArgument> parseArgs(String argsString) {
@@ -334,6 +331,9 @@ public class RoutesParser {
                     final ActionArgument.CookieArgument res = new ActionArgument.CookieArgument(pm.group(1));
                     fillInTypes(res, pm.group(2));
                     parameters.add(res);
+                } else if ((pm = pPart.matcher(arg)).matches()) {
+                    // FIXME check that the method of the path is not GET
+                    parameters.add(new ActionArgument.RequestPart(pm.group(1)));
                 } else if ((pm = pvar.matcher(arg)).matches()) {
                     final ActionArgument.Variable res = new ActionArgument.Variable(pm.group(1));
                     fillInTypes(res, pm.group(2));
@@ -344,9 +344,6 @@ public class RoutesParser {
                     parameters.add(new ActionArgument.Const<Boolean>(Boolean.parseBoolean(pm.group(1))));
                 } else if ((pm = pnull.matcher(arg)).matches()) {
                     parameters.add(new ActionArgument.Const<Object>(null));
-                } else if ((pm = pPart.matcher(arg)).matches()) {
-                    // FIXME check that the method of the path is not GET
-                    parameters.add(new ActionArgument.RequestPart(pm.group(1)));
                 } else {
                     try {
                         parameters.add(new NumConst(new BigDecimal(arg)));
