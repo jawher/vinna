@@ -45,7 +45,7 @@ public class VinnaConfigTest {
     public void test0ConfigSetsUpDefaultControllerFactoryWithVinnaAsBasePkg() {
         Vinna app = new Vinna();
         app.init(Collections.<String, Object>emptyMap());
-        final Object controller = app.createController("sub.empty2", null);
+        final Object controller = app.getControllerFactory().create("sub.empty2", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty2);
     }
@@ -67,7 +67,7 @@ public class VinnaConfigTest {
     public void testBasePkgSetsUpDefaultControllerFactoryWithCorrectPkg() {
         Vinna app = new Vinna();
         app.init(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
-        final Object controller = app.createController("empty3", null);
+        final Object controller = app.getControllerFactory().create("empty3", null);
         assertNotNull(controller);
         assertTrue(controller instanceof Empty3);
     }
@@ -160,7 +160,7 @@ public class VinnaConfigTest {
         Vinna app = new Vinna();
         app.init(Collections.<String, Object>singletonMap(Vinna.CONTROLLER_FACTORY, "vinna.VinnaConfigTest$MyControllerFactory"));
 
-        final Object controller = app.createController("anything", null);
+        final Object controller = app.getControllerFactory().create("anything", null);
         assertTrue(controller instanceof Baz);
     }
 

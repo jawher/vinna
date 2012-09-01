@@ -209,8 +209,8 @@ public class Vinna {
         }
     }
 
-    public final Object createController(String id, Class<?> clazz) {
-        return controllerFactory.create(id, clazz);
+    public ControllerFactory getControllerFactory() {
+        return controllerFactory;
     }
 
     public final RouteResolution match(Request request) {

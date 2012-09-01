@@ -35,7 +35,7 @@ public class RouteResolution {
         if (methodName != null) {
             methodName = evaluate(methodName, paramValues);
         }
-        Object controllerInstance = vinna.createController(controllerId, action.controllerClass);
+        Object controllerInstance = vinna.getControllerFactory().create(controllerId, action.controllerClass);
         Class<?> controllerClz = controllerInstance.getClass();
         Method toCall = action.method;
         if (toCall == null) {
