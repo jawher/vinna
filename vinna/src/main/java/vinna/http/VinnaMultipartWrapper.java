@@ -64,13 +64,13 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
     }
 
     @Override
-    public Collection<String> getPartsName() {
+    public Collection<String> getPartsNames() {
         init(temporaryDirectory, maxSize);
         return Collections.unmodifiableCollection(files.keySet());
     }
 
     @Override
-    public UploadedFile getParts(String name) {
+    public UploadedFile getPart(String name) {
         init(temporaryDirectory, maxSize);
         UploadedFile fileItem = files.get(name);
         if (fileItem != null) {
@@ -78,6 +78,12 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
         } else {
             throw new VuntimeException("Cannot find file with the name " + name);
         }
+    }
+
+    @Override
+    public Map<String, UploadedFile> getParts() {
+        init(temporaryDirectory, maxSize);
+        return Collections.unmodifiableMap(files);
     }
 
     @Override

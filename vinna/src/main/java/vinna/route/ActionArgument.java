@@ -102,7 +102,7 @@ public interface ActionArgument {
         public Object resolve(Environment env, Class<?> targetType) {
             if (env.request instanceof MultipartRequest) {
                 final MultipartRequest request = (MultipartRequest) env.request;
-                return request.getParts(name);
+                return request.getPart(name);
             } else {
                 throw new VuntimeException("Trying to get a file from a non multipart request");
             }
