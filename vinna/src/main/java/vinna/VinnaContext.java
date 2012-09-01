@@ -12,12 +12,14 @@ public class VinnaContext {
     public final VinnaRequestWrapper request;
     public final VinnaResponseWrapper response;
     public final ServletContext servletContext;
+    public final Session session;
 
-    public VinnaContext(Vinna vinna, VinnaRequestWrapper request, VinnaResponseWrapper response, ServletContext servletContext) {
+    public VinnaContext(Vinna vinna, VinnaRequestWrapper request, VinnaResponseWrapper response, ServletContext servletContext, Session session) {
         this.vinna = vinna;
         this.request = request;
         this.response = response;
         this.servletContext = servletContext;
+        this.session = session;
     }
 
     public static VinnaContext get() {

@@ -54,6 +54,10 @@ public class Vinna {
         }
     }
 
+    protected Session newSession() {
+        return new Session();
+    }
+
     private void uploadSettings(Map<String, Object> config) {
         Object uploadDir = config.get(UPLOAD_DIR);
         if (uploadDir != null) {
