@@ -25,14 +25,18 @@ public class VinnaFilter implements Filter {
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
 
     private Vinna vinna;
-    private File uploadDirectory;
-    private int uploadMaxSize;
     protected ServletContext servletContext;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.servletContext = filterConfig.getServletContext();
         Map<String, Object> cfg = new HashMap<>();
+
+        final Object tempDir = filterConfig.getServletContext().getAttribute("javax.servlet.context.tempdir");
+        if (tempDir != null) {
+            cfg.put(Vinna.UPLOAD_DIR, ((File)tempDir).getAbsolutePath());
+        }
+
         final Enumeration initParameterNames = filterConfig.getInitParameterNames();
         while (initParameterNames.hasMoreElements()) {
             final String name = (String) initParameterNames.nextElement();
@@ -45,24 +49,8 @@ public class VinnaFilter implements Filter {
         } else {
             vinna = new Vinna();
         }
+
         vinna.init(cfg);
-
-        String confUploadTemporaryDirectory = (String) vinna.getConfig().get("upload-directory");
-        if (confUploadTemporaryDirectory != null && !confUploadTemporaryDirectory.isEmpty()) {
-            uploadDirectory = new File(confUploadTemporaryDirectory).getAbsoluteFile();
-        } else {
-            uploadDirectory = (File) filterConfig.getServletContext().getAttribute("javax.servlet.context.tempdir");
-            if (uploadDirectory == null) {
-                String tmpdir = System.getProperty("java.io.tmpdir");
-                if (tmpdir != null) {
-                    uploadDirectory = new File(tmpdir).getAbsoluteFile();
-                } else {
-                    logger.warn("Cannot find a temporary directory for upload.");
-                }
-            }
-        }
-
-        uploadMaxSize = Integer.parseInt((String) vinna.getConfig().get("upload-max-size"));
     }
 
     protected Vinna createUserVinnaApp(String appClass, Map<String, Object> cfg) throws ServletException {
@@ -79,7 +67,7 @@ public class VinnaFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             VinnaRequestWrapper vinnaRequest;
             if (isMultipartContent((HttpServletRequest) request)) {
-                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, uploadDirectory, uploadMaxSize);
+                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, (File)vinna.getConfig().get(Vinna.UPLOAD_DIR), (Integer) vinna.getConfig().get(Vinna.UPLOAD_MAX_SIZE));
             } else {
                 vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
             }

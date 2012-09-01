@@ -17,6 +17,8 @@ public class Vinna {
     public static final String ROUTES = "routes";
     public static final String CONF = "conf";
     public static final String CONTROLLER_FACTORY = "controller-factory";
+    public static final String UPLOAD_DIR = "upload-dir";
+    public static final String UPLOAD_MAX_SIZE = "upload-max-size";
 
     private Map<String, Object> config;
     private String basePackage;
@@ -45,9 +47,43 @@ public class Vinna {
         this.router = new Router();
         routes(this.config);
 
+        uploadSettings(this.config);
         if (isDirtyState) {
             // TODO enhance the message
             throw new ConfigException("Something is going wrong");
+        }
+    }
+
+    private void uploadSettings(Map<String, Object> config) {
+        Object uploadDir = config.get(UPLOAD_DIR);
+        if (uploadDir != null) {
+            if (uploadDir instanceof String && !((String) uploadDir).trim().isEmpty()) {
+                config.put(UPLOAD_DIR, new File((String) uploadDir).getAbsoluteFile());
+            } else if (uploadDir instanceof File) {
+                //do nothing, all is good
+            } else {
+                throw new ConfigException("Can't handle the " + UPLOAD_DIR + " parameter: should be either a String or a java.io.File");
+            }
+        } else {
+            String tmpdir = System.getProperty("java.io.tmpdir");
+            if (tmpdir != null) {
+                config.put(UPLOAD_DIR, new File(tmpdir).getAbsoluteFile());
+            } else {
+                logger.warn("Cannot find a temporary directory for upload.");
+            }
+        }
+
+        Object uploadMaxSize = config.get(UPLOAD_MAX_SIZE); // should always have a value (configured in the embedded conf.properties)
+        if (uploadMaxSize instanceof String) {
+            try {
+                config.put(UPLOAD_MAX_SIZE, Integer.parseInt((String) uploadMaxSize));
+            } catch (NumberFormatException e) {
+                throw new ConfigException("Invalid value for "+UPLOAD_MAX_SIZE+": should be a numeric", e);
+            }
+        } else if (!(uploadMaxSize instanceof Number)) {
+            throw new ConfigException("Can't handle the " + UPLOAD_MAX_SIZE + " parameter: should be either a String or a Number");
+        } else {
+            config.put(UPLOAD_MAX_SIZE, ((Number) uploadMaxSize).intValue());
         }
     }
 
