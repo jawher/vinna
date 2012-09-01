@@ -91,7 +91,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionString({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -103,7 +103,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionString({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "a").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -115,7 +115,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionString({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "a").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -129,7 +129,7 @@ public class DeclarativeControllersTest {
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
 
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -141,7 +141,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionInt({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -153,7 +153,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionInt({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -165,7 +165,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionInteger({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -177,7 +177,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionInt({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "13").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -189,7 +189,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionInteger({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "27").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -201,7 +201,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionBool({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -213,7 +213,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBool({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -225,7 +225,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBool({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -237,7 +237,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionBool({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -249,7 +249,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBool({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -261,7 +261,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBool({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -274,7 +274,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionBoolean({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -286,7 +286,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBoolean({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -298,7 +298,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBoolean({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -310,7 +310,7 @@ public class DeclarativeControllersTest {
         String route = "get /users/{id} Controller.actionBoolean({id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -322,7 +322,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBoolean({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -334,7 +334,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBoolean({req.header.x-id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -347,7 +347,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionString(\"" + ohai + "\")";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -360,7 +360,7 @@ public class DeclarativeControllersTest {
         String route = "get /users AmbiguousController.action(\"" + ohai + "\")";
         MockFactoryVinna<AmbiguousController> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -373,7 +373,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBool(true)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -385,7 +385,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionBoolean(true)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -397,7 +397,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionInteger(42)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -409,7 +409,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionFloat(42.7)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -421,7 +421,7 @@ public class DeclarativeControllersTest {
         String route = "get /users Controller.actionDouble(42.7)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -435,7 +435,7 @@ public class DeclarativeControllersTest {
 
         String[] params = new String[]{"Loulou", "Riri", "Fifi"};
         MockedRequest mockedRequest = MockedRequest.get("/users").param("names", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -448,7 +448,7 @@ public class DeclarativeControllersTest {
 
         String[] params = new String[]{"Loulou", "Riri", "Fifi"};
         MockedRequest mockedRequest = MockedRequest.get("/users").param("names", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -462,7 +462,7 @@ public class DeclarativeControllersTest {
 
         String[] params = new String[]{"1", "2", "3"};
         MockedRequest mockedRequest = MockedRequest.get("/users").param("ids", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
@@ -488,7 +488,7 @@ public class DeclarativeControllersTest {
         String route = "GET /ambiguous/{id} ControllerWithOverloadedAndDiffArgCountMethods.action({id})";
         MockFactoryVinna<ControllerWithOverloadedAndDiffArgCountMethods> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -511,7 +511,7 @@ public class DeclarativeControllersTest {
         String route = "GET /ambiguous/{id} AmbiguousController.action({id})";
         MockFactoryVinna<AmbiguousController> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -522,7 +522,7 @@ public class DeclarativeControllersTest {
         String route = "GET /ambiguous/{id} AmbiguousController.action({id: String})";
         MockFactoryVinna<AmbiguousController> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/ambiguous/w").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -535,7 +535,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{controller} {controller}.actionInteger(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -548,7 +548,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{action} Controller.{action}(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/actionInteger").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -561,7 +561,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{controller}/{action} {controller}.{action}(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/Controller/actionInteger").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -574,7 +574,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{controller}/{action} {controller}ler.action{action}(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/Control/Integer").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -587,7 +587,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{controller} {bad-controller}.actionInteger(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/Controller").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -599,7 +599,7 @@ public class DeclarativeControllersTest {
         String route = "GET /{action} Controller.{bad-action}(5)";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
         MockedRequest mockedRequest = MockedRequest.get("/stuff").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);

@@ -195,7 +195,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -212,7 +212,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
         resolution.callAction(app);
         verify(app.controllerMock).action(5);
@@ -228,7 +228,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -245,7 +245,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -262,7 +262,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -279,7 +279,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/true").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -296,7 +296,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/false").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -315,7 +315,7 @@ public class ProgrammaticControllersTest {
 
         String[] params = new String[]{"Loulou", "Riri", "Fifi"};
         MockedRequest mockedRequest = MockedRequest.get("/users").param("names", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -334,7 +334,7 @@ public class ProgrammaticControllersTest {
 
         String[] params = new String[]{"1", "2", "3"};
         MockedRequest mockedRequest = MockedRequest.get("/users").param("ids", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -352,7 +352,7 @@ public class ProgrammaticControllersTest {
         };
 
         MockedRequest mockedRequest = MockedRequest.get("/users").param("id", "1").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -370,7 +370,7 @@ public class ProgrammaticControllersTest {
         };
 
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-id", "1").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -389,7 +389,7 @@ public class ProgrammaticControllersTest {
 
         String[] params = new String[]{"1", "2", "3"};
         MockedRequest mockedRequest = MockedRequest.get("/users").header("x-ids", params).build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -406,7 +406,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -423,7 +423,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -440,7 +440,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -457,7 +457,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/666").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -474,7 +474,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -491,7 +491,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -508,7 +508,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42.007").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -524,7 +524,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42.007").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -541,7 +541,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42.0d").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -558,7 +558,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/42.0d").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -575,7 +575,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/10").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -592,7 +592,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/10").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -609,7 +609,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
 
         assertNotNull(resolution);
 
@@ -626,7 +626,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
 
         assertNotNull(resolution);
 
@@ -643,7 +643,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -661,7 +661,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -680,7 +680,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/abc").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -699,7 +699,7 @@ public class ProgrammaticControllersTest {
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/abc").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
         resolution.callAction(app);

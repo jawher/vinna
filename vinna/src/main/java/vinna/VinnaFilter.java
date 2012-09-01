@@ -88,7 +88,7 @@ public class VinnaFilter implements Filter {
             VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext));
 
             logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
-            RouteResolution resolvedRoute = vinna.match(vinnaRequest);
+            RouteResolution resolvedRoute = vinna.getRouter().match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
                     Response outcome = resolvedRoute.callAction(vinna);

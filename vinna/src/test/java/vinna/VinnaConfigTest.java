@@ -55,7 +55,7 @@ public class VinnaConfigTest {
         SpyVinna<Application> app = new SpyVinna<>(Collections.<String, Object>emptyMap());
 
         MockedRequest mockedRequest = MockedRequest.get("/").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -77,7 +77,7 @@ public class VinnaConfigTest {
         SpyVinna<foo.controllers.Application> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "foo"));
 
         MockedRequest mockedRequest = MockedRequest.get("/").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -90,7 +90,7 @@ public class VinnaConfigTest {
         SpyVinna<Bar> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
 
         MockedRequest mockedRequest = MockedRequest.get("/").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -104,7 +104,7 @@ public class VinnaConfigTest {
         app.init(Collections.<String, Object>singletonMap(Vinna.BASE_PACKAGE, "bar"));
 
         MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNull(resolution);
     }
 
@@ -113,7 +113,7 @@ public class VinnaConfigTest {
         SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1"));
 
         MockedRequest mockedRequest = MockedRequest.get("/custom1").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
         resolution.callAction(app);
@@ -126,13 +126,13 @@ public class VinnaConfigTest {
         SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1, vinna/routes2"));
 
         MockedRequest mockedRequest = MockedRequest.get("/custom1").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
         resolution.callAction(app);
         verify(app.controllerSpy).action();
 
         mockedRequest = MockedRequest.get("/custom2").build();
-        resolution = app.match(mockedRequest);
+        resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
         resolution.callAction(app);
         verify(app.controllerSpy).action();
@@ -143,7 +143,7 @@ public class VinnaConfigTest {
         SpyVinna<Baz> app = new SpyVinna<>(Collections.<String, Object>singletonMap(Vinna.ROUTES, "vinna/routes1"));
 
         MockedRequest mockedRequest = MockedRequest.get("/garbage").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNull(resolution);
     }
 
@@ -176,11 +176,11 @@ public class VinnaConfigTest {
         app.init(Collections.<String, Object>emptyMap());
 
         MockedRequest mockedRequest = MockedRequest.get("/declarative").build();
-        RouteResolution resolution = app.match(mockedRequest);
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
         mockedRequest = MockedRequest.get("/programmatic").build();
-        resolution = app.match(mockedRequest);
+        resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
     }
 

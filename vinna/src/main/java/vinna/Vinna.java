@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.exception.ConfigException;
 import vinna.exception.VuntimeException;
-import vinna.http.Request;
 import vinna.http.UploadedFile;
 import vinna.route.*;
 
@@ -213,8 +212,8 @@ public class Vinna {
         return controllerFactory;
     }
 
-    public final RouteResolution match(Request request) {
-        return router.match(request);
+    public Router getRouter() {
+        return router;
     }
 
     public final void addRoute(Route route) {
