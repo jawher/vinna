@@ -6,7 +6,7 @@
         <groupId>vinna</groupId>
         <artifactId>vinna-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>0.0.4-SNAPSHOT</version>
+        <version>0.0.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>vinna</groupId>

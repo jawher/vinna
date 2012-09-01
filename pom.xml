@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>vinna</groupId>
     <artifactId>vinna-parent</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
     <name>vinna-parent</name>
     <description>Reinventing the wheel</description>
