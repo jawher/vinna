@@ -100,7 +100,12 @@ public interface ActionArgument {
 
         @Override
         public Object resolve(Environment env, Class<?> targetType) {
-            return ((MultipartRequest) env.request).getParts(name);
+            if (env.request instanceof MultipartRequest) {
+                final MultipartRequest request = (MultipartRequest) env.request;
+                return request.getParts(name);
+            } else {
+                throw new VuntimeException("Trying to get a file from a non multipart request");
+            }
         }
 
         @Override
