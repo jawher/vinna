@@ -18,13 +18,23 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
     private static Logger logger = LoggerFactory.getLogger(VinnaMultipartWrapper.class);
 
     private final HttpServletRequest request;
-    private final MultivaluedHashMap<String, String> parameters;
-    private final Map<String, UploadedFile> files;
+    private final File temporaryDirectory;
+    private final int maxSize;
+    private MultivaluedHashMap<String, String> parameters;
+    private Map<String, UploadedFile> files;
+    private boolean initialized = false;
 
     public VinnaMultipartWrapper(HttpServletRequest servletRequest, File temporaryDirectory, int maxSize) {
         super(servletRequest);
-
         this.request = servletRequest;
+        this.temporaryDirectory = temporaryDirectory;
+        this.maxSize = maxSize;
+    }
+
+    private void init(File temporaryDirectory, int maxSize) {
+        if (initialized) {
+            return;
+        }
         this.parameters = new MultivaluedHashMap<>();
         this.files = new HashMap<>();
 
@@ -46,7 +56,7 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
                     files.put(part.getFieldName(), new UploadedFile(part));
                 }
             }
-
+            initialized = true;
         } catch (FileUploadException | UnsupportedEncodingException e) {
             logger.error("Error while parsing a multipart request", e);
             throw new VuntimeException(e);
@@ -55,11 +65,13 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
 
     @Override
     public Collection<String> getPartsName() {
+        init(temporaryDirectory, maxSize);
         return Collections.unmodifiableCollection(files.keySet());
     }
 
     @Override
     public UploadedFile getParts(String name) {
+        init(temporaryDirectory, maxSize);
         UploadedFile fileItem = files.get(name);
         if (fileItem != null) {
             return fileItem;
@@ -70,16 +82,19 @@ public class VinnaMultipartWrapper extends VinnaRequestWrapper implements Multip
 
     @Override
     public String getParameter(String name) {
+        init(temporaryDirectory, maxSize);
         return this.parameters.getFirst(name);
     }
 
     @Override
     public Collection<String> getParameters(String name) {
+        init(temporaryDirectory, maxSize);
         return Collections.unmodifiableCollection(this.parameters.get(name));
     }
 
     @Override
     public Map<String, Collection<String>> getParameters() {
+        init(temporaryDirectory, maxSize);
         return Collections.<String, Collection<String>>unmodifiableMap(this.parameters);
     }
 }
