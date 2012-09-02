@@ -46,12 +46,12 @@ public class Vinna {
 
         this.router = new Router();
         routes(this.config);
-
-        uploadSettings(this.config);
         if (isDirtyState) {
             // TODO enhance the message
             throw new ConfigException("Something is going wrong");
         }
+
+        uploadSettings(this.config);
     }
 
     protected Session newSession() {
