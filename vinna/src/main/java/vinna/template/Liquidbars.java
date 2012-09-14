@@ -53,8 +53,16 @@ public class Liquidbars {
             if (node instanceof LiquidbarsNode.Text) {
                 out.write(((LiquidbarsNode.Text) node).getValue());
             } else if (node instanceof LiquidbarsNode.Variable) {
-                Object value = context.resolve(((LiquidbarsNode.Variable) node).getName());
-                out.write(String.valueOf(value));
+                final LiquidbarsNode.Variable variable = (LiquidbarsNode.Variable) node;
+                final Object value = context.resolve(variable.getName());
+                if (value != null) {
+                    final String str = String.valueOf(value);
+                    if (variable.isRaw()) {
+                        out.write(str);
+                    } else {
+                        out.write(HtmlUtils.htmlEscape(str));
+                    }
+                }
             } else {
                 LiquidbarsNode.Block block = (LiquidbarsNode.Block) node;
                 BlockHandler handler = handlers.get(block.getName());
