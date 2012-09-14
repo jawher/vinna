@@ -15,6 +15,10 @@ public class IterBlock implements BlockHandler {
         for (Object o : coll) {
             Context subContext = new Context(context, o);
             subContext.add("#", i);
+            subContext.add("##", i + 1);
+            subContext.add("#first", i == 0);
+            subContext.add("#last", i == coll.size() - 1);
+
             for (LiquidbarsNode child : block.getChildren()) {
                 defaultBlockHandler.render(child, subContext, defaultBlockHandler, out);
             }
