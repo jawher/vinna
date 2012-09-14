@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import vinna.exception.ConfigException;
 import vinna.exception.VuntimeException;
 import vinna.http.UploadedFile;
+import vinna.interceptor.Interceptor;
 import vinna.route.*;
 
 import java.io.*;
@@ -25,6 +26,7 @@ public class Vinna {
     private Router router;
     private ControllerFactory controllerFactory;
     private List<ActionArgument> routeParameters;
+    private List<Interceptor> interceptors;
 
     // is true when a route is created with the programmatic API without specify a controller and/or a method
     private boolean isDirtyState = false;
@@ -32,6 +34,8 @@ public class Vinna {
     protected final RequestBuilder req = new RequestBuilder();
 
     public void init(Map<String, Object> config) {
+        this.interceptors = new ArrayList<>();
+
         this.config = new HashMap<>(config);
         if (config.get(BASE_PACKAGE) == null) {
             basePackage = getClass().getPackage().getName();
@@ -41,13 +45,13 @@ public class Vinna {
         }
 
         conf(this.config);
+        uploadSettings(this.config);
+        registerCallback(this.config);
 
         this.controllerFactory = controllerFactory(this.config);
-
         this.router = new Router();
         routes(this.config);
 
-        uploadSettings(this.config);
         if (isDirtyState) {
             // TODO enhance the message
             throw new ConfigException("Something is going wrong");
@@ -82,7 +86,7 @@ public class Vinna {
             try {
                 config.put(UPLOAD_MAX_SIZE, Integer.parseInt((String) uploadMaxSize));
             } catch (NumberFormatException e) {
-                throw new ConfigException("Invalid value for "+UPLOAD_MAX_SIZE+": should be a numeric", e);
+                throw new ConfigException("Invalid value for " + UPLOAD_MAX_SIZE + ": should be a numeric", e);
             }
         } else if (!(uploadMaxSize instanceof Number)) {
             throw new ConfigException("Can't handle the " + UPLOAD_MAX_SIZE + " parameter: should be either a String or a Number");
@@ -161,6 +165,23 @@ public class Vinna {
                 throw new VuntimeException("Error opening conf file '" + confPath + "'", e);
             }
         }
+    }
+
+    /**
+     * Override to define callback, register helpers and interceptors
+     *
+     * @param config
+     */
+    protected void registerCallback(Map<String, Object> config) {
+        // nothing to register by default
+    }
+
+    protected final void registerInterceptor(Interceptor interceptor) {
+        this.interceptors.add(interceptor);
+    }
+
+    public final List<Interceptor> getInterceptors() {
+        return this.interceptors;
     }
 
     /**

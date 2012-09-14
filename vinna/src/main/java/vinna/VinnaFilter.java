@@ -8,6 +8,7 @@ import vinna.exception.VuntimeException;
 import vinna.http.VinnaMultipartWrapper;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
+import vinna.interceptor.Interceptor;
 import vinna.response.Response;
 import vinna.route.RouteResolution;
 
@@ -17,17 +18,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class VinnaFilter implements Filter {
-    public static final String APPLICATION_CLASS = "application-class";
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
+
+    public static final String APPLICATION_CLASS = "application-class";
     public static final String VINNA_SESSION_KEY = "vinna.session";
 
     private Vinna vinna;
     protected ServletContext servletContext;
+    private List<Interceptor> interceptors = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,6 +54,7 @@ public class VinnaFilter implements Filter {
         }
 
         vinna.init(cfg);
+        this.interceptors.addAll(vinna.getInterceptors());
     }
 
     protected Vinna createUserVinnaApp(String appClass, Map<String, Object> cfg) throws ServletException {
@@ -85,16 +87,27 @@ public class VinnaFilter implements Filter {
             VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext, session));
 
             logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
+
+            callBeforeMatchInterceptors(vinnaRequest);
             RouteResolution resolvedRoute = vinna.getRouter().match(vinnaRequest);
-            if (resolvedRoute != null) {
+            Response routeResponse = callAfterMatchInterceptors(vinnaRequest, resolvedRoute != null);
+
+            if (resolvedRoute != null && routeResponse == null) {
+                routeResponse = resolvedRoute.callAction(vinna);
+            }
+
+            if (routeResponse != null) {
                 try {
-                    Response outcome = resolvedRoute.callAction(vinna);
-                    outcome.execute(vinnaRequest, vinnaResponse);
+                    callBeforeExecute(vinnaRequest, vinnaResponse);
+                    routeResponse.execute(vinnaRequest, vinnaResponse);
+                    // TODO call after execute interceptor
+
                     httpSession = vinnaRequest.getSession(false);
                     if (httpSession != null) {
                         httpSession.setAttribute(VINNA_SESSION_KEY, session);
                     }
                 } catch (VuntimeException e) {
+                    // TODO call after execute interceptor
                     logger.error("Error while processing the request", e);
                     e.printStackTrace(vinnaResponse.getWriter());
                     vinnaResponse.setStatus(500);
@@ -114,18 +127,42 @@ public class VinnaFilter implements Filter {
         }
     }
 
-    private final boolean isMultipartContent(HttpServletRequest request) {
+    private void callBeforeMatchInterceptors(VinnaRequestWrapper request) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.beforeMatch(request);
+        }
+    }
+
+    private void callBeforeExecute(VinnaRequestWrapper request, VinnaResponseWrapper response) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.beforeExecute(request, response);
+        }
+    }
+
+    private void callAfterExecute(VinnaRequestWrapper request, VinnaResponseWrapper response) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.afterExecute(request, response);
+        }
+    }
+
+    // TODO defined how to interact with route resolution
+    private Response callAfterMatchInterceptors(VinnaRequestWrapper request, boolean hasMatched) {
+        Response interceptorResponse;
+        for (Interceptor interceptor : interceptors) {
+            interceptorResponse = interceptor.afterMatch(request, hasMatched);
+            if (interceptorResponse != null) {
+                return interceptorResponse;
+            }
+        }
+        return null;
+    }
+
+    private boolean isMultipartContent(HttpServletRequest request) {
         if ("GET".equals(request.getMethod().toUpperCase())) {
             return false;
         }
         String contentType = request.getContentType();
-        if (contentType == null) {
-            return false;
-        }
-        if (contentType.toLowerCase().startsWith("multipart/")) {
-            return true;
-        }
-        return false;
+        return contentType != null && contentType.toLowerCase().startsWith("multipart/");
     }
 
     @Override
