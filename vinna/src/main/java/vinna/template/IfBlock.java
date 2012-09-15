@@ -29,6 +29,9 @@ public class IfBlock implements BlockHandler {
         Context subContext = new Context(context, value);
         for (LiquidbarsNode child : block.getChildren()) {
             if (child instanceof LiquidbarsNode.Block && ("else".equals(((LiquidbarsNode.Block) child).getName()))) {
+                if (doit) {
+                    return;
+                }
                 doit = !doit;
             } else if (doit) {
                 defaultBlockHandler.render(child, subContext, defaultBlockHandler, out);
