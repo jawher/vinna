@@ -13,7 +13,27 @@ public class Template {
     public Template(List<LiquidbarsNode> rootNodes, Liquidbars liquidbars) {
         this.rootNodes = rootNodes;
         this.liquidbars = liquidbars;
+        processIncludes();
         processExtends();
+    }
+
+    private void processIncludes() {
+        List<LiquidbarsNode> mergedNodes = new ArrayList<>(rootNodes.size());
+        for (LiquidbarsNode node : rootNodes) {
+            if (node instanceof LiquidbarsNode.Block) {
+                LiquidbarsNode.Block block = (LiquidbarsNode.Block) node;
+                if ("include".equals(block.getName())) {
+                    final Template included = liquidbars.parse(block.getArg());
+                    mergedNodes.addAll(included.getRootNodes());
+                } else {
+                    mergedNodes.add(block);
+                }
+            } else {
+                mergedNodes.add(node);
+            }
+        }
+
+        this.rootNodes = mergedNodes;
     }
 
     private void processExtends() {
@@ -66,7 +86,6 @@ public class Template {
                 }
             }
             this.rootNodes = mergedNodes;
-            //System.err.println("merged: "+rootNodes);
         }
     }
 
