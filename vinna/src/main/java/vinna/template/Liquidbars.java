@@ -25,6 +25,19 @@ public class Liquidbars {
     public Liquidbars() {
         registerHandler("if", new IfBlock());
         registerHandler("for", new IterBlock());
+        registerHandler("else", new ElseBlock());
+        registerHandler("include", new BlockHandler() {
+            @Override
+            public boolean wantsCloseTag() {
+                return false;
+            }
+
+            @Override
+            public void render(LiquidbarsNode node, Context context, BlockHandler defaultBlockHandler, Writer out) throws IOException {
+                // nop. Mommy Template will take care of me
+            }
+        });
+
     }
 
     public final Liquidbars registerHandler(String name, BlockHandler handler) {
@@ -42,11 +55,16 @@ public class Liquidbars {
     }
 
     public Template parse(Reader reader) {
-        List<LiquidbarsNode> rootNodes = new LiquidbarsParser(reader).parse();
+        List<LiquidbarsNode> rootNodes = new LiquidbarsParser(reader, handlers).parse();
         return new Template(rootNodes, this);
     }
 
     /* package */ BlockHandler defaultRenderer = new BlockHandler() {
+
+        @Override
+        public boolean wantsCloseTag() {
+            return false;//doesn't matter
+        }
 
         @Override
         public void render(LiquidbarsNode node, Context context, BlockHandler defaultBlockHandler, Writer out) throws IOException {
