@@ -7,6 +7,11 @@ import java.util.Collection;
 public class IterBlock implements BlockHandler {
 
     @Override
+    public boolean wantsCloseTag() {
+        return true;
+    }
+
+    @Override
     public void render(LiquidbarsNode node, Context context, BlockHandler defaultBlockHandler, Writer out) throws IOException {
         LiquidbarsNode.Block block = (LiquidbarsNode.Block) node;
         Object value = context.resolve(block.getArg());

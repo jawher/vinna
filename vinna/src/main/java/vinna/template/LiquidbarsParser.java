@@ -1,9 +1,7 @@
 package vinna.template;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +9,8 @@ import java.util.regex.Pattern;
  * regexp FTW !
  */
 public class LiquidbarsParser {
+
+    private final Map<String, BlockHandler> handlers;
 
     private static class Token {
         private enum Type {
@@ -55,7 +55,8 @@ public class LiquidbarsParser {
     private Token eof = null;
     private int row = 1, col = 0;
 
-    public LiquidbarsParser(Reader reader) {
+    public LiquidbarsParser(Reader reader, Map<String, BlockHandler> handlers) {
+        this.handlers = handlers;
         this.reader = new BufferedReader(reader);
     }
 
@@ -182,7 +183,6 @@ public class LiquidbarsParser {
                     throw new RuntimeException("Was expecting a close pair but got " + current);
                 }
             } else if (is(Token.Type.OPEN_TAG)) {
-
                 String name;
                 String arg = null;
                 advance();
@@ -217,8 +217,13 @@ public class LiquidbarsParser {
                         return Arrays.<LiquidbarsNode>asList(new LiquidbarsNode.Block(openSectionName, openSectionArg, nodes));
                     }
                 } else {
-                    pushSectionName(name, arg);
-                    nodes.addAll(start());
+                    BlockHandler handler = handlers.get(name);
+                    if (handler != null && !handler.wantsCloseTag()) {
+                        nodes.add(new LiquidbarsNode.Block(name, arg, Collections.<LiquidbarsNode>emptyList()));
+                    } else {
+                        pushSectionName(name, arg);
+                        nodes.addAll(start());
+                    }
                 }
             } else {
                 return nodes;
@@ -238,8 +243,8 @@ public class LiquidbarsParser {
 
     public static void main(String[] args) {
 
-        testLex();
-        //bench();
+        //testLex();
+        bench();
 
         /*String text = "{% each items %}{% if visible %}-{ {{ text }}{{ else }}- ***\n{% end if %}{% end eachp %}";
 
@@ -264,7 +269,9 @@ public class LiquidbarsParser {
                 t0 = System.currentTimeMillis();
             }
             final InputStreamReader templateReader = new InputStreamReader(LiquidbarsParser.class.getResourceAsStream("new-liquid.html"));
-            final LiquidbarsParser parser = new LiquidbarsParser(templateReader);
+            Map<String, BlockHandler> xhandlers=new HashMap<>();
+            xhandlers.put("else", new ElseBlock());
+            final LiquidbarsParser parser = new LiquidbarsParser(templateReader, xhandlers);
             parser.parse();
         }
         long t1 = System.currentTimeMillis();
@@ -281,7 +288,10 @@ public class LiquidbarsParser {
 
     private static void testLex() {
         final String text = "{% each items %}{% if visible %}-{ {{ text }}{% else %}- ***\n{% endif %}{% endeach %}";
-        LiquidbarsParser parser = new LiquidbarsParser(new InputStreamReader(LiquidbarsParser.class.getResourceAsStream("new-liquid.html")));
+        Map<String, BlockHandler> xhandlers=new HashMap<>();
+        xhandlers.put("else", new ElseBlock());
+
+        LiquidbarsParser parser = new LiquidbarsParser(new InputStreamReader(LiquidbarsParser.class.getResourceAsStream("new-liquid.html")), xhandlers);
         Token tk;
         do {
             tk = parser.nextToken();
