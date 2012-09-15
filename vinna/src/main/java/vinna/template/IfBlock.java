@@ -7,6 +7,11 @@ import java.util.Collection;
 public class IfBlock implements BlockHandler {
 
     @Override
+    public boolean wantsCloseTag() {
+        return true;
+    }
+
+    @Override
     public void render(LiquidbarsNode node, Context context, BlockHandler defaultBlockHandler, Writer out) throws IOException {
         LiquidbarsNode.Block block = (LiquidbarsNode.Block) node;
         Object value = context.resolve(block.getArg());
@@ -23,7 +28,7 @@ public class IfBlock implements BlockHandler {
 
         Context subContext = new Context(context, value);
         for (LiquidbarsNode child : block.getChildren()) {
-            if (child instanceof LiquidbarsNode.Variable && ("else".equals(((LiquidbarsNode.Variable) child).getName()))) {
+            if (child instanceof LiquidbarsNode.Block && ("else".equals(((LiquidbarsNode.Block) child).getName()))) {
                 doit = !doit;
             } else if (doit) {
                 defaultBlockHandler.render(child, subContext, defaultBlockHandler, out);
