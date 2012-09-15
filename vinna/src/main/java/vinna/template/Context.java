@@ -1,15 +1,16 @@
 package vinna.template;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Context {
     private static final Object NOT_FOUND = new Object();
+    public static final Class[] NO_ARGS = new Class[]{};
     private final Context parent;
     private final Object data;
     private final Object helper;
@@ -119,50 +120,83 @@ public class Context {
         if (accessorCache.containsKey(k)) {
             return accessorCache.get(k);
         } else {
-            try {
-                Method getter = new PropertyDescriptor(key, root.getClass()).getReadMethod();
-                if (getter != null) {
-                    final Accessor.MethodAccessor accessor = new Accessor.MethodAccessor(getter);
-                    accessorCache.put(k, accessor);
-                    return accessor;
-                }
-            } catch (IntrospectionException e) {
-                // nop
-            }
-            try {
-                Method method = root.getClass().getMethod(key);
-                method.setAccessible(true);
-                final Accessor.MethodAccessor accessor = new Accessor.MethodAccessor(method);
-                accessorCache.put(k, accessor);
-                return accessor;
-            } catch (NoSuchMethodException e) {
-                // nop
-            }
-            try {
-                Field field = root.getClass().getField(key);
-                final Accessor.FieldAccessor accessor = new Accessor.FieldAccessor(field);
-                accessorCache.put(k, accessor);
-                return accessor;
-            } catch (NoSuchFieldException e) {
-                //nop
-            }
-
-            if (helper != null) {
-                Method[] methods = helper.getClass().getDeclaredMethods();
-                for (Method method : methods) {
-                    if (key.equals(method.getName()) && method.getParameterTypes().length == 1) {
-                        if (method.getParameterTypes()[0].isAssignableFrom(root.getClass())) {
-                            final Accessor.HelperAccessor accessor = new Accessor.HelperAccessor(method);
-                            accessorCache.put(k, accessor);
-                            return accessor;
+            Accessor accessor = internalAcessorFor(key, root, false);
+            if (accessor == null) {
+                if (helper != null) {
+                    accessor = internalAcessorFor(key, helper, true);
+                    if (accessor == null) {
+                        Method helperMethod = searchMethod(key, helper.getClass(), new Class[]{root.getClass()}, true);
+                        if (helperMethod != null) {
+                            accessor = new Accessor.HelperAccessor(helperMethod);
                         }
                     }
                 }
             }
 
-            accessorCache.put(k, Accessor.NoAccessor.INSTANCE);
-            return Accessor.NoAccessor.INSTANCE;
+            if (accessor == null) {
+                accessor = Accessor.NoAccessor.INSTANCE;
+            }
+            accessorCache.put(k, accessor);
+
+            return accessor;
         }
+    }
+
+    private Accessor internalAcessorFor(String key, Object root, boolean helperMode) {
+        Method getter = searchMethod("get" + capitalize(key), root.getClass(), NO_ARGS, true);
+        if (getter == null) {
+            getter = searchMethod("is" + capitalize(key), root.getClass(), NO_ARGS, true);
+        }
+        if (getter != null) {
+            return new Accessor.MethodAccessor(getter, helperMode);
+        }
+
+        Method method = searchMethod(key, root.getClass(), NO_ARGS, true);
+        if (method != null) {
+            method.setAccessible(true);
+            return new Accessor.MethodAccessor(method, helperMode);
+        }
+
+        try {
+            Field field = root.getClass().getField(key);
+            return new Accessor.FieldAccessor(field, helperMode);
+        } catch (NoSuchFieldException e) {
+            //nop
+        }
+        return null;
+    }
+
+    private static String capitalize(String name) {
+        return name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
+    }
+
+    private static Method searchMethod(String methodName, Class clazz, Class[] args, boolean notVoid) {
+        for (Class base = clazz; base != null; base = base.getSuperclass()) {
+            Method[] methods = base.getDeclaredMethods();
+            for (Method method : methods) {
+                if (methodName.equals(method.getName()) && method.getParameterTypes().length == args.length && Modifier.isPublic(
+                        method.getModifiers())) {
+                    boolean match = true;
+                    for (int i = 0; i < args.length; i++) {
+                        Class argClass = args[i];
+                        if (!method.getParameterTypes()[i].isAssignableFrom(argClass)) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        if (notVoid) {
+                            if (!method.getReturnType().equals(Void.TYPE) && !method.getReturnType().equals(Void.class)) {
+                                return method;
+                            }
+                        } else {
+                            return method;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private interface Accessor {
@@ -170,15 +204,17 @@ public class Context {
 
         public static class MethodAccessor implements Accessor {
             private final Method getter;
+            private final boolean helperMode;
 
-            public MethodAccessor(Method getter) {
+            public MethodAccessor(Method getter, boolean helperMode) {
                 this.getter = getter;
+                this.helperMode = helperMode;
             }
 
             @Override
             public Object get(Object root, Object helper) {
                 try {
-                    return getter.invoke(root);
+                    return getter.invoke(helperMode ? helper : root);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -187,15 +223,17 @@ public class Context {
 
         public static class FieldAccessor implements Accessor {
             private final Field getter;
+            private final boolean helperMode;
 
-            public FieldAccessor(Field getter) {
+            public FieldAccessor(Field getter, boolean helperMode) {
                 this.getter = getter;
+                this.helperMode = helperMode;
             }
 
             @Override
             public Object get(Object root, Object helper) {
                 try {
-                    return getter.get(root);
+                    return getter.get(helperMode ? helper : root);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
