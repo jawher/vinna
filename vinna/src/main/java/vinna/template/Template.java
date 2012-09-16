@@ -1,5 +1,6 @@
 package vinna.template;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class Template {
             for (LiquidbarsNode node : rootNodes) {
                 liquidbars.defaultRenderer.render(node, context, liquidbars.defaultRenderer, out);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
