@@ -6,12 +6,12 @@ import vinna.response.Response;
 
 public class InterceptorAdapter implements Interceptor {
     @Override
-    public void beforeMatch(VinnaRequestWrapper request) {
+    public void beforeMatch(VinnaRequestWrapper request, VinnaResponseWrapper response) {
         // do nothing by default
     }
 
     @Override
-    public Response afterMatch(VinnaRequestWrapper request, boolean hasMatched) {
+    public Response afterMatch(VinnaRequestWrapper request, VinnaResponseWrapper response, boolean hasMatched) {
         // do nothing by default
         return null;
     }

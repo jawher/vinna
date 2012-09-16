@@ -6,9 +6,9 @@ import vinna.response.Response;
 
 public interface Interceptor {
 
-    public void beforeMatch(VinnaRequestWrapper request);
+    public void beforeMatch(VinnaRequestWrapper request, VinnaResponseWrapper response);
 
-    public Response afterMatch(VinnaRequestWrapper request, boolean hasMatched);
+    public Response afterMatch(VinnaRequestWrapper request, VinnaResponseWrapper response, boolean hasMatched);
 
     public void beforeExecute(VinnaRequestWrapper request, VinnaResponseWrapper response);
 

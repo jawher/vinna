@@ -88,9 +88,9 @@ public class VinnaFilter implements Filter {
 
             logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
 
-            callBeforeMatchInterceptors(vinnaRequest);
+            callBeforeMatchInterceptors(vinnaRequest, vinnaResponse);
             RouteResolution resolvedRoute = vinna.getRouter().match(vinnaRequest);
-            Response routeResponse = callAfterMatchInterceptors(vinnaRequest, resolvedRoute != null);
+            Response routeResponse = callAfterMatchInterceptors(vinnaRequest, vinnaResponse, resolvedRoute != null);
 
             if (resolvedRoute != null && routeResponse == null) {
                 routeResponse = resolvedRoute.callAction(vinna);
@@ -100,17 +100,15 @@ public class VinnaFilter implements Filter {
                 try {
                     callBeforeExecute(vinnaRequest, vinnaResponse);
                     routeResponse.execute(vinnaRequest, vinnaResponse);
-                    // TODO call after execute interceptor
 
                     httpSession = vinnaRequest.getSession(false);
                     if (httpSession != null) {
                         httpSession.setAttribute(VINNA_SESSION_KEY, session);
                     }
                 } catch (VuntimeException e) {
-                    // TODO call after execute interceptor
                     logger.error("Error while processing the request", e);
-                    e.printStackTrace(vinnaResponse.getWriter());
                     vinnaResponse.setStatus(500);
+                    e.printStackTrace(vinnaResponse.getWriter());
                 } catch (PassException e) {
                     logger.info("Response delegated to FilterChain.doChain");
                     chain.doFilter(request, response);
@@ -118,6 +116,7 @@ public class VinnaFilter implements Filter {
                     logger.error("Vinna internal error occurred !", e);
                     throw new ServletException(e);
                 }
+                callAfterExecute(vinnaRequest, vinnaResponse);
             } else {
                 logger.debug("Unable to resolve '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
                 chain.doFilter(request, response);
@@ -127,9 +126,9 @@ public class VinnaFilter implements Filter {
         }
     }
 
-    private void callBeforeMatchInterceptors(VinnaRequestWrapper request) {
+    private void callBeforeMatchInterceptors(VinnaRequestWrapper request, VinnaResponseWrapper response) {
         for (Interceptor interceptor : interceptors) {
-            interceptor.beforeMatch(request);
+            interceptor.beforeMatch(request, response);
         }
     }
 
@@ -145,11 +144,10 @@ public class VinnaFilter implements Filter {
         }
     }
 
-    // TODO defined how to interact with route resolution
-    private Response callAfterMatchInterceptors(VinnaRequestWrapper request, boolean hasMatched) {
+    private Response callAfterMatchInterceptors(VinnaRequestWrapper request, VinnaResponseWrapper response, boolean hasMatched) {
         Response interceptorResponse;
         for (Interceptor interceptor : interceptors) {
-            interceptorResponse = interceptor.afterMatch(request, hasMatched);
+            interceptorResponse = interceptor.afterMatch(request, response, hasMatched);
             if (interceptorResponse != null) {
                 return interceptorResponse;
             }
