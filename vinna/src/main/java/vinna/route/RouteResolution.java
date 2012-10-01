@@ -1,5 +1,7 @@
 package vinna.route;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vinna.Vinna;
 import vinna.exception.ConversionException;
 import vinna.exception.VuntimeException;
@@ -16,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RouteResolution {
+    private static final Logger log = LoggerFactory.getLogger(RouteResolution.class);
+
     private final Map<String, String> paramValues;
     private final Route.Action action;
     private final Request request;
@@ -55,13 +59,16 @@ public class RouteResolution {
                 final Class argType = argTypes[i];
                 final ActionArgument actionArgument = action.methodParameters.get(i);
 
-                castedParams.add(actionArgument.resolve(env, argType));
+                try {
+                    castedParams.add(actionArgument.resolve(env, argType));
+                } catch (ConversionException e) {
+                    //FIXME: handle conversion errors in resolve: what to do ? 404 ?
+                    log.error("Error while converting argument "+actionArgument+" to type "+argType, e);
+                    return ResponseBuilder.withStatus(500);
+                }
             }
 
             return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
-        } catch (ConversionException e) {
-            //FIXME: handle conversion errors in resolve: what to do ? 404 ?
-            return ResponseBuilder.withStatus(500);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new VuntimeException(e);
         }

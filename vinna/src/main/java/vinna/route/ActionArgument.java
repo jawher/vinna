@@ -45,6 +45,12 @@ public interface ActionArgument {
             //TODO: handle primtives/object duos
             return value == null || type.isAssignableFrom(value.getClass());
         }
+
+
+        @Override
+        public String toString() {
+            return "const['" + value + "']";
+        }
     }
 
     public static class Variable extends ChameleonArgument {
@@ -68,6 +74,12 @@ public interface ActionArgument {
             }
             return Conversions.convertString(value, targetType);
         }
+
+
+        @Override
+        public String toString() {
+            return "variable['" + name + "']";
+        }
     }
 
     public static class RequestParameter extends ChameleonArgument {
@@ -88,6 +100,11 @@ public interface ActionArgument {
                 }
             }
             return Conversions.convertString(env.request.getParameter(name), targetType);
+        }
+
+        @Override
+        public String toString() {
+            return "req.param['" + name + "']";
         }
     }
 
@@ -129,6 +146,12 @@ public interface ActionArgument {
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(InputStream.class);
         }
+
+
+        @Override
+        public String toString() {
+            return "req.body";
+        }
     }
 
     public static class Header extends ChameleonArgument {
@@ -156,6 +179,12 @@ public interface ActionArgument {
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
+
+
+        @Override
+        public String toString() {
+            return "req.header['" + headerName + "']";
+        }
     }
 
     public static class Headers implements ActionArgument {
@@ -169,6 +198,12 @@ public interface ActionArgument {
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(Map.class);
         }
+
+
+        @Override
+        public String toString() {
+            return "req.headers";
+        }
     }
 
     public static class RequestParameters implements ActionArgument {
@@ -181,6 +216,11 @@ public interface ActionArgument {
         @Override
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(Map.class);
+        }
+
+        @Override
+        public String toString() {
+            return "req.params";
         }
     }
 
@@ -207,6 +247,12 @@ public interface ActionArgument {
         public Cookie asCookie() {
             this.type = Cookie.class;
             return null;
+        }
+
+
+        @Override
+        public String toString() {
+            return "req.cookie['" + cookieName + "']";
         }
     }
 
