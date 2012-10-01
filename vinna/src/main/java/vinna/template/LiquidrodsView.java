@@ -2,6 +2,7 @@ package vinna.template;
 
 import liquidrods.*;
 import vinna.Model;
+import vinna.Session;
 import vinna.Validation;
 import vinna.VinnaContext;
 import vinna.response.ResponseBuilder;
@@ -89,5 +90,9 @@ public class LiquidrodsView extends ResponseBuilder {
 
     public void validation(Validation validation) {
         this.validation = validation;
+    }
+
+    public Session session() {
+        return VinnaContext.get().session;
     }
 }
