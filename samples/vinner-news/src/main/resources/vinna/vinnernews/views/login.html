@@ -35,39 +35,50 @@
         <div id="pageBody">
             {% extends base.html %}
             {% define body %}
-            <form action="/submit" method="POST" class="form-horizontal">
-                <legend>Submit a link</legend>
+            <form action="/login" method="POST" class="form-horizontal">
+                <legend>Login</legend>
+                {% if firstErrors.general %}
+                <div class="alert alert-error">
+                    {{firstErrors.general}}
+                </div>
+                {% end %}
 
-
-                <div class="control-group{% if firstErrors.title %} error{% end %}">
-                    <label class="control-label" for="inputTitle">Title</label>
+                <div class="control-group{% if firstErrors.login %} error{% end %}">
+                    <label class="control-label" for="inputLogin">Login</label>
 
                     <div class="controls">
-                        <input class="input-xxlarge" type="text"
-                               id="inputTitle" name="title" placeholder="Type something…"
-                               value="{{title}}">
-                        {% if firstErrors.title %}
-                        <span class="help-inline">{{firstErrors.title}}</span>
+                        <input class="input" type="text"
+                               id="inputLogin" name="login" placeholder="login…"
+                               value="{{login}}">
+                        {% if firstErrors.login %}
+                        <span class="help-inline">{{firstErrors.login}}</span>
                         {% end %}
                     </div>
                 </div>
 
-                <div class="control-group{% if firstErrors.link %} error{% end %}">
-                    <label class="control-label" for="inputLink">Link</label>
+                <div class="control-group{% if firstErrors.password %} error{% end %}">
+                    <label class="control-label" for="inputPassword">Password</label>
 
                     <div class="controls">
-                        <input class="input-xxlarge" type="text"
-                               id="inputLink" name="link" placeholder="Type something…"
+                        <input class="input" type="password"
+                               id="inputPassword" name="password" placeholder="password…"
                                value="{{link}}">
-                        {% if firstErrors.link %}
-                        <span class="help-inline">{{firstErrors.link}}</span>
+                        {% if firstErrors.password %}
+                        <span class="help-inline">{{firstErrors.password}}</span>
                         {% end %}
                     </div>
                 </div>
 
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <label class="checkbox">
+                            <input type="checkbox" name="remeberMe" value="true">Remember me
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button type="submit" class="btn btn-primary">Login</button>
                         <a href="/" class="btn">Cancel</a>
                     </div>
                 </div>

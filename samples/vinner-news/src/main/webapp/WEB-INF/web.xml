@@ -6,8 +6,8 @@
         <filter-name>vinnaFilter</filter-name>
         <filter-class>vinna.VinnaFilter</filter-class>
         <init-param>
-            <param-name>base-package</param-name>
-            <param-value>vinna.vinnernews</param-value>
+            <param-name>application-class</param-name>
+            <param-value>vinna.vinnernews.VinnerApp</param-value>
         </init-param>
     </filter>
 

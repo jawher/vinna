@@ -1,18 +1,17 @@
 package vinna.vinnernews.controllers;
 
 import vinna.Validation;
+import vinna.VinnaContext;
 import vinna.response.Redirect;
 import vinna.response.Response;
 import vinna.response.StringResponse;
 import vinna.template.LiquidrodsResponse;
 import vinna.template.LiquidrodsView;
+import vinna.vinnernews.VinnerSession;
 import vinna.vinnernews.model.DummyRepository;
 import vinna.vinnernews.model.Submission;
 import vinna.vinnernews.util.Seo;
-import vinna.vinnernews.views.ListView;
-import vinna.vinnernews.views.NotFoundView;
-import vinna.vinnernews.views.SubmissionView;
-import vinna.vinnernews.views.SubmitView;
+import vinna.vinnernews.views.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -65,14 +64,67 @@ public class VinnerControler {
         }
     }
 
+    public Response loginForm() {
+        if (getSession().exists()) {
+            return Redirect.found("/");//FIXME: maybe add a message explaining why
+        } else {
+            return new LoginView();
+        }
+    }
+
+    public Response login(String login, String password, String rememberMe) {
+        Validation validation = new Validation();
+        validation.required(login, "login")
+                .required(password, "password")
+                .custom(new AuthValidator(login), password, "general");
+        if (validation.hasErrors()) {
+            return new LoginView(login, validation);
+        } else {
+            //validate login/password
+            getSession().create();
+            getSession().login = login;
+            return Redirect.found("/");
+        }
+    }
+
+    public Response logout() {
+        VinnerSession session = getSession();
+        if (session.exists()) {
+            session.delete();
+        }
+        return Redirect.found("/");
+    }
+
+
+    private VinnerSession getSession() {
+        return (VinnerSession) VinnaContext.get().session;
+    }
+
+    private static class AuthValidator implements Validation.Validator {
+        private final String login;
+
+        private AuthValidator(String login) {
+            this.login = login;
+        }
+
+        @Override
+        public void validate(String value) throws ValidationError {
+            if (!login.equals(value)) {
+                throw ValidationError.withMessage("Invalid credentials");
+            }
+        }
+    }
 
     private static class UrlValidator implements Validation.Validator {
 
         @Override
         public void validate(String value) throws ValidationError {
+            if (value == null) {
+                throw ValidationError.withMessage("Invalid link");
+            }
             try {
                 URI uri = new URI(value);
-                if(!uri.isAbsolute()) {
+                if (!uri.isAbsolute()) {
                     throw ValidationError.withMessage("Invalid link");
                 }
             } catch (URISyntaxException e) {

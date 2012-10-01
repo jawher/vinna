@@ -33,7 +33,12 @@
                     <a href="/">Home</a>
                 </li>
                 <li {% if inSubmit %} class="active" {% end %}><a href="/submit">Submit a link</a></li>
+                {% if session.login %}
+                <li class="pull-right"><a href="/logout">Logout</a></li>
+                <li class="pull-right"><a href="/user/{{session.login}}">{{session.login}}</a></li>
+                {% else %}
                 <li class="{% if inLogin %}active {% end %}pull-right"><a href="/login">Login</a></li>
+                {% end %}
             </ul>
             {% end %}
         </div>
