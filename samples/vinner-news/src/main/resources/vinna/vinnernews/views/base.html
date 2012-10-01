@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Vinner news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 20px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+    <link href="/css/bootstrap-responsive.css" rel="stylesheet">
+</head>
+<body>
+<div id="body" class="container">
+
+    <div id="page" class="offset2 span8">
+
+        <div id="pageHeader">
+            {% placeholder title %}
+            <h1>Vinner.News <small>The backpage of the internet</small></h1>
+
+            <!--<p class="lead">
+            </p>-->
+
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a href="/">Home</a>
+                </li>
+                <li><a href="/submit">Submit a link</a></li>
+                <li class="pull-right"><a href="/login">Login</a></li>
+            </ul>
+            {% end %}
+        </div>
+
+        <div id="pageBody">
+            {% placeholder body %}
+            Here be dragons !
+            {% end %}
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

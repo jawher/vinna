@@ -17,6 +17,7 @@
     <modules>
         <module>vinna</module>
         <module>samples/todo-sample</module>
+        <module>samples/vinner-news</module>
         <module>samples/declarative-sample</module>
         <module>samples/programmatic-sample</module>
         <module>archetypes/maven/vinna-declarative-archetype</module>

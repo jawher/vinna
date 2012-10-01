@@ -1,0 +1,5 @@
+GET / VinnerControler.index()
+GET /news/{id} VinnerControler.index({id})
+GET /submission/{id}/{title} VinnerControler.submission({id}, {title})
+GET /submit VinnerControler.submitForm()
+POST /submit VinnerControler.submit({req.param.title}, {req.param.link})

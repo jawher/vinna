@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+    <title>Todo</title>
+    <meta charset="UTF-8">
+    <link href="/styles.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="body">
+    {% extends base.html %}
+    <div id="page">
+
+        <div id="pageHeader">
+            <h1>Vinner news: fuck yeah !</h1>
+        </div>
+
+        <div id="pageBody">
+            {% define body %}
+            <div id="todoList">
+
+                <table class="table table-condensed">
+                    {% for submissions %}
+                    <tr>
+                        <td rowspan="2" style="vertical-align: middle; text-align: center;">
+                            <span class="badge">{{index}}</span></td>
+                        <td>
+                            <h4 class="pull-left"><a href="{{link}}">{{{title}}}</a> <small>(<a href="/{{domain}}" class="muted">{{domain}}</a>)</small></h4>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: none">
+                            <small>23 points | submitted by <a href="/{{domain}}">djo</a> | {{niceDate}} | {{creationDate.niceDate}}<a
+                                    href="{{submissionLocation}}">123 comments</a></small>
+                        </td>
+                    </tr>
+                    {% end %}
+                </table>
+
+                <ul class="pager">
+                    {% if showPrev %}
+                    <li><a href="/news/{{prevPage}}">&larr; Previous</a></li>
+                    {% end %}
+                    <li><a href="/news/{{nextPage}}">Next &rarr;</a></li>
+                </ul>
+            </div>
+            {% end %}
+        </div>
+
+    </div>
+    {% end %}
+</div>
+</body>
+</html>

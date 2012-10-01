@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Vinner news</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+    <link href="/css/bootstrap-responsive.css" rel="stylesheet">
+</head>
+<body>
+<div id="body" class="container">
+
+    <div id="page" class="offset2 span8">
+
+        <div id="pageHeader">
+            <h1>Vinner.News</h1>
+
+            <p class="lead">The backpage of the internet
+            </p>
+
+            <p><a class="btn btn-primary" href="/submit">
+                <i class="icon-plus icon-white"></i> Submit a link
+            </a></p>
+        </div>
+
+        <div id="pageBody">
+            {% extends base.html %}
+            {% define body %}
+            <h2>{{{submission.title}}}</h2>
+            {% end %}
+            {% end %}
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
