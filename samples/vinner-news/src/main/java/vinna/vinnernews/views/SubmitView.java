@@ -20,5 +20,7 @@ public class SubmitView extends LiquidrodsView {
         super.validation = validation;
     }
 
-
+    public boolean inSubmit() {
+        return true;
+    }
 }

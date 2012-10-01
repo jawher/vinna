@@ -42,11 +42,7 @@ public class ListView extends LiquidrodsView {
         return Seo.submissionLocation(s);
     }
 
-    public String niceDate(Submission s) {
-        return "fuck off";
-    }
-
-    public String niceDate(Date date) {
-        return "xxxxxXxxxxx";
+    public boolean inHome() {
+        return true;
     }
 }

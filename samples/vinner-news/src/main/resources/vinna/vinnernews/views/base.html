@@ -29,11 +29,11 @@
             </p>-->
 
             <ul class="nav nav-pills">
-                <li class="active">
+                <li {% if inHome %} class="active" {% end %}>
                     <a href="/">Home</a>
                 </li>
-                <li><a href="/submit">Submit a link</a></li>
-                <li class="pull-right"><a href="/login">Login</a></li>
+                <li {% if inSubmit %} class="active" {% end %}><a href="/submit">Submit a link</a></li>
+                <li class="{% if inLogin %}active {% end %}pull-right"><a href="/login">Login</a></li>
             </ul>
             {% end %}
         </div>
