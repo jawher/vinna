@@ -3,7 +3,7 @@ package ${package}.controllers;
 import vinna.response.Response;
 import vinna.response.StringResponse;
 
-public class HelloControler {
+public class HelloController {
 
     public Response index() {
         return new StringResponse("Go to /hello/{your name} for a free hug !");
