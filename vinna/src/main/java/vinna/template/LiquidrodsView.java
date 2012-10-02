@@ -1,7 +1,8 @@
 package vinna.template;
 
-import liquidrods.*;
-import vinna.Model;
+import liquidrods.Config;
+import liquidrods.Liquidrods;
+import liquidrods.Template;
 import vinna.Session;
 import vinna.Validation;
 import vinna.VinnaContext;
@@ -39,7 +40,6 @@ public class LiquidrodsView extends ResponseBuilder {
 
     @Override
     protected void writeBody(ServletOutputStream out) throws IOException {
-
 
         final Template template;
         if (templateReader != null) {
@@ -94,5 +94,9 @@ public class LiquidrodsView extends ResponseBuilder {
 
     public Session session() {
         return VinnaContext.get().session;
+    }
+
+    public String contextPath() {
+        return VinnaContext.get().servletContext.getContextPath();
     }
 }
