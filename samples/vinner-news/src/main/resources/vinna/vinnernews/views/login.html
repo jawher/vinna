@@ -34,7 +34,7 @@
 
         <div id="pageBody">
             {% extends base.html %}
-            {% define body %}
+            {% block body %}
             <form action="/login" method="POST" class="form-horizontal">
                 <legend>Login</legend>
                 {% if firstErrors.general %}
@@ -83,7 +83,6 @@
                     </div>
                 </div>
             </form>
-            {% end %}
             {% end %}
         </div>
 
