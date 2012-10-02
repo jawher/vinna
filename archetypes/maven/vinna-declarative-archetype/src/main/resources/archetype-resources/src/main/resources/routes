@@ -1,3 +1,3 @@
-GET / HelloControler.index()
+GET / HelloController.index()
 
-GET /hello/{name} HelloControler.sayHello({name}, {req.param.ohai})
+GET /hello/{name} HelloController.sayHello({name}, {req.param.ohai})
