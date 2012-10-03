@@ -44,6 +44,13 @@ public class DeclarativeRoutingTest {
     }
 
     @Test
+    public void handlesPassAsAnAction() {
+        Vinna app = oneRouteApp("get /users pass");
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
     public void failsWithAPostVerbInRouteButNotInRequest() {
         Vinna app = oneRouteApp("post", "/users");
         MockedRequest mockedRequest = MockedRequest.get("/users").build();

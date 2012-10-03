@@ -88,7 +88,7 @@ public class VinnaFilter implements Filter {
             RouteResolution resolvedRoute = vinna.getRouter().match(vinnaRequest);
             if (resolvedRoute != null) {
                 try {
-                    Response outcome = resolvedRoute.callAction(vinna);
+                    Response outcome = resolvedRoute.callAction(vinnaRequest, vinna);
                     outcome.execute(vinnaRequest, vinnaResponse);
                     httpSession = vinnaRequest.getSession(false);
                     if (httpSession != null) {

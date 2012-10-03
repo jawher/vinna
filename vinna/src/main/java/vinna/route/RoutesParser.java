@@ -68,10 +68,11 @@ public class RoutesParser {
         String line;
         int lineNum = 0;
         String verbp = "(?<verb>[^\\s]+)";
+        String passp = "(?<pass>pass)";
         String controllerAndMethodp = "(?<controller>.+)\\.(?<method>[^\\.]+)";
         String actionp = controllerAndMethodp + "\\s*\\((?<args>.*)\\)";
         String pathp = "(?<path>.+?)";
-        Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+" + actionp);
+        Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+(" + actionp + "|" + passp + ")");
 
         try {
             while ((line = readLine()) != null) {
@@ -83,9 +84,19 @@ public class RoutesParser {
                     } else {
                         String verb = rm.group("verb");
                         String path = prefix + rm.group("path");
-                        String controller = rm.group("controller");
-                        String method = rm.group("method");
-                        String args = rm.group("args").trim();
+                        boolean pass = rm.group("pass") != null;
+                        String controller = null;
+                        String method = null;
+                        String args = null;
+                        if (!pass) {
+                            method = rm.group("method");
+                            controller = rm.group("controller");
+                            args = rm.group("args");
+                            if (args != null) {
+                                args = args.trim();
+                            }
+                        }
+
 
                         //read constraints
                         Map<String, Pattern> queryVars = new HashMap<>();
@@ -129,7 +140,9 @@ public class RoutesParser {
                         }
 
                         ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, new Route.Action(controller, method, parseArgs(args))));
+                        RouteResolution.Action action = pass ? PassAction.INSTANCE :
+                                new InvokeMethodAction(controller, method, parseArgs(args));
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, action));
                     }
                 }
             }
@@ -365,7 +378,7 @@ public class RoutesParser {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return Conversions.convertNumeric(value, targetType);
         }
 

@@ -2,46 +2,14 @@ package vinna.route;
 
 import vinna.http.Request;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Route {
-
     // TODO multiple action per route
-    public static final class Action {
-        public final String controllerId;
-        public final Class<?> controllerClass;
-        public final String methodName;
-        public final Method method;
-        public final List<ActionArgument> methodParameters;
-
-        public Action(String controllerId, String methodName, List<ActionArgument> methodParameters) {
-            this.controllerId = controllerId;
-            this.controllerClass = null;
-            this.methodName = methodName;
-            this.method = null;
-            this.methodParameters = methodParameters;
-        }
-
-        public Action(String controllerId, Class<?> controllerClass, Method method, List<ActionArgument> methodParameters) {
-            this.controllerId = controllerId;
-            this.controllerClass = controllerClass;
-            this.methodName = null;
-            this.method = method;
-            this.methodParameters = methodParameters;
-            // TODO check that methodParameters.size() == method.getParameterTypes().length
-        }
-
-        @Override
-        public String toString() {
-            return (controllerClass == null ? controllerId : controllerClass.getName()) + "." + (method == null ? methodName : method.getName());
-        }
-    }
 
     private final String verb;
     private final Pattern pathPattern;
@@ -50,10 +18,10 @@ public class Route {
     private final Map<String, Pattern> mandatoryQueryParameters;
     private final Map<String, Pattern> mandatoryRequestHeaders;
 
-    private final Action action;
+    private final RouteResolution.Action action;
 
     public Route(String verb, Pattern pathPattern, Collection<String> pathVariableNames, Map<String, Pattern> mandatoryQueryParameters,
-                 Map<String, Pattern> mandatoryRequestHeaders, Action action) {
+                 Map<String, Pattern> mandatoryRequestHeaders, RouteResolution.Action action) {
         this.verb = verb;
         this.pathPattern = pathPattern;
         this.mandatoryQueryParameters = mandatoryQueryParameters;
@@ -91,7 +59,7 @@ public class Route {
                     }
                 }
 
-                return new RouteResolution(action, paramValues, request);
+                return new RouteResolution(action, paramValues);
             }
         }
         return null;

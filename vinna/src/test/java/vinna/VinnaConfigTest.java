@@ -58,7 +58,7 @@ public class VinnaConfigTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
         verify(app.controllerSpy).index();
     }
@@ -80,7 +80,7 @@ public class VinnaConfigTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
         verify(app.controllerSpy).index();
     }
@@ -93,7 +93,7 @@ public class VinnaConfigTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
         verify(app.controllerSpy).action();
     }
@@ -116,7 +116,7 @@ public class VinnaConfigTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
         verify(app.controllerSpy).action();
     }
@@ -128,13 +128,13 @@ public class VinnaConfigTest {
         MockedRequest mockedRequest = MockedRequest.get("/custom1").build();
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerSpy).action();
 
         mockedRequest = MockedRequest.get("/custom2").build();
         resolution = app.getRouter().match(mockedRequest);
         Assert.assertNotNull(resolution);
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerSpy).action();
     }
 

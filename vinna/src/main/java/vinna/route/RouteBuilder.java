@@ -8,7 +8,9 @@ import vinna.exception.ConfigException;
 import vinna.response.Response;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +74,12 @@ public final class RouteBuilder {
         return this;
     }
 
+    public void pass() {
+        RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
+        Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, PassAction.INSTANCE);
+        context.addRoute(route);
+    }
+
     public void withMethod(String methodPattern) {
         Matcher methodMatcher = METHOD_PATTERN.matcher(methodPattern);
         if (methodMatcher.matches()) {
@@ -79,7 +87,7 @@ public final class RouteBuilder {
             String methodArgs = methodMatcher.group("args");
 
             RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-            Route.Action action = new Route.Action(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
+            RouteResolution.Action action = new InvokeMethodAction(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
             Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
             context.addRoute(route);
         } else {
@@ -92,7 +100,7 @@ public final class RouteBuilder {
 
         if (!controller.isInterface()) {
             // The controller is not an interface. Trying to create a proxy with javassist
-            // Final class cannot be extend and we cannot intercept call to final method
+            // Final class cannot be extend and we cannot intercept execute to final method
 
             if (Modifier.isFinal(controller.getModifiers())) {
                 throw new ConfigException("Cannot create proxy of final controller");
@@ -124,7 +132,7 @@ public final class RouteBuilder {
 
     private Route createRoute() {
         RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-        Route.Action action = new Route.Action(controllerId, controller, method, methodParameters);
+        RouteResolution.Action action = new InvokeMethodAction(controllerId, controller, method, methodParameters);
         return new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
     }
 

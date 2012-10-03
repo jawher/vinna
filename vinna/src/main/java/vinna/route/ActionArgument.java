@@ -1,9 +1,8 @@
 package vinna.route;
 
 import vinna.exception.VuntimeException;
-import vinna.http.MultipartRequest;
 import vinna.http.Cookie;
-import vinna.http.Request;
+import vinna.http.MultipartRequest;
 import vinna.http.UploadedFile;
 import vinna.util.Conversions;
 
@@ -18,16 +17,6 @@ import java.util.Map;
 
 public interface ActionArgument {
 
-    public static class Environment {
-        protected final Map<String, String> matchedVars;
-        protected final Request request;
-
-        public Environment(Request request, Map<String, String> matchedVars) {
-            this.matchedVars = matchedVars;
-            this.request = request;
-        }
-    }
-
     public static class Const<T> implements ActionArgument {
         private final T value;
 
@@ -36,7 +25,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return value;
         }
 
@@ -61,7 +50,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
             if (targetType.isAssignableFrom(Collection.class)) {
                 //TODO: simply do not expose asCollection for path variables ?
@@ -91,7 +80,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getParameters(name), typeArg);
@@ -116,7 +105,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (env.request instanceof MultipartRequest) {
                 final MultipartRequest request = (MultipartRequest) env.request;
                 return request.getPart(name);
@@ -134,7 +123,7 @@ public interface ActionArgument {
     public static class RequestBody implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             try {
                 return env.request.getInputStream();
             } catch (IOException e) {
@@ -169,7 +158,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getHeaderValues(headerName), typeArg);
@@ -190,7 +179,7 @@ public interface ActionArgument {
     public static class Headers implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return env.request.getHeaders();
         }
 
@@ -209,7 +198,7 @@ public interface ActionArgument {
     public static class RequestParameters implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return env.request.getParameters();
         }
 
@@ -233,7 +222,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             final Cookie cookie = env.request.getCookiesMap().get(cookieName);
             if (targetType.isAssignableFrom(Cookie.class)) {
                 return cookie;
@@ -312,7 +301,7 @@ public interface ActionArgument {
         }
     }
 
-    Object resolve(Environment env, Class<?> targetType);
+    Object resolve(RouteResolution.Action.Environment env, Class<?> targetType);
 
     boolean compatibleWith(Class<?> type);
 }

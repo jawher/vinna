@@ -84,6 +84,19 @@ public class ProgrammaticRoutingTest {
     }
 
     @Test
+    public void handlesPassAsAnAction() {
+        Vinna app = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users").pass();
+            }
+        };
+        app.init(Collections.<String, Object>emptyMap());
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
     public void failsWithAPostVerbInRouteButNotInRequest() {
         Vinna app = onePostRouteApp("/users");
         MockedRequest mockedRequest = MockedRequest.get("/users").build();

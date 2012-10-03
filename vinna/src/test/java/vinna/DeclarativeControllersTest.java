@@ -3,6 +3,7 @@ package vinna;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
@@ -86,6 +87,18 @@ public class DeclarativeControllersTest {
         }
     }
 
+    @Test(expected = PassException.class)
+    public void passesWithAPassAction() {
+        String route = "get /users pass";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+
+    }
+
     @Test
     public void passesAPathVarAsAString() {
         String route = "get /users/{id} Controller.actionString({id})";
@@ -94,7 +107,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionString("a");
     }
 
@@ -106,7 +119,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionString("a");
     }
 
@@ -118,7 +131,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
         verify(app.controllerMock).actionString("a");
     }
@@ -132,7 +145,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInt(5);
     }
 
@@ -144,7 +157,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInt(13);
     }
 
@@ -156,7 +169,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInt(27);
     }
 
@@ -168,7 +181,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(666);
     }
 
@@ -180,7 +193,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInt(13);
     }
 
@@ -192,7 +205,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(27);
     }
 
@@ -204,7 +217,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(true);
     }
 
@@ -216,7 +229,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(true);
     }
 
@@ -228,7 +241,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(true);
     }
 
@@ -240,7 +253,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(false);
     }
 
@@ -252,7 +265,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(false);
     }
 
@@ -264,7 +277,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(false);
     }
 
@@ -277,7 +290,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(Boolean.TRUE);
     }
 
@@ -289,7 +302,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(true);
     }
 
@@ -301,7 +314,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(true);
     }
 
@@ -313,7 +326,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(Boolean.FALSE);
     }
 
@@ -325,7 +338,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(false);
     }
 
@@ -337,7 +350,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(false);
     }
 
@@ -350,7 +363,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionString(ohai);
     }
 
@@ -363,7 +376,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(ohai);
     }
 
@@ -376,7 +389,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBool(true);
     }
 
@@ -388,7 +401,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionBoolean(true);
     }
 
@@ -400,7 +413,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(42);
     }
 
@@ -412,7 +425,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionFloat(42.7f);
     }
 
@@ -424,7 +437,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionDouble(42.7);
     }
 
@@ -438,7 +451,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
     }
 
     @Test
@@ -451,7 +464,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionColl(argThat(eqColl(params)));
     }
 
@@ -466,7 +479,7 @@ public class DeclarativeControllersTest {
         assertNotNull(resolution);
 
         ArgumentCaptor<Collection> argument = ArgumentCaptor.forClass(Collection.class);
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionColl(argThat(eqColl(1, 2, 3)));
     }
 
@@ -491,7 +504,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action("w");
     }
 
@@ -514,7 +527,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
     }
 
     @Test
@@ -525,7 +538,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action("w");
 
     }
@@ -538,7 +551,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(5);
 
     }
@@ -551,7 +564,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(5);
 
     }
@@ -564,7 +577,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(5);
 
     }
@@ -577,7 +590,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).actionInteger(5);
 
     }
@@ -590,7 +603,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
     }
 
@@ -602,7 +615,7 @@ public class DeclarativeControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
 
     }
 
