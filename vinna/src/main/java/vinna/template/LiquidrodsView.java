@@ -62,12 +62,17 @@ public class LiquidrodsView extends ResponseBuilder {
     }
 
     private Reader getTemplateReader(String prefix, String name) {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(prefix + name);
+        String viewPackage = getClass().getPackage().getName().replace(".", "/") + "/";
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(viewPackage + name);
+        if (stream == null) {
+            stream = getClass().getClassLoader().getResourceAsStream(prefix + name);
+        }
         if (stream == null) {
             stream = getClass().getClassLoader().getResourceAsStream(name);
         }
         if (stream == null) {
-            throw new RuntimeException("Can't find a template for the view class " + getClass() + ": Tried " + (prefix + name) + " and " + name);
+            throw new RuntimeException("Can't find a template for the view class " + getClass() + ": Tried " + (viewPackage + name) + ", " + (prefix + name) + " and " + name);
         }
         try {
             return new InputStreamReader(stream, "utf-8");
