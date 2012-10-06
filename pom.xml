@@ -16,7 +16,7 @@
 
     <modules>
         <module>vinna</module>
-        <module>samples/todo-sample</module>
+        <module>samples/todo-sample-jsp</module>
         <module>samples/todo-sample-liquidrods</module>
         <module>samples/declarative-sample</module>
         <module>samples/programmatic-sample</module>

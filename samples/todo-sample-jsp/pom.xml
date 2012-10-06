@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <name>Todo Sample Application</name>
+    <name>Todo-jsp</name>
     <url>https://github.com/jawher/vinna</url>
     <dependencies>
         <dependency>
