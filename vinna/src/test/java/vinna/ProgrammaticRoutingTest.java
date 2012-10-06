@@ -371,5 +371,24 @@ public class ProgrammaticRoutingTest {
         assertNotNull(vinna.getRouter().match(mockedRequest));
     }
 
+    @Test
+    public void pathVarsDontSpanMultipleSegments() {
+        Vinna app = oneRouteApp("/users/{id}/ohai");
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/6/ohai").build();
+        assertNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
+    public void pathVarsWithStarModifierSpanMultipleSegments() {
+        Vinna app = oneRouteApp("/users/{id*}/ohai");
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/6/ohai").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test(expected = ConfigException.class)
+    public void failsWhenPathContainsVarWithStarModifierAndPattern() {
+        oneRouteApp("/users/{id*: \\d+}/ohai");
+    }
+
     //TODO: moar test !
 }

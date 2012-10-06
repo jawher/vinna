@@ -112,6 +112,18 @@ public class DeclarativeControllersTest {
     }
 
     @Test
+    public void passesAStarPathVarAsAString() {
+        String route = "get /users/{id*} Controller.actionString({id})";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users/a/b/c").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+        verify(app.controllerMock).actionString("a/b/c");
+    }
+
+    @Test
     public void passesAQueryVarAsAString() {
         String route = "get /users Controller.actionString({req.param.id})";
         MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);

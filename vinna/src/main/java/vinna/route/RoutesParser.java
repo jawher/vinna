@@ -160,7 +160,7 @@ public class RoutesParser {
         if (!path.startsWith("/")) {
             path = ".*?/" + path;
         }
-        String ref = "\\{(.+?)\\}";
+        String ref = "\\{(.+?)(\\*?)\\}";
 
         Pattern refp = Pattern.compile(ref);
 
@@ -169,8 +169,12 @@ public class RoutesParser {
         Matcher m = refp.matcher(path);
         while (m.find()) {
             String var = m.group(1);
+            boolean multiSeg = !m.group(2).isEmpty();
             pathVariables.add(var);
             if (pathVarsConstraints.containsKey(var)) {
+                if(multiSeg) {
+                    throw new ConfigException("Cannot combine a user specified regexp and a *-modifier for thar variable " + var + " in " + path);
+                }
                 m.appendReplacement(pathPattern, "(?<$1>");
                             /*
                             Beware, for the beast is prawling the streets
@@ -181,7 +185,8 @@ public class RoutesParser {
                             */
                 pathPattern.append(pathVarsConstraints.get(var)).append(")");
             } else {
-                m.appendReplacement(pathPattern, "(?<$1>[^/]+)");
+                String pattern = multiSeg ? "(?<$1>.+?)" : "(?<$1>[^/]+)";
+                m.appendReplacement(pathPattern, pattern);
             }
         }
         m.appendTail(pathPattern);
@@ -196,7 +201,7 @@ public class RoutesParser {
     }
 
     public static ParsedPath parsePath(String path) {
-        String variable = "\\{(?<name>.+?)(\\s*:\\s*(?<pattern>.+?))?\\}";
+        String variable = "\\{(?<name>.+?)(?<star>\\*?)(\\s*:\\s*(?<pattern>.+?))?\\}";
         Pattern pathSegmentPattern = Pattern.compile("(?<ls>/)(" + variable + "|(?<seg>[^/?]+))");
 
         List<String> variablesNames = new ArrayList<>();
@@ -215,11 +220,16 @@ public class RoutesParser {
             } else {
                 String pattern = m.group("pattern");
                 String name = m.group("name");
+                boolean multiSeg = !m.group("star").isEmpty();
                 variablesNames.add(name);
                 if (pattern != null) {
+                    if (multiSeg) {
+                        throw new ConfigException("Cannot combine a user specified regexp and a *-modifier for thar variable " + name + " in " + path);
+                    }
                     pathPattern.append("(?<").append(name).append(">").append(pattern).append(")");
                 } else {
-                    pathPattern.append("(?<").append(name).append(">").append("[^/]+").append(")");
+                    String s = multiSeg ? ".+?" : "[^/]+";
+                    pathPattern.append("(?<").append(name).append(">").append(s).append(")");
                 }
             }
         }

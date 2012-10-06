@@ -222,6 +222,22 @@ public class ProgrammaticControllersTest {
     }
 
     @Test
+    public void passesAStarPathVarAsAString() {
+        MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users/{id*}").withController(StringArgController.class).action(param("id").asString());
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/a/b/c").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+        verify(app.controllerMock).action("a/b/c");
+    }
+
+    @Test
     public void passesAPathVarAsAnInt() {
         MockFactoryVinna<IntArgController> app = new MockFactoryVinna<IntArgController>() {
             @Override
