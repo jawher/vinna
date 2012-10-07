@@ -13,7 +13,6 @@ public class TodoController {
     private static final AtomicLong todoIdGenerator = new AtomicLong(0);
     private static final ConcurrentSkipListMap<Long, Todo> todoRepository = new ConcurrentSkipListMap<>();
 
-
     public Response list() {
         Forward forward = new Forward("/WEB-INF/index.jsp");
         forward.setAttribute("todos", todoRepository.values());

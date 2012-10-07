@@ -1,0 +1,23 @@
+{% extends base.html %}
+{% block content %}
+<h1>TODO list</h1>
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for todos %}
+    <tr>
+        <td>{{ title }}</td>
+        <td>{{ description }}</td>
+    </tr>
+    {% end %}
+    </tbody>
+</table>
+
+<hr/>
+<a class="btn btn-primary" href="new">Create</a>
+{% end %}

@@ -9,15 +9,17 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>vinna</groupId>
-    <artifactId>todo-sample</artifactId>
+    <artifactId>todo-sample-liquidrods</artifactId>
     <packaging>war</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <name>Todo Sample Application</name>
+    <name>Todorods</name>
+    <description>Todo Sample Application with Liquidrods</description>
     <url>https://github.com/jawher/vinna</url>
+
     <dependencies>
         <dependency>
             <groupId>vinna</groupId>
@@ -30,15 +32,11 @@
             <version>2.5</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.0.6</version>
         </dependency>
+
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
