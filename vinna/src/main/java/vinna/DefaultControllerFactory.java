@@ -2,12 +2,15 @@ package vinna;
 
 import vinna.exception.VuntimeException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DefaultControllerFactory implements ControllerFactory {
 
     private final String basePackage;
+    private final Map<String, Class<?>> cache = new HashMap<>();
 
     public DefaultControllerFactory(String basePackage) {
         this.basePackage = basePackage;
@@ -15,11 +18,13 @@ public class DefaultControllerFactory implements ControllerFactory {
 
     @Override
     public Object create(String id, Class<?> clazz) {
-        if (clazz == null) {
+        if (clazz == null && cache.containsKey(id)) {
+            clazz = cache.get(id);
+        } else if (clazz == null) {
             try {
                 clazz = Class.forName(id);
+                cache.put(id, clazz);
             } catch (ClassNotFoundException e) {
-                String id2 = basePackage + ".controllers." + id;
                 String id2 = basePackage + "." + VinnaContext.get().vinna.getConfig().get("controllers-package") + "." + id;
                 Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(id2);
                 if (!m.matches()) {
@@ -28,8 +33,9 @@ public class DefaultControllerFactory implements ControllerFactory {
                 id2 = m.group(1) + m.group(2).toUpperCase() + m.group(3);
                 try {
                     clazz = Class.forName(id2);
+                    cache.put(id, clazz);
                 } catch (ClassNotFoundException e1) {
-                    throw new VuntimeException("Invalid object id '" + id+"' : Tried classes "+id+" and "+id2+" but none were found");
+                    throw new VuntimeException("Invalid object id '" + id + "' : Tried classes " + id + " and " + id2 + " but none were found");
                 }
             }
         }
