@@ -2,15 +2,15 @@ package vinna;
 
 import vinna.exception.VuntimeException;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DefaultControllerFactory implements ControllerFactory {
 
     private final String basePackage;
-    private final Map<String, Class<?>> cache = new HashMap<>();
+    private final Map<String, Class<?>> cache = new ConcurrentHashMap<>();
 
     public DefaultControllerFactory(String basePackage) {
         this.basePackage = basePackage;
