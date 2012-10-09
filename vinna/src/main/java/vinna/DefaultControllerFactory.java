@@ -20,6 +20,7 @@ public class DefaultControllerFactory implements ControllerFactory {
                 clazz = Class.forName(id);
             } catch (ClassNotFoundException e) {
                 String id2 = basePackage + ".controllers." + id;
+                String id2 = basePackage + "." + VinnaContext.get().vinna.getConfig().get("controllers-package") + "." + id;
                 Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(id2);
                 if (!m.matches()) {
                     throw new VuntimeException("Something really fishy here: " + id2);

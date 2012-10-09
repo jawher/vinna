@@ -26,7 +26,7 @@ public class LiquidrodsView extends ResponseBuilder {
     public LiquidrodsView() {
         super(200);
         type("text/html");
-        final String prefix = VinnaContext.get().vinna.getBasePackage().replace(".", "/") + "/views/";
+        final String prefix = VinnaContext.get().vinna.getBasePackage().replace(".", "/") + "/" + VinnaContext.get().vinna.getConfig().get("views-package") + "/";
 
         config = new Config();
         config.templateLoader(new Config.TemplateLoader() {
@@ -90,7 +90,7 @@ public class LiquidrodsView extends ResponseBuilder {
     }
 
     public boolean hasErrors() {
-        return validation == null ? false : validation.hasErrors();
+        return validation != null && validation.hasErrors();
     }
 
     public void validation(Validation validation) {
