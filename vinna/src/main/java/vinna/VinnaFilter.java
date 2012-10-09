@@ -114,18 +114,12 @@ public class VinnaFilter implements Filter {
         }
     }
 
-    private final boolean isMultipartContent(HttpServletRequest request) {
+    private boolean isMultipartContent(HttpServletRequest request) {
         if ("GET".equals(request.getMethod().toUpperCase())) {
             return false;
         }
         String contentType = request.getContentType();
-        if (contentType == null) {
-            return false;
-        }
-        if (contentType.toLowerCase().startsWith("multipart/")) {
-            return true;
-        }
-        return false;
+        return contentType != null && contentType.toLowerCase().startsWith("multipart/");
     }
 
     @Override
