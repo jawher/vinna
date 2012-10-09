@@ -1,6 +1,5 @@
 package vinna.route;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.exception.ConversionException;
@@ -18,6 +17,7 @@ import java.util.regex.Pattern;
 
 public class InvokeMethodAction implements RouteResolution.Action {
     private static final Logger log = LoggerFactory.getLogger(InvokeMethodAction.class);
+    private static final Pattern EVALUATE_PATTERN = Pattern.compile("\\{(.+?)\\}");
 
     public final String controllerId;
     public final Class<?> controllerClass;
@@ -39,7 +39,6 @@ public class InvokeMethodAction implements RouteResolution.Action {
         this.methodName = null;
         this.method = method;
         this.methodParameters = methodParameters;
-        // TODO check that methodParameters.size() == method.getParameterTypes().length
     }
 
     @Override
@@ -94,7 +93,7 @@ public class InvokeMethodAction implements RouteResolution.Action {
 
     private String evaluate(String s, Map<String, String> paramValues) {
         StringBuffer res = new StringBuffer();
-        Matcher m = Pattern.compile("\\{(.+?)\\}").matcher(s);
+        Matcher m = EVALUATE_PATTERN.matcher(s);
         while (m.find()) {
             String key = m.group(1);
             if (!paramValues.containsKey(key)) {
