@@ -1,0 +1,5 @@
+GET  /css/bootstrap.min.css pass
+
+GET  /    vinna.samples.todo.controller.TodoController.list()
+GET  /new vinna.samples.todo.controller.TodoController.create()
+POST /new vinna.samples.todo.controller.TodoController.create({req.param.title}, {req.param.description})
