@@ -11,14 +11,9 @@ import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class RouteBuilder {
-
-    private static final Pattern METHOD_PATTERN = Pattern.compile("(?<method>[^\\.]+)\\s*\\((?<args>.*)\\)");
-
-    private final String path;
     private final String verb;
     private final Vinna context;
     private final List<ActionArgument> methodParameters;
@@ -29,9 +24,10 @@ public final class RouteBuilder {
     private Class controller;
     private Method method;
     private String controllerId;
+    private final RoutesParser.ParsedPath parsedPath;
 
-    public RouteBuilder(String verb, String path, Vinna context, List<ActionArgument> methodParameters) {
-        this.path = path;
+    public RouteBuilder(String verb, String path, String prefix, Vinna context, List<ActionArgument> methodParameters) {
+        parsedPath = RoutesParser.parsePath(path, prefix);
         this.context = context;
         this.verb = verb;
         this.methodParameters = methodParameters;
@@ -75,24 +71,14 @@ public final class RouteBuilder {
     }
 
     public void pass() {
-        RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
         Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, PassAction.INSTANCE);
         context.addRoute(route);
     }
 
     public void withMethod(String methodPattern) {
-        Matcher methodMatcher = METHOD_PATTERN.matcher(methodPattern);
-        if (methodMatcher.matches()) {
-            String methodName = methodMatcher.group("method");
-            String methodArgs = methodMatcher.group("args");
-
-            RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-            RouteResolution.Action action = new InvokeMethodAction(controllerId, methodName, RoutesParser.parseArgs(methodArgs, context));
-            Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
-            context.addRoute(route);
-        } else {
-            throw new ConfigException("Incorrect method pattern");
-        }
+        RouteResolution.Action action = RoutesParser.parseAction(controllerId + "." + methodPattern, context.getBasePackage(), parsedPath.variableNames);
+        Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
+        context.addRoute(route);
     }
 
     public <T> T withController(Class<T> controller) {
@@ -131,7 +117,6 @@ public final class RouteBuilder {
     }
 
     private Route createRoute() {
-        RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
         RouteResolution.Action action = new InvokeMethodAction(controllerId, controller, method, methodParameters);
         return new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
     }

@@ -5,8 +5,7 @@ GET  /new TodoController.create()
 POST /new TodoController.create({req.param.title}, {req.param.description})
 
 GET /api      ApiTodoController.list()
-GET /api/{id} ApiTodoController.show({id})
-    id: \d+
+GET /api/{id: \d+} ApiTodoController.show({id})
 
 POST /api ApiTodoController.create(JacksonArgument)
 

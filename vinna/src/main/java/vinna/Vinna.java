@@ -303,7 +303,7 @@ public class Vinna {
         if (prefix == null) {
             prefix = "";
         }
-        List<Route> routes = new RoutesParser(reader).load(prefix, this);
+        List<Route> routes = RoutesParser.parse(reader, prefix, getBasePackage());
         router.addRoutes(routes);
     }
 
@@ -330,7 +330,7 @@ public class Vinna {
         if (prefix == null) {
             prefix = "";
         }
-        return new RouteBuilder(verb.toUpperCase(), prefix + path, this, routeParameters);
+        return new RouteBuilder(verb.toUpperCase(), path, prefix, this, routeParameters);
     }
 
     protected final ActionArgument.Variable param(String name) {

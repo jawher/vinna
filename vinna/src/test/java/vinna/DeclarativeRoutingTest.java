@@ -170,7 +170,7 @@ public class DeclarativeRoutingTest {
 
     @Test
     public void matchesWithAPathWithAVariableWithAPattern() {
-        Vinna app = oneRouteAppWithAConstraint("get", "/users/{id}", "id", "\\d+");
+        Vinna app = oneRouteApp("get", "/users/{id: \\d+}");
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
         assertNotNull(app.getRouter().match(mockedRequest));
     }
