@@ -54,7 +54,8 @@ public class VinnerControler {
     public Response submit(String title, String link) {
         Validation validation = new Validation();
         validation.required(title, "title").longerThan(title, 20, "title")
-                .required(link, "link").custom(new UrlValidator(), link, "link");
+                .required(link, "link");
+        validateUrl("link", link, validation);
         if (validation.hasErrors()) {
             return new SubmitView(title, link, validation);
         } else {
@@ -75,8 +76,9 @@ public class VinnerControler {
     public Response login(String login, String password, String rememberMe) {
         Validation validation = new Validation();
         validation.required(login, "login")
-                .required(password, "password")
-                .custom(new AuthValidator(login), password, "general");
+                .required(password, "password");
+        validateAuth(login, password, validation);
+
         if (validation.hasErrors()) {
             return new LoginView(login, validation);
         } else {
@@ -100,36 +102,27 @@ public class VinnerControler {
         return (VinnerSession) VinnaContext.get().session;
     }
 
-    private static class AuthValidator implements Validation.Validator {
-        private final String login;
-
-        private AuthValidator(String login) {
-            this.login = login;
+    private static void validateAuth(String value, String expected, Validation validation) {
+        if (!expected.equals(value)) {
+            validation.addError("general", "Invalid credentials");
         }
 
-        @Override
-        public void validate(String value) throws ValidationError {
-            if (!login.equals(value)) {
-                throw ValidationError.withMessage("Invalid credentials");
-            }
-        }
     }
 
-    private static class UrlValidator implements Validation.Validator {
 
-        @Override
-        public void validate(String value) throws ValidationError {
-            if (value == null) {
-                throw ValidationError.withMessage("Invalid link");
+    private static void validateUrl(String name, String value, Validation validation) {
+        if (validation.hasErrors(name)) {
+            return;
+        }
+        try {
+            URI uri = new URI(value);
+            if (!uri.isAbsolute()) {
+                validation.addError(name, "Invalid link");
             }
-            try {
-                URI uri = new URI(value);
-                if (!uri.isAbsolute()) {
-                    throw ValidationError.withMessage("Invalid link");
-                }
             } catch (URISyntaxException e) {
-                throw ValidationError.withMessage("Invalid link");
-            }
+            validation.addError(name, "Invalid link");
+
+
         }
     }
 }
