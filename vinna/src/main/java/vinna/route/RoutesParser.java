@@ -68,10 +68,11 @@ public class RoutesParser {
         String line;
         int lineNum = 0;
         String verbp = "(?<verb>[^\\s]+)";
+        String passp = "(?<pass>pass)";
         String controllerAndMethodp = "(?<controller>.+)\\.(?<method>[^\\.]+)";
         String actionp = controllerAndMethodp + "\\s*\\((?<args>.*)\\)";
         String pathp = "(?<path>.+?)";
-        Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+" + actionp);
+        Pattern routeLine = Pattern.compile(verbp + "\\s+" + pathp + "\\s+(" + actionp + "|" + passp + ")");
 
         try {
             while ((line = readLine()) != null) {
@@ -83,9 +84,19 @@ public class RoutesParser {
                     } else {
                         String verb = rm.group("verb");
                         String path = prefix + rm.group("path");
-                        String controller = rm.group("controller");
-                        String method = rm.group("method");
-                        String args = rm.group("args").trim();
+                        boolean pass = rm.group("pass") != null;
+                        String controller = null;
+                        String method = null;
+                        String args = null;
+                        if (!pass) {
+                            method = rm.group("method");
+                            controller = rm.group("controller");
+                            args = rm.group("args");
+                            if (args != null) {
+                                args = args.trim();
+                            }
+                        }
+
 
                         //read constraints
                         Map<String, Pattern> queryVars = new HashMap<>();
@@ -129,7 +140,9 @@ public class RoutesParser {
                         }
 
                         ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, new Route.Action(controller, method, parseArgs(args))));
+                        RouteResolution.Action action = pass ? PassAction.INSTANCE :
+                                new InvokeMethodAction(controller, method, parseArgs(args));
+                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, action));
                     }
                 }
             }
@@ -147,7 +160,7 @@ public class RoutesParser {
         if (!path.startsWith("/")) {
             path = ".*?/" + path;
         }
-        String ref = "\\{(.+?)\\}";
+        String ref = "\\{(.+?)(\\*?)\\}";
 
         Pattern refp = Pattern.compile(ref);
 
@@ -156,8 +169,12 @@ public class RoutesParser {
         Matcher m = refp.matcher(path);
         while (m.find()) {
             String var = m.group(1);
+            boolean multiSeg = !m.group(2).isEmpty();
             pathVariables.add(var);
             if (pathVarsConstraints.containsKey(var)) {
+                if(multiSeg) {
+                    throw new ConfigException("Cannot combine a user specified regexp and a *-modifier for thar variable " + var + " in " + path);
+                }
                 m.appendReplacement(pathPattern, "(?<$1>");
                             /*
                             Beware, for the beast is prawling the streets
@@ -168,7 +185,8 @@ public class RoutesParser {
                             */
                 pathPattern.append(pathVarsConstraints.get(var)).append(")");
             } else {
-                m.appendReplacement(pathPattern, "(?<$1>[^/]+)");
+                String pattern = multiSeg ? "(?<$1>.+?)" : "(?<$1>[^/]+)";
+                m.appendReplacement(pathPattern, pattern);
             }
         }
         m.appendTail(pathPattern);
@@ -183,7 +201,7 @@ public class RoutesParser {
     }
 
     public static ParsedPath parsePath(String path) {
-        String variable = "\\{(?<name>.+?)(\\s*:\\s*(?<pattern>.+?))?\\}";
+        String variable = "\\{(?<name>.+?)(?<star>\\*?)(\\s*:\\s*(?<pattern>.+?))?\\}";
         Pattern pathSegmentPattern = Pattern.compile("(?<ls>/)(" + variable + "|(?<seg>[^/?]+))");
 
         List<String> variablesNames = new ArrayList<>();
@@ -202,11 +220,16 @@ public class RoutesParser {
             } else {
                 String pattern = m.group("pattern");
                 String name = m.group("name");
+                boolean multiSeg = !m.group("star").isEmpty();
                 variablesNames.add(name);
                 if (pattern != null) {
+                    if (multiSeg) {
+                        throw new ConfigException("Cannot combine a user specified regexp and a *-modifier for thar variable " + name + " in " + path);
+                    }
                     pathPattern.append("(?<").append(name).append(">").append(pattern).append(")");
                 } else {
-                    pathPattern.append("(?<").append(name).append(">").append("[^/]+").append(")");
+                    String s = multiSeg ? ".+?" : "[^/]+";
+                    pathPattern.append("(?<").append(name).append(">").append(s).append(")");
                 }
             }
         }
@@ -365,7 +388,7 @@ public class RoutesParser {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return Conversions.convertNumeric(value, targetType);
         }
 

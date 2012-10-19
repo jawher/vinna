@@ -1,9 +1,8 @@
 package vinna.route;
 
 import vinna.exception.VuntimeException;
-import vinna.http.MultipartRequest;
 import vinna.http.Cookie;
-import vinna.http.Request;
+import vinna.http.MultipartRequest;
 import vinna.http.UploadedFile;
 import vinna.util.Conversions;
 
@@ -18,16 +17,6 @@ import java.util.Map;
 
 public interface ActionArgument {
 
-    public static class Environment {
-        protected final Map<String, String> matchedVars;
-        protected final Request request;
-
-        public Environment(Request request, Map<String, String> matchedVars) {
-            this.matchedVars = matchedVars;
-            this.request = request;
-        }
-    }
-
     public static class Const<T> implements ActionArgument {
         private final T value;
 
@@ -36,7 +25,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return value;
         }
 
@@ -44,6 +33,12 @@ public interface ActionArgument {
         public boolean compatibleWith(Class<?> type) {
             //TODO: handle primtives/object duos
             return value == null || type.isAssignableFrom(value.getClass());
+        }
+
+
+        @Override
+        public String toString() {
+            return "const['" + value + "']";
         }
     }
 
@@ -55,7 +50,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             String value = env.matchedVars.get(name);
             if (targetType.isAssignableFrom(Collection.class)) {
                 //TODO: simply do not expose asCollection for path variables ?
@@ -68,6 +63,12 @@ public interface ActionArgument {
             }
             return Conversions.convertString(value, targetType);
         }
+
+
+        @Override
+        public String toString() {
+            return "variable['" + name + "']";
+        }
     }
 
     public static class RequestParameter extends ChameleonArgument {
@@ -79,7 +80,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getParameters(name), typeArg);
@@ -88,6 +89,11 @@ public interface ActionArgument {
                 }
             }
             return Conversions.convertString(env.request.getParameter(name), targetType);
+        }
+
+        @Override
+        public String toString() {
+            return "req.param['" + name + "']";
         }
     }
 
@@ -99,7 +105,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (env.request instanceof MultipartRequest) {
                 final MultipartRequest request = (MultipartRequest) env.request;
                 return request.getPart(name);
@@ -117,7 +123,7 @@ public interface ActionArgument {
     public static class RequestBody implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             try {
                 return env.request.getInputStream();
             } catch (IOException e) {
@@ -128,6 +134,12 @@ public interface ActionArgument {
         @Override
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(InputStream.class);
+        }
+
+
+        @Override
+        public String toString() {
+            return "req.body";
         }
     }
 
@@ -146,7 +158,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             if (targetType.isAssignableFrom(Collection.class)) {
                 if (typeArg != null) {
                     return Conversions.convertCollection(env.request.getHeaderValues(headerName), typeArg);
@@ -156,12 +168,18 @@ public interface ActionArgument {
             }
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
+
+
+        @Override
+        public String toString() {
+            return "req.header['" + headerName + "']";
+        }
     }
 
     public static class Headers implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return env.request.getHeaders();
         }
 
@@ -169,18 +187,29 @@ public interface ActionArgument {
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(Map.class);
         }
+
+
+        @Override
+        public String toString() {
+            return "req.headers";
+        }
     }
 
     public static class RequestParameters implements ActionArgument {
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             return env.request.getParameters();
         }
 
         @Override
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(Map.class);
+        }
+
+        @Override
+        public String toString() {
+            return "req.params";
         }
     }
 
@@ -193,7 +222,7 @@ public interface ActionArgument {
         }
 
         @Override
-        public Object resolve(Environment env, Class<?> targetType) {
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
             final Cookie cookie = env.request.getCookiesMap().get(cookieName);
             if (targetType.isAssignableFrom(Cookie.class)) {
                 return cookie;
@@ -207,6 +236,12 @@ public interface ActionArgument {
         public Cookie asCookie() {
             this.type = Cookie.class;
             return null;
+        }
+
+
+        @Override
+        public String toString() {
+            return "req.cookie['" + cookieName + "']";
         }
     }
 
@@ -266,7 +301,7 @@ public interface ActionArgument {
         }
     }
 
-    Object resolve(Environment env, Class<?> targetType);
+    Object resolve(RouteResolution.Action.Environment env, Class<?> targetType);
 
     boolean compatibleWith(Class<?> type);
 }

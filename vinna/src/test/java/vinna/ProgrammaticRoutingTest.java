@@ -84,6 +84,19 @@ public class ProgrammaticRoutingTest {
     }
 
     @Test
+    public void handlesPassAsAnAction() {
+        Vinna app = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users").pass();
+            }
+        };
+        app.init(Collections.<String, Object>emptyMap());
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
     public void failsWithAPostVerbInRouteButNotInRequest() {
         Vinna app = onePostRouteApp("/users");
         MockedRequest mockedRequest = MockedRequest.get("/users").build();
@@ -356,6 +369,25 @@ public class ProgrammaticRoutingTest {
         vinna.init(Collections.<String, Object>emptyMap());
         MockedRequest mockedRequest = MockedRequest.head("/users").build();
         assertNotNull(vinna.getRouter().match(mockedRequest));
+    }
+
+    @Test
+    public void pathVarsDontSpanMultipleSegments() {
+        Vinna app = oneRouteApp("/users/{id}/ohai");
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/6/ohai").build();
+        assertNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
+    public void pathVarsWithStarModifierSpanMultipleSegments() {
+        Vinna app = oneRouteApp("/users/{id*}/ohai");
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/6/ohai").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test(expected = ConfigException.class)
+    public void failsWhenPathContainsVarWithStarModifierAndPattern() {
+        oneRouteApp("/users/{id*: \\d+}/ohai");
     }
 
     //TODO: moar test !

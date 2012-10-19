@@ -15,23 +15,23 @@ public class ServerError extends ResponseBuilder {
         }
     }
 
-    public ServerError internalError() {
+    public static ServerError internalError() {
         return new ServerError(Kind.INTERNAL_ERROR);
     }
 
-    public ServerError notImplemented() {
+    public static ServerError notImplemented() {
         return new ServerError(Kind.NOT_IMPLEMENTED);
     }
 
-    public ServerError badGateway() {
+    public static ServerError badGateway() {
         return new ServerError(Kind.BAD_GATEWAY);
     }
 
-    public ServerError serviceUnavailable() {
+    public static ServerError serviceUnavailable() {
         return new ServerError(Kind.SERVICE_UNAVAILABLE);
     }
 
-    public ServerError gatewayTimeout() {
+    public static ServerError gatewayTimeout() {
         return new ServerError(Kind.GATEWAY_TIMEOUT);
     }
 

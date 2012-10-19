@@ -1,0 +1,36 @@
+{% extends base.html %}
+{% block content %}
+<h1>TODO</h1>
+
+<form class="form-horizontal" method="post" action="new">
+    <legend>Create a new todo:</legend>
+    <fieldset>
+        <div class="control-group {% if firstErrors.title %} error{% end %}">
+            <label class="control-label" for="title">Title</label>
+
+            <div class="controls">
+                <input type="text" class="input-xlarge" id="title" name="title" value="{{title}}"/>
+                {% if firstErrors.title %}
+                <span class="help-inline">{{firstErrors.title}}</span>
+                {% end %}
+            </div>
+        </div>
+        <div class="control-group {% if firstErrors.description %} error{% end %}">
+            <label class="control-label" for="description">Description</label>
+
+            <div class="controls">
+                <textarea class="input-xlarge" id="description" name="description"
+                          rows="3">{{description}}</textarea>
+                {% if firstErrors.description %}
+                <span class="help-inline">{{firstErrors.description}}</span>
+                {% end %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+{% end %}

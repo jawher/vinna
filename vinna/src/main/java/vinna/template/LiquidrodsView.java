@@ -1,7 +1,9 @@
 package vinna.template;
 
-import liquidrods.*;
-import vinna.Model;
+import liquidrods.Config;
+import liquidrods.Liquidrods;
+import liquidrods.Template;
+import vinna.Session;
 import vinna.Validation;
 import vinna.VinnaContext;
 import vinna.response.ResponseBuilder;
@@ -24,7 +26,7 @@ public class LiquidrodsView extends ResponseBuilder {
     public LiquidrodsView() {
         super(200);
         type("text/html");
-        final String prefix = VinnaContext.get().vinna.getBasePackage().replace(".", "/") + "/views/";
+        final String prefix = VinnaContext.get().vinna.getBasePackage().replace(".", "/") + "/" + VinnaContext.get().vinna.getConfig().get("views-package") + "/";
 
         config = new Config();
         config.templateLoader(new Config.TemplateLoader() {
@@ -38,7 +40,6 @@ public class LiquidrodsView extends ResponseBuilder {
 
     @Override
     protected void writeBody(ServletOutputStream out) throws IOException {
-
 
         final Template template;
         if (templateReader != null) {
@@ -61,12 +62,17 @@ public class LiquidrodsView extends ResponseBuilder {
     }
 
     private Reader getTemplateReader(String prefix, String name) {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(prefix + name);
+        String viewPackage = getClass().getPackage().getName().replace(".", "/") + "/";
+
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(viewPackage + name);
+        if (stream == null) {
+            stream = getClass().getClassLoader().getResourceAsStream(prefix + name);
+        }
         if (stream == null) {
             stream = getClass().getClassLoader().getResourceAsStream(name);
         }
         if (stream == null) {
-            throw new RuntimeException("Can't find a template for the view class " + getClass() + ": Tried " + (prefix + name) + " and " + name);
+            throw new RuntimeException("Can't find a template for the view class " + getClass() + ": Tried " + (viewPackage + name) + ", " + (prefix + name) + " and " + name);
         }
         try {
             return new InputStreamReader(stream, "utf-8");
@@ -84,10 +90,18 @@ public class LiquidrodsView extends ResponseBuilder {
     }
 
     public boolean hasErrors() {
-        return validation == null ? false : validation.hasErrors();
+        return validation != null && validation.hasErrors();
     }
 
     public void validation(Validation validation) {
         this.validation = validation;
+    }
+
+    public Session session() {
+        return VinnaContext.get().session;
+    }
+
+    public String contextPath() {
+        return VinnaContext.get().servletContext.getContextPath();
     }
 }

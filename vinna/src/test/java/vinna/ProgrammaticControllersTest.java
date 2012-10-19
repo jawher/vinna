@@ -2,6 +2,7 @@ package vinna;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
@@ -186,6 +187,23 @@ public class ProgrammaticControllersTest {
         }
     }
 
+    @Test(expected = PassException.class)
+    public void passesWithAPassAction() {
+        Vinna app = new Vinna() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users").pass();
+            }
+        };
+        app.init(Collections.<String, Object>emptyMap());
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+
+    }
+
     @Test
     public void passesAPathVarAsAString() {
         MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
@@ -198,9 +216,25 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action("a");
 
+    }
+
+    @Test
+    public void passesAStarPathVarAsAString() {
+        MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users/{id*}").withController(StringArgController.class).action(param("id").asString());
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/a/b/c").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+        verify(app.controllerMock).action("a/b/c");
     }
 
     @Test
@@ -214,7 +248,7 @@ public class ProgrammaticControllersTest {
         MockedRequest mockedRequest = MockedRequest.get("/users/5").build();
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(5);
 
     }
@@ -231,7 +265,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(666);
 
     }
@@ -248,7 +282,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(true);
 
     }
@@ -265,7 +299,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(false);
 
     }
@@ -282,7 +316,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Boolean.TRUE);
 
     }
@@ -299,7 +333,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Boolean.FALSE);
 
     }
@@ -318,7 +352,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(argThat(eqColl(params)));
 
     }
@@ -337,7 +371,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(argThat(eqColl(1, 2, 3)));
 
     }
@@ -355,7 +389,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(1);
 
     }
@@ -373,7 +407,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(1);
 
     }
@@ -392,7 +426,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(argThat(eqColl(1, 2, 3)));
 
     }
@@ -409,7 +443,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(666);
 
     }
@@ -426,7 +460,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Long.parseLong("666"));
 
     }
@@ -443,7 +477,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Short.parseShort("666"));
 
     }
@@ -460,7 +494,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Short.parseShort("666"));
 
     }
@@ -477,7 +511,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Byte.parseByte("42"));
 
     }
@@ -494,7 +528,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Byte.parseByte("42"));
 
     }
@@ -511,7 +545,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Float.parseFloat("42.007"));
     }
 
@@ -527,7 +561,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Float.parseFloat("42.007"));
 
     }
@@ -544,7 +578,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Double.parseDouble("42.0d"));
 
     }
@@ -561,7 +595,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(Double.parseDouble("42.0d"));
 
     }
@@ -578,7 +612,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(BigDecimal.TEN);
 
     }
@@ -595,7 +629,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(BigInteger.TEN);
 
     }
@@ -613,7 +647,7 @@ public class ProgrammaticControllersTest {
 
         assertNotNull(resolution);
 
-        Response response = resolution.callAction(app);
+        Response response = resolution.callAction(mockedRequest, app);
         assertEquals(500, ((ResponseBuilder) response).getStatus());
     }
 
@@ -630,7 +664,7 @@ public class ProgrammaticControllersTest {
 
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action(null);
     }
 
@@ -646,7 +680,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action("a");
 
     }
@@ -664,7 +698,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock, Mockito.never()).action(anyString());
         verify(app.controllerMock).action(5);
 
@@ -683,7 +717,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock, Mockito.never()).action(anyInt());
         verify(app.controllerMock).action("abc");
 
@@ -702,7 +736,7 @@ public class ProgrammaticControllersTest {
         RouteResolution resolution = app.getRouter().match(mockedRequest);
         assertNotNull(resolution);
 
-        resolution.callAction(app);
+        resolution.callAction(mockedRequest, app);
         verify(app.controllerMock, Mockito.never()).action(anyInt());
         verify(app.controllerMock, Mockito.never()).action(anyString());
 

@@ -1,6 +1,7 @@
 package vinna;
 
 import org.junit.Test;
+import vinna.exception.ConfigException;
 import vinna.response.Response;
 import vinna.helpers.MockedRequest;
 
@@ -41,6 +42,13 @@ public class DeclarativeRoutingTest {
 
     private Vinna oneRouteAppWithAConstraint(final String verb, final String path, final String var, final String pattern) {
         return oneRouteApp(verb + " " + path + " foo.bar()\n  " + var + " : " + pattern);
+    }
+
+    @Test
+    public void handlesPassAsAnAction() {
+        Vinna app = oneRouteApp("get /users pass");
+        MockedRequest mockedRequest = MockedRequest.get("/users").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
     }
 
     @Test
@@ -231,6 +239,27 @@ public class DeclarativeRoutingTest {
         Vinna app = oneRouteAppWithAConstraint("get", "/users", "req.header.X-Vinna", "\\d+");
         MockedRequest mockedRequest = MockedRequest.get("/users").header("X-Vinna", "five").build();
         assertNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
+    public void pathVarsDontSpanMultipleSegments() {
+        Vinna app = oneRouteApp("get", "/users/{id}/ohai");
+
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/7/ohai").build();
+        assertNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test
+    public void pathVarsWithStarModifierSpanMultipleSegments() {
+        Vinna app = oneRouteApp("get", "/users/{id*}/ohai");
+
+        MockedRequest mockedRequest = MockedRequest.get("/users/5/7/ohai").build();
+        assertNotNull(app.getRouter().match(mockedRequest));
+    }
+
+    @Test(expected = ConfigException.class)
+    public void failsWhenPathContainsVarWithStarModifierAndPattern() {
+        oneRouteAppWithAConstraint("get", "/users/{id*}/ohai", "id", "\\d+");
     }
 
     //TODO: moar test !

@@ -38,5 +38,4 @@ public class Success extends ResponseBuilder {
     private Success(Kind kind) {
         super(kind.status);
     }
-
 }
