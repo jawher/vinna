@@ -29,4 +29,9 @@ public class Todo {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Todo[" + title + ":" + description + "]";
+    }
 }

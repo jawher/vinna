@@ -14,5 +14,8 @@ public class TodoApp extends Vinna {
         get("/").withController(TodoController.class).list();
         get("/new").withController(TodoController.class).create();
         post("/new").withController(TodoController.class).create(req.param("title").asString(), req.param("description").asString());
+
+        get("/create").withController(TodoController.class).create(custom(new TodoParameter()).asTodo());
+        get("/create/{title}/{description}").withController(TodoController.class).create(custom(new TodoParameter()).asTodo());
     }
 }

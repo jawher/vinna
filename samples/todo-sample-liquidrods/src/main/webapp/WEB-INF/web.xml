@@ -5,14 +5,14 @@
 <web-app>
     <display-name>Todo Application</display-name>
 
-    <filter>
+    <!--filter>
         <filter-name>vinnaProgrammaticFilter</filter-name>
         <filter-class>vinna.VinnaFilter</filter-class>
         <init-param>
             <param-name>application-class</param-name>
             <param-value>vinna.samples.todo.TodoApp</param-value>
         </init-param>
-    </filter>
+    </filter-->
 
     <filter>
         <filter-name>vinnaDeclarativeFilter</filter-name>
@@ -24,7 +24,7 @@
     </filter>
 
     <filter-mapping>
-        <filter-name>vinnaProgrammaticFilter</filter-name>
+        <filter-name>vinnaDeclarativeFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 </web-app>

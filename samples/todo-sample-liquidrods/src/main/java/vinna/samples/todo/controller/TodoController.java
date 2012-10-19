@@ -3,6 +3,7 @@ package vinna.samples.todo.controller;
 import vinna.Validation;
 import vinna.response.Redirect;
 import vinna.response.Response;
+import vinna.response.StringResponse;
 import vinna.samples.todo.model.Todo;
 import vinna.samples.todo.view.CreateView;
 import vinna.samples.todo.view.ListView;
@@ -17,6 +18,10 @@ public class TodoController {
 
     public Response list() {
         return new ListView(todoRepository.values());
+    }
+
+    public Response create(Todo todo) {
+        return new StringResponse(todo.toString());
     }
 
     public Response create(String title, String description) {
