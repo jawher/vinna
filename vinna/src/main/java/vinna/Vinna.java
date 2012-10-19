@@ -82,7 +82,7 @@ public class Vinna {
             try {
                 config.put(UPLOAD_MAX_SIZE, Integer.parseInt((String) uploadMaxSize));
             } catch (NumberFormatException e) {
-                throw new ConfigException("Invalid value for "+UPLOAD_MAX_SIZE+": should be a numeric", e);
+                throw new ConfigException("Invalid value for " + UPLOAD_MAX_SIZE + ": should be a numeric", e);
             }
         } else if (!(uploadMaxSize instanceof Number)) {
             throw new ConfigException("Can't handle the " + UPLOAD_MAX_SIZE + " parameter: should be either a String or a Number");
@@ -281,7 +281,7 @@ public class Vinna {
         if (prefix == null) {
             prefix = "";
         }
-        List<Route> routes = new RoutesParser(reader).load(prefix);
+        List<Route> routes = new RoutesParser(reader).load(prefix, this);
         router.addRoutes(routes);
     }
 
@@ -321,6 +321,11 @@ public class Vinna {
         ActionArgument param = new ActionArgument.Const<>(value);
         routeParameters.add(param);
         return value;
+    }
+
+    protected final <T extends ActionArgument> T custom(T action) {
+        routeParameters.add(action);
+        return action;
     }
 
     protected final class RequestBuilder {

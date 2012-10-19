@@ -7,6 +7,7 @@ import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
 import vinna.response.ResponseBuilder;
+import vinna.route.ActionArgument;
 import vinna.route.RouteResolution;
 
 import java.math.BigDecimal;
@@ -47,6 +48,23 @@ public class ProgrammaticControllersTest {
                     return controllerMock;
                 }
             };
+        }
+    }
+
+    public static class CustomActionArgument implements ActionArgument {
+
+        @Override
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
+            return env.matchedVars.get("id");
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(String.class);
+        }
+
+        public String asString() {
+            return null;
         }
     }
 
@@ -739,6 +757,23 @@ public class ProgrammaticControllersTest {
         resolution.callAction(mockedRequest, app);
         verify(app.controllerMock, Mockito.never()).action(anyInt());
         verify(app.controllerMock, Mockito.never()).action(anyString());
+
+    }
+
+    @Test
+    public void useACustomActionParameter() {
+        MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users/{id}").withController(StringArgController.class).action(custom(new CustomActionArgument()).asString());
+            }
+        };
+        MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+        verify(app.controllerMock).action("a");
 
     }
 

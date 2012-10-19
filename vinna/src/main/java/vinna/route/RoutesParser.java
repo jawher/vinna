@@ -1,5 +1,8 @@
 package vinna.route;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import vinna.Vinna;
 import vinna.exception.ConfigException;
 import vinna.util.Conversions;
 
@@ -14,6 +17,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class RoutesParser {
+    private static final Logger logger = LoggerFactory.getLogger(RoutesParser.class);
+
     private final BufferedReader reader;
 
     public RoutesParser(Reader reader) {
@@ -63,7 +68,7 @@ public class RoutesParser {
         }
     }
 
-    public List<Route> load(String prefix) {
+    public List<Route> load(String prefix, Vinna context) {
         List<Route> routes = new ArrayList<>();
         String line;
         int lineNum = 0;
@@ -96,7 +101,6 @@ public class RoutesParser {
                                 args = args.trim();
                             }
                         }
-
 
                         //read constraints
                         Map<String, Pattern> queryVars = new HashMap<>();
@@ -141,8 +145,10 @@ public class RoutesParser {
 
                         ParsedPath parsedPath = parsePath(path, pathVarsConstraints);
                         RouteResolution.Action action = pass ? PassAction.INSTANCE :
-                                new InvokeMethodAction(controller, method, parseArgs(args));
-                        routes.add(new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, action));
+                                new InvokeMethodAction(controller, method, parseArgs(args, context));
+                        Route route = new Route(verb, parsedPath.pathPattern, parsedPath.variableNames, queryVars, headers, action);
+                        logger.debug("Route created: {}", route);
+                        routes.add(route);
                     }
                 }
             }
@@ -172,7 +178,7 @@ public class RoutesParser {
             boolean multiSeg = !m.group(2).isEmpty();
             pathVariables.add(var);
             if (pathVarsConstraints.containsKey(var)) {
-                if(multiSeg) {
+                if (multiSeg) {
                     throw new ConfigException("Cannot combine a user specified regexp and a *-modifier for thar variable " + var + " in " + path);
                 }
                 m.appendReplacement(pathPattern, "(?<$1>");
@@ -321,7 +327,7 @@ public class RoutesParser {
         }
     }
 
-    public static List<ActionArgument> parseArgs(String argsString) {
+    public static List<ActionArgument> parseArgs(String argsString, Vinna vinna) {
         List<ActionArgument> parameters = new ArrayList<>();
         Pattern pbody = Pattern.compile("\\{" + Pattern.quote("req.body") + "\\}");
         Pattern pqvar = argPattern("req.param.");
@@ -371,13 +377,46 @@ public class RoutesParser {
                     try {
                         parameters.add(new NumConst(new BigDecimal(arg)));
                     } catch (NumberFormatException e) {
-                        throw new ConfigException("Invalid action argument " + arg);
+                        ActionArgument actionArgument = selectActionArgument(arg, vinna.getBasePackage());
+                        if (actionArgument != null) {
+                            parameters.add(actionArgument);
+                        } else {
+                            throw new ConfigException("Invalid action argument " + arg);
+                        }
                     }
                 }
             }
         }
 
         return parameters;
+    }
+
+    private static ActionArgument selectActionArgument(String value, String basePackage) {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName(value);
+        } catch (ClassNotFoundException e) {
+            String value2 = basePackage + "." + value;
+            Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(value2);
+            if (!m.matches()) {
+                throw new ConfigException("Something really fishy here: " + value2);
+            }
+            value2 = m.group(1) + m.group(2).toUpperCase() + m.group(3);
+            try {
+                clazz = Class.forName(value2);
+            } catch (ClassNotFoundException e1) {
+                throw new ConfigException("Invalid ActionArgument '" + value + "' : Tried classes " + value + " and " + value2 + " but none were found");
+            }
+        }
+
+        try {
+            if (!ActionArgument.class.isAssignableFrom(clazz)) {
+                throw new ConfigException(clazz + " has to implement ActionArgument");
+            }
+            return clazz != null ? (ActionArgument) clazz.newInstance() : null;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new ConfigException("Can't create an instance of the controller " + clazz);
+        }
     }
 
     private static final class NumConst implements ActionArgument {
