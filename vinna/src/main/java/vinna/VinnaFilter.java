@@ -8,8 +8,8 @@ import vinna.exception.VuntimeException;
 import vinna.http.VinnaMultipartWrapper;
 import vinna.http.VinnaRequestWrapper;
 import vinna.http.VinnaResponseWrapper;
+import vinna.interceptor.Interceptor;
 import vinna.response.Response;
-import vinna.route.RouteResolution;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -17,17 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class VinnaFilter implements Filter {
-    public static final String APPLICATION_CLASS = "application-class";
     private final static Logger logger = LoggerFactory.getLogger(VinnaFilter.class);
+
+    public static final String APPLICATION_CLASS = "application-class";
     public static final String VINNA_SESSION_KEY = "vinna.session";
 
     private Vinna vinna;
     protected ServletContext servletContext;
+    private List<Interceptor> interceptors = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -53,6 +53,7 @@ public class VinnaFilter implements Filter {
         }
 
         vinna.init(cfg);
+        this.interceptors.addAll(vinna.getInterceptors());
     }
 
     protected Vinna createUserVinnaApp(String appClass, Map<String, Object> cfg) throws ServletException {
@@ -82,35 +83,68 @@ public class VinnaFilter implements Filter {
             } else {
                 session = vinna.newSession();
             }
-            VinnaContext.set(new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext, session));
+            VinnaContext vinnaContext = new VinnaContext(vinna, vinnaRequest, vinnaResponse, servletContext, session);
+            VinnaContext.set(vinnaContext);
 
             logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
-            RouteResolution resolvedRoute = vinna.getRouter().match(vinnaRequest);
-            if (resolvedRoute != null) {
-                try {
-                    Response outcome = resolvedRoute.callAction(vinnaRequest, vinna);
-                    outcome.execute(vinnaRequest, vinnaResponse);
+
+            try {
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.beforeMatch(vinnaContext);
+                    if (vinnaContext.isAborted()) {
+                        vinnaContext.sendResponse();
+                        return;
+                    }
+                }
+
+                vinnaContext.routeResolution = vinna.getRouter().match(vinnaRequest);
+
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.afterMatch(vinnaContext);
+                    if (vinnaContext.isAborted()) {
+                        vinnaContext.sendResponse();
+                        return;
+                    }
+                }
+
+                if (vinnaContext.isResolved()) {
+                    vinnaContext.canAbort(false);
+
+                    Response routeResponse = vinnaContext.routeResolution.callAction(vinnaRequest, vinna);
+                    routeResponse.execute(vinnaRequest, vinnaResponse);
+
                     httpSession = vinnaRequest.getSession(false);
                     if (httpSession != null) {
                         httpSession.setAttribute(VINNA_SESSION_KEY, session);
                     }
-                } catch (VuntimeException e) {
-                    logger.error("Error while processing the request", e);
-                    e.printStackTrace(vinnaResponse.getWriter());
-                    vinnaResponse.setStatus(500);
-                } catch (PassException e) {
-                    logger.info("Response delegated to FilterChain.doChain");
+
+                    callAfterExecute(vinnaContext);
+
+                } else {
+                    logger.debug("Unable to resolve '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
                     chain.doFilter(request, response);
-                } catch (InternalVinnaException e) {
-                    logger.error("Vinna internal error occurred !", e);
-                    throw new ServletException(e);
                 }
-            } else {
-                logger.debug("Unable to resolve '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
+
+            } catch (PassException e) {
+                logger.info("Response delegated to FilterChain.doChain");
                 chain.doFilter(request, response);
+            } catch (VuntimeException e) {
+                logger.error("Error while processing the request", e);
+                vinnaResponse.setStatus(500);
+                e.printStackTrace(vinnaResponse.getWriter());
+            } catch (InternalVinnaException e) {
+                logger.error("Vinna internal error occurred !", e);
+                throw new ServletException(e);
             }
+
         } else {
             chain.doFilter(request, response);
+        }
+    }
+
+    private void callAfterExecute(VinnaContext context) {
+        for (Interceptor interceptor : interceptors) {
+            interceptor.afterExecute(context);
         }
     }
 
