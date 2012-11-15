@@ -3,10 +3,8 @@ package vinna.samples.todo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vinna.Vinna;
-import vinna.http.VinnaRequestWrapper;
-import vinna.http.VinnaResponseWrapper;
+import vinna.VinnaContext;
 import vinna.interceptor.InterceptorAdapter;
-import vinna.response.Response;
 import vinna.response.ResponseBuilder;
 import vinna.response.StringResponse;
 import vinna.samples.todo.controller.TodoController;
@@ -28,36 +26,30 @@ public class TodoApp extends Vinna {
 
         registerInterceptor(new InterceptorAdapter() {
             @Override
-            public void beforeMatch(VinnaRequestWrapper request, VinnaResponseWrapper response) {
-                request.setAttribute("currentTime", System.currentTimeMillis());
+            public void beforeMatch(VinnaContext context) {
+                context.request.setAttribute("currentTime", System.currentTimeMillis());
             }
 
             @Override
-            public Response afterMatch(VinnaRequestWrapper request, VinnaResponseWrapper response, boolean hasMatched) {
-                logger.debug("Route matching: {} ms", (System.currentTimeMillis() - (Long) request.getAttribute("currentTime")));
-                return null;
+            public void afterMatch(VinnaContext context) {
+                logger.debug("Route matching: {} ms", (System.currentTimeMillis() - (Long) context.request.getAttribute("currentTime")));
             }
 
             @Override
-            public void beforeExecute(VinnaRequestWrapper request, VinnaResponseWrapper response) {
-                request.setAttribute("currentTime", System.currentTimeMillis());
-            }
-
-            @Override
-            public void afterExecute(VinnaRequestWrapper request, VinnaResponseWrapper response) {
-                logger.debug("Executing time: {} ms", (System.currentTimeMillis() - (Long) request.getAttribute("currentTime")));
+            public void afterExecute(VinnaContext context) {
+                logger.debug("Executing time: {} ms", (System.currentTimeMillis() - (Long) context.request.getAttribute("currentTime")));
             }
         });
 
         registerInterceptor(new InterceptorAdapter() {
+
             @Override
-            public Response afterMatch(VinnaRequestWrapper request, VinnaResponseWrapper response, boolean hasMatched) {
-                if (!hasMatched && request.getPath().startsWith("/css")) {
-                    return ResponseBuilder.pass();
-                } else if (!hasMatched) {
-                    return new StringResponse("Route not found");
+            public void afterMatch(VinnaContext context) {
+                if (!context.isResolved() && context.request.getPath().startsWith("/css")) {
+                    context.abortWith(ResponseBuilder.pass());
+                } else if (!context.isResolved()) {
+                    context.abortWith(new StringResponse("Route not found"));
                 }
-                return null;
             }
         });
     }
