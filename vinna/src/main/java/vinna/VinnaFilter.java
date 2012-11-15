@@ -89,11 +89,23 @@ public class VinnaFilter implements Filter {
             logger.debug("Resolving '{} {}'", vinnaRequest.getMethod(), vinnaRequest.getPath());
 
             try {
-                callBeforeMatchInterceptors(vinnaContext);
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.beforeMatch(vinnaContext);
+                    if (vinnaContext.isAborted()) {
+                        vinnaContext.sendResponse();
+                        return;
+                    }
+                }
 
                 vinnaContext.routeResolution = vinna.getRouter().match(vinnaRequest);
 
-                callAfterMatchInterceptors(vinnaContext);
+                for (Interceptor interceptor : interceptors) {
+                    interceptor.afterMatch(vinnaContext);
+                    if (vinnaContext.isAborted()) {
+                        vinnaContext.sendResponse();
+                        return;
+                    }
+                }
 
                 if (vinnaContext.isResolved()) {
                     vinnaContext.canAbort(false);
@@ -127,24 +139,6 @@ public class VinnaFilter implements Filter {
 
         } else {
             chain.doFilter(request, response);
-        }
-    }
-
-    private void callBeforeMatchInterceptors(VinnaContext context) throws IOException, ServletException {
-        for (Interceptor interceptor : interceptors) {
-            interceptor.beforeMatch(context);
-            if (context.isAborted()) {
-                context.sendResponse();
-            }
-        }
-    }
-
-    private void callAfterMatchInterceptors(VinnaContext context) throws IOException, ServletException {
-        for (Interceptor interceptor : interceptors) {
-            interceptor.afterMatch(context);
-            if (context.isAborted()) {
-                context.sendResponse();
-            }
         }
     }
 
