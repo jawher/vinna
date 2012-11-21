@@ -45,7 +45,6 @@ public class Vinna {
         }
 
         conf(this.config);
-        uploadSettings(this.config);
         registerCallback(this.config);
 
         this.controllerFactory = controllerFactory(this.config);
