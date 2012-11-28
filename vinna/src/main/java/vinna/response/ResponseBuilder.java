@@ -155,10 +155,15 @@ public class ResponseBuilder implements Response {
         response.setStatus(status);
 
         for (Map.Entry<String, List<Object>> header : headers.entrySet()) {
-            for (Object value : header.getValue()) {
-                //FIXME: properly handle multi-valued headers (using servletResponse.(add|set)Header)
-                response.addHeader(header.getKey(), value.toString());
+
+            if (header.getValue().size() == 1) {
+                response.setHeader(header.getKey(), header.getValue().get(0).toString());
+            } else {
+                for (Object value : header.getValue()) {
+                    response.addHeader(header.getKey(), value.toString());
+                }
             }
+
         }
 
         for (Cookie cookie : cookies.values()) {
