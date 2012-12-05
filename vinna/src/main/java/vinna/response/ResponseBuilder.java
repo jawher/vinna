@@ -119,6 +119,7 @@ public class ResponseBuilder implements Response {
     }
 
     protected void writeBody(ServletOutputStream out) throws IOException {
+        logger.debug("Start sending response body");
         if (body != null) {
             int size = 512;//FIXME: make this configurable ?
             byte[] buffer = new byte[size];

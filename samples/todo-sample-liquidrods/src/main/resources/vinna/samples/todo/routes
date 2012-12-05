@@ -4,5 +4,11 @@ GET  /    vinna.samples.todo.controller.TodoController.list()
 GET  /new vinna.samples.todo.controller.TodoController.create()
 POST /new vinna.samples.todo.controller.TodoController.create({req.param.title}, {req.param.description})
 
+GET /api      vinna.samples.todo.controller.ApiTodoController.list()
+GET /api/{id} vinna.samples.todo.controller.ApiTodoController.show({id})
+    id: \d+
+
+POST /api vinna.samples.todo.controller.ApiTodoController.create(JacksonArgument)
+
 GET /create vinna.samples.todo.controller.TodoController.create(TodoParameter)
 GET /create/{title}/{description} vinna.samples.todo.controller.TodoController.create(TodoParameter)

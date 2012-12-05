@@ -5,19 +5,14 @@ import vinna.response.Redirect;
 import vinna.response.Response;
 import vinna.response.StringResponse;
 import vinna.samples.todo.model.Todo;
+import vinna.samples.todo.model.TodoRepository;
 import vinna.samples.todo.view.CreateView;
 import vinna.samples.todo.view.ListView;
 
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.atomic.AtomicLong;
-
 public class TodoController {
 
-    private static final AtomicLong todoIdGenerator = new AtomicLong(0);
-    private static final ConcurrentSkipListMap<Long, Todo> todoRepository = new ConcurrentSkipListMap<>();
-
     public Response list() {
-        return new ListView(todoRepository.values());
+        return new ListView(TodoRepository.findAll());
     }
 
     public Response create(Todo todo) {
@@ -33,10 +28,10 @@ public class TodoController {
         }
 
         Todo newTodo = new Todo();
-        newTodo.setId(todoIdGenerator.incrementAndGet());
+        newTodo.setId(TodoRepository.incrementAndGetId());
         newTodo.setTitle(title);
         newTodo.setDescription(description);
-        todoRepository.put(newTodo.getId(), newTodo);
+        TodoRepository.putTodo(newTodo.getId(), newTodo);
         return Redirect.found("");
     }
 
