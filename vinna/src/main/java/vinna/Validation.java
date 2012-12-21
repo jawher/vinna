@@ -1,13 +1,39 @@
 package vinna;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.*;
 
 public class Validation {
     private Map<String, List<String>> errors = new HashMap<>();
     private Map<String, String> firstErrors = new HashMap<>();
+
+    private Validator validator;
+
+    public Validation() {
+        // NOp
+    }
+
+    public Validation(Validator validator) {
+        this.validator = validator;
+    }
+
+    public <T> Validation addConstrainViolations(Set<ConstraintViolation<T>> violations) {
+        for (ConstraintViolation<T> violation : violations) {
+            addError(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+        return this;
+    }
+
+    public Validation validate(Object object) {
+        if (validator == null) {
+            validator = LazyValidator.VALIDATOR;
+        }
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(object);
+        addConstrainViolations(violations);
+        return this;
+    }
 
     public Validation addError(String name, String message) {
         List<String> list = errors.get(name);
@@ -43,10 +69,7 @@ public class Validation {
         return this;
     }
 
-
-
     //TODO: moar validations
-
 
     public Map<String, List<String>> getErrors() {
         return errors;
@@ -62,5 +85,9 @@ public class Validation {
 
     public boolean hasErrors(String name) {
         return errors.containsKey(name);
+    }
+
+    private static class LazyValidator {
+        private static final Validator VALIDATOR = javax.validation.Validation.buildDefaultValidatorFactory().getValidator();
     }
 }
