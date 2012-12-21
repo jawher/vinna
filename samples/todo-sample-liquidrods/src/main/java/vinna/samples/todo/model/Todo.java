@@ -1,9 +1,18 @@
 package vinna.samples.todo.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Todo {
 
     private Long id;
+
+    @NotNull
+    @Size(min = 2, max = 128)
     private String title;
+
+    @NotNull
+    @Size(max = 512)
     private String description;
 
     public Long getId() {

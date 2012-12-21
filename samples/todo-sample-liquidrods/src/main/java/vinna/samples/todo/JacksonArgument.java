@@ -1,6 +1,7 @@
 package vinna.samples.todo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import vinna.exception.VuntimeException;
 import vinna.route.ActionArgument;
 import vinna.route.RouteResolution;
 
@@ -20,8 +21,7 @@ public class JacksonArgument implements ActionArgument {
         try {
             return mapper.readValue(env.request.getInputStream(), targetType);
         } catch (IOException e) {
-            // FIXME:
-            return null;
+            throw new VuntimeException(e);
         }
     }
 

@@ -1,4 +1,4 @@
-package vinna.samples.todo;
+package vinna.samples.todo.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import vinna.response.ResponseBuilder;
