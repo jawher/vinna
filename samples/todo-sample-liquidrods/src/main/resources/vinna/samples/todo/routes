@@ -1,5 +1,14 @@
 GET  /css/bootstrap.min.css pass
 
-GET  /    vinna.samples.todo.controller.TodoController.list()
-GET  /new vinna.samples.todo.controller.TodoController.create()
-POST /new vinna.samples.todo.controller.TodoController.create({req.param.title}, {req.param.description})
+GET  /    TodoController.list()
+GET  /new TodoController.create()
+POST /new TodoController.create({req.param.title}, {req.param.description})
+
+GET /api      ApiTodoController.list()
+GET /api/{id} ApiTodoController.show({id})
+    id: \d+
+
+POST /api ApiTodoController.create(JacksonArgument)
+
+GET /create TodoController.create(TodoParameter)
+GET /create/{title}/{description} TodoController.create(TodoParameter)

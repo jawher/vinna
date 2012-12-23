@@ -257,7 +257,7 @@ public class Vinna {
      */
     protected ControllerFactory controllerFactory(Map<String, Object> config) {
         if (config.get(CONTROLLER_FACTORY) == null) {
-            return new DefaultControllerFactory(this.basePackage);
+            return new DefaultControllerFactory(this.basePackage, (String) config.get("controllers-package"));
         } else {
             try {
                 Class<ControllerFactory> clz = (Class<ControllerFactory>) Thread.currentThread().getContextClassLoader().loadClass((String) config.get(CONTROLLER_FACTORY));
@@ -303,7 +303,7 @@ public class Vinna {
         if (prefix == null) {
             prefix = "";
         }
-        List<Route> routes = new RoutesParser(reader).load(prefix);
+        List<Route> routes = new RoutesParser(reader).load(prefix, this);
         router.addRoutes(routes);
     }
 
@@ -343,6 +343,11 @@ public class Vinna {
         ActionArgument param = new ActionArgument.Const<>(value);
         routeParameters.add(param);
         return value;
+    }
+
+    protected final <T extends ActionArgument> T custom(T action) {
+        routeParameters.add(action);
+        return action;
     }
 
     protected final class RequestBuilder {

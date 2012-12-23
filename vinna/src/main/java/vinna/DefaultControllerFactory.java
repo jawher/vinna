@@ -10,10 +10,12 @@ import java.util.regex.Pattern;
 public class DefaultControllerFactory implements ControllerFactory {
 
     private final String basePackage;
+    private final String controllersPackage;
     private final Map<String, Class<?>> cache = new ConcurrentHashMap<>();
 
-    public DefaultControllerFactory(String basePackage) {
+    public DefaultControllerFactory(String basePackage, String controllersPackage) {
         this.basePackage = basePackage;
+        this.controllersPackage = controllersPackage;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class DefaultControllerFactory implements ControllerFactory {
                 clazz = Class.forName(id);
                 cache.put(id, clazz);
             } catch (ClassNotFoundException e) {
-                String id2 = basePackage + ".controllers." + id;
+                String id2 = basePackage + "." + controllersPackage + "." + id;
                 Matcher m = Pattern.compile("(.+\\.)([^\\.])([^\\.]+)").matcher(id2);
                 if (!m.matches()) {
                     throw new VuntimeException("Something really fishy here: " + id2);

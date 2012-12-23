@@ -87,7 +87,7 @@ public final class RouteBuilder {
             String methodArgs = methodMatcher.group("args");
 
             RoutesParser.ParsedPath parsedPath = RoutesParser.parsePath(path);
-            RouteResolution.Action action = new InvokeMethodAction(controllerId, methodName, RoutesParser.parseArgs(methodArgs));
+            RouteResolution.Action action = new InvokeMethodAction(controllerId, methodName, RoutesParser.parseArgs(methodArgs, context));
             Route route = new Route(this.verb, parsedPath.pathPattern, parsedPath.variableNames, this.mandatoryQueryParameters, mandatoryRequestHeaders, action);
             context.addRoute(route);
         } else {

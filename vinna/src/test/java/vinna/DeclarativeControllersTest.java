@@ -7,6 +7,7 @@ import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
 import vinna.helpers.MockedRequest;
 import vinna.response.Response;
+import vinna.route.ActionArgument;
 import vinna.route.RouteResolution;
 
 import java.io.StringReader;
@@ -21,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static vinna.helpers.VinnaMatchers.eqColl;
 
 public class DeclarativeControllersTest {
-
 
     private static class MockFactoryVinna<T> extends Vinna {
         public T controllerMock;
@@ -84,6 +84,19 @@ public class DeclarativeControllersTest {
 
         public Response actionDouble(Double param) {
             return null;
+        }
+    }
+
+    public static class CustomActionArgument implements ActionArgument {
+
+        @Override
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
+            return env.matchedVars.get("id");
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(String.class);
         }
     }
 
@@ -628,6 +641,19 @@ public class DeclarativeControllersTest {
         assertNotNull(resolution);
 
         resolution.callAction(mockedRequest, app);
+
+    }
+
+    @Test
+    public void useACustomActionParameter() {
+        String route = "GET /users/{id} Controller.actionString(vinna.DeclarativeControllersTest$CustomActionArgument)";
+        MockFactoryVinna<Controller> app = new MockFactoryVinna<>(route);
+        MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
+        RouteResolution resolution = app.getRouter().match(mockedRequest);
+        assertNotNull(resolution);
+
+        resolution.callAction(mockedRequest, app);
+        verify(app.controllerMock).actionString("a");
 
     }
 

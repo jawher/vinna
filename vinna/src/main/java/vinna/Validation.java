@@ -1,46 +1,51 @@
 package vinna;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.*;
 
 public class Validation {
-    public interface Validator {
-        public static class ValidationError extends Exception {
-            public final String errorMessageKey;
-            public final String errorMessage;
-
-            private ValidationError(String errorMessageKey, String errorMessage) {
-                this.errorMessageKey = errorMessageKey;
-                this.errorMessage = errorMessage;
-            }
-
-            public static ValidationError withKey(String key) {
-                return new ValidationError(key, null);
-            }
-
-            public static ValidationError withMessage(String message) {
-                return new ValidationError(null, message);
-            }
-        }
-
-        public void validate(String value) throws ValidationError;
-    }
-
     private Map<String, List<String>> errors = new HashMap<>();
     private Map<String, String> firstErrors = new HashMap<>();
 
-    private void addError(String key, String value) {
-        List<String> list = errors.get(key);
+    private Validator validator;
+
+    public Validation() {
+        // NOp
+    }
+
+    public Validation(Validator validator) {
+        this.validator = validator;
+    }
+
+    public <T> Validation addConstrainViolations(Set<ConstraintViolation<T>> violations) {
+        for (ConstraintViolation<T> violation : violations) {
+            addError(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+        return this;
+    }
+
+    public Validation validate(Object object) {
+        if (validator == null) {
+            validator = LazyValidator.VALIDATOR;
+        }
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(object);
+        addConstrainViolations(violations);
+        return this;
+    }
+
+    public Validation addError(String name, String message) {
+        List<String> list = errors.get(name);
         if (list == null) {
             list = new ArrayList<>();
-            errors.put(key, list);
+            errors.put(name, list);
         }
-        list.add(value);
-        if (!firstErrors.containsKey(key)) {
-            firstErrors.put(key, value);
+        list.add(message);
+        if (!firstErrors.containsKey(name)) {
+            firstErrors.put(name, message);
         }
+        return this;
     }
 
     public Validation required(String value, String name) {
@@ -64,20 +69,7 @@ public class Validation {
         return this;
     }
 
-    public Validation custom(Validator validator, String value, String name) {
-        try {
-            validator.validate(value);
-        } catch (Validator.ValidationError validationError) {
-            addError(name, validationError.errorMessage == null ?
-                    Messages.format(validationError.errorMessageKey, name) :
-                    validationError.errorMessage);
-        }
-
-        return this;
-    }
-
     //TODO: moar validations
-
 
     public Map<String, List<String>> getErrors() {
         return errors;
@@ -89,5 +81,13 @@ public class Validation {
 
     public boolean hasErrors() {
         return !errors.isEmpty();
+    }
+
+    public boolean hasErrors(String name) {
+        return errors.containsKey(name);
+    }
+
+    private static class LazyValidator {
+        private static final Validator VALIDATOR = javax.validation.Validation.buildDefaultValidatorFactory().getValidator();
     }
 }

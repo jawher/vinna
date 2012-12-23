@@ -35,7 +35,6 @@ public interface ActionArgument {
             return value == null || type.isAssignableFrom(value.getClass());
         }
 
-
         @Override
         public String toString() {
             return "const['" + value + "']";
@@ -63,7 +62,6 @@ public interface ActionArgument {
             }
             return Conversions.convertString(value, targetType);
         }
-
 
         @Override
         public String toString() {
@@ -136,7 +134,6 @@ public interface ActionArgument {
             return type.isAssignableFrom(InputStream.class);
         }
 
-
         @Override
         public String toString() {
             return "req.body";
@@ -169,7 +166,6 @@ public interface ActionArgument {
             return Conversions.convertString(env.request.getHeader(headerName), targetType);
         }
 
-
         @Override
         public String toString() {
             return "req.header['" + headerName + "']";
@@ -187,7 +183,6 @@ public interface ActionArgument {
         public boolean compatibleWith(Class<?> type) {
             return type.isAssignableFrom(Map.class);
         }
-
 
         @Override
         public String toString() {
@@ -237,7 +232,6 @@ public interface ActionArgument {
             this.type = Cookie.class;
             return null;
         }
-
 
         @Override
         public String toString() {

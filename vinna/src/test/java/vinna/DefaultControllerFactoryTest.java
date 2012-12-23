@@ -14,7 +14,7 @@ public class DefaultControllerFactoryTest {
 
     @Before
     public void setUp() {
-        this.controllerFactory = new DefaultControllerFactory("vinna");
+        this.controllerFactory = new DefaultControllerFactory("vinna", "controllers");
     }
 
     @Test
