@@ -235,7 +235,7 @@ public class Vinna {
      */
     protected ControllerFactory controllerFactory(Map<String, Object> config) {
         if (config.get(CONTROLLER_FACTORY) == null) {
-            return new DefaultControllerFactory(this.basePackage);
+            return new DefaultControllerFactory(this.basePackage, (String) config.get("controllers-package"));
         } else {
             try {
                 Class<ControllerFactory> clz = (Class<ControllerFactory>) Thread.currentThread().getContextClassLoader().loadClass((String) config.get(CONTROLLER_FACTORY));
