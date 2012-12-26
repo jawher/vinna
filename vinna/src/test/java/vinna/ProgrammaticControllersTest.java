@@ -765,7 +765,7 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users/{id}").withController(StringArgController.class).action(custom(new CustomActionArgument()).asString());
+                get("/users/{id}").withController(StringArgController.class).action(custom(CustomActionArgument.class).asString());
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();

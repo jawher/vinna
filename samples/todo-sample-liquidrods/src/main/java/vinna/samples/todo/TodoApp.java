@@ -26,10 +26,10 @@ public class TodoApp extends Vinna {
 
         get("/api").withController(ApiTodoController.class).list();
         get("/api/{id: \\d+}").withController(ApiTodoController.class).show(param("id").asLong());
-        post("/api").withController(ApiTodoController.class).create(custom(new JacksonArgument()).<Todo>asT());
+        post("/api").withController(ApiTodoController.class).create(custom(JacksonArgument.class).<Todo>asT());
 
-        get("/create").withController(TodoController.class).create(custom(new TodoParameter()).asTodo());
-        get("/create/{title}/{description}").withController(TodoController.class).create(custom(new TodoParameter()).asTodo());
+        get("/create").withController(TodoController.class).create(custom(TodoParameter.class).asTodo());
+        get("/create/{title}/{description}").withController(TodoController.class).create(custom(TodoParameter.class).asTodo());
     }
 
     @Override
