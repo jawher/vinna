@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -51,7 +52,28 @@ public class ProgrammaticControllersTest {
         }
     }
 
-    public static class CustomActionArgument implements ActionArgument {
+    public static class GoodCustomActionArgument implements ActionArgument {
+
+        @Override
+        public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
+            return env.matchedVars.get("id");
+        }
+
+        @Override
+        public boolean compatibleWith(Class<?> type) {
+            return type.isAssignableFrom(String.class);
+        }
+
+        public String asString() {
+            return null;
+        }
+    }
+
+    public static class BadCustomActionArgument implements ActionArgument {
+
+        public BadCustomActionArgument(String anArg) {
+            //NOp
+        }
 
         @Override
         public Object resolve(RouteResolution.Action.Environment env, Class<?> targetType) {
@@ -765,7 +787,7 @@ public class ProgrammaticControllersTest {
         MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
             @Override
             protected void routes(Map<String, Object> config) {
-                get("/users/{id}").withController(StringArgController.class).action(custom(CustomActionArgument.class).asString());
+                get("/users/{id}").withController(StringArgController.class).action(custom(GoodCustomActionArgument.class).asString());
             }
         };
         MockedRequest mockedRequest = MockedRequest.get("/users/a").build();
@@ -775,6 +797,18 @@ public class ProgrammaticControllersTest {
         resolution.callAction(mockedRequest, app);
         verify(app.controllerMock).action("a");
 
+    }
+
+    @Test(expected = VuntimeException.class)
+    public void useACustomActionParameterWithoutNullaryConstructor() {
+        MockFactoryVinna<StringArgController> app = new MockFactoryVinna<StringArgController>() {
+            @Override
+            protected void routes(Map<String, Object> config) {
+                get("/users/{id}").withController(StringArgController.class).action(custom(BadCustomActionArgument.class).asString());
+            }
+        };
+
+        fail("Using a custom action without nullary constructor should throw an exception");
     }
 
     //TODO: moar tests !

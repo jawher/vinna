@@ -348,12 +348,12 @@ public class Vinna {
     protected final <T extends ActionArgument> T custom(Class<T> clazz) {
         T actionArgument;
         try {
-            actionArgument = (T) clazz.newInstance();
+            actionArgument = clazz.newInstance();
             routeParameters.add(actionArgument);
         } catch (InstantiationException e) {
-            throw new VuntimeException("There are nullary constructor for class " + clazz, e);
+            throw new VuntimeException("There are no nullary constructor for " + clazz, e);
         } catch (IllegalAccessException e) {
-            throw new VuntimeException("Default constructor is not accessible", e);
+            throw new VuntimeException("Default nullary constructor is not accessible", e);
         }
         return actionArgument;
     }
