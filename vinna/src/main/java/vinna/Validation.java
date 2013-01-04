@@ -18,20 +18,15 @@ public class Validation {
         this.validator = validator;
     }
 
-    public <T> Validation addConstrainViolations(Set<ConstraintViolation<T>> violations) {
-        for (ConstraintViolation<T> violation : violations) {
-            addError(violation.getPropertyPath().toString(), violation.getMessage());
-        }
-        return this;
-    }
-
     public Validation validate(Object object) {
         if (validator == null) {
             validator = LazyValidator.VALIDATOR;
         }
 
         Set<ConstraintViolation<Object>> violations = validator.validate(object);
-        addConstrainViolations(violations);
+        for (ConstraintViolation<Object> violation : violations) {
+            addError(violation.getPropertyPath().toString(), violation.getMessage());
+        }
         return this;
     }
 
