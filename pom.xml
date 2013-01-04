@@ -22,7 +22,6 @@
         <module>samples/programmatic-sample</module>
         <module>archetypes/maven/vinna-declarative-archetype</module>
         <module>archetypes/maven/vinna-programmatic-archetype</module>
-        <module>vinna-spring</module>
     </modules>
 
     <build>
