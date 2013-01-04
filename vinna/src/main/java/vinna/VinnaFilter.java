@@ -2,6 +2,7 @@ package vinna;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vinna.exception.ConfigException;
 import vinna.exception.InternalVinnaException;
 import vinna.exception.PassException;
 import vinna.exception.VuntimeException;
@@ -70,7 +71,14 @@ public class VinnaFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             VinnaRequestWrapper vinnaRequest;
             if (isMultipartContent((HttpServletRequest) request)) {
-                vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, (File) vinna.getConfig().get(Vinna.UPLOAD_DIR), (Integer) vinna.getConfig().get(Vinna.UPLOAD_MAX_SIZE));
+                try {
+                    File temporaryDirectory = (File) vinna.getConfig().get(Vinna.UPLOAD_DIR);
+                    Integer maxSize = (Integer) vinna.getConfig().get(Vinna.UPLOAD_MAX_SIZE);
+                    vinnaRequest = new VinnaMultipartWrapper((HttpServletRequest) request, temporaryDirectory, maxSize);
+                } catch (NoClassDefFoundError e) {
+                    throw new ConfigException("commons-fileupload is not available. For using multipart, you have to add commons-fileupload and commons-io to your classpath");
+                }
+
             } else {
                 vinnaRequest = new VinnaRequestWrapper((HttpServletRequest) request);
             }

@@ -1,10 +1,16 @@
 package vinna;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import vinna.exception.ConfigException;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.*;
 
 public class Validation {
+    private static final Logger logger = LoggerFactory.getLogger(Validation.class);
+
     private Map<String, List<String>> errors = new HashMap<>();
     private Map<String, String> firstErrors = new HashMap<>();
 
@@ -20,7 +26,12 @@ public class Validation {
 
     public Validation validate(Object object) {
         if (validator == null) {
-            validator = LazyValidator.VALIDATOR;
+            try {
+                validator = LazyValidator.VALIDATOR;
+            } catch (NoClassDefFoundError e) {
+                logger.error("javax.validation.Validation is not available.");
+                throw new ConfigException("javax.validation.Validation is not available. For using JSR303 and Bean Validation you have to add an implementation of this JSR on your classpath.");
+            }
         }
 
         Set<ConstraintViolation<Object>> violations = validator.validate(object);

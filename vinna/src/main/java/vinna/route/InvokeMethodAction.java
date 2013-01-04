@@ -86,8 +86,14 @@ public class InvokeMethodAction implements RouteResolution.Action {
             }
 
             return (Response) toCall.invoke(controllerInstance, castedParams.toArray());
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             throw new VuntimeException(e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            } else {
+                throw new VuntimeException(e);
+            }
         }
     }
 
