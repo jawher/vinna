@@ -10,6 +10,7 @@ public class ClientError extends ResponseBuilder {
         NOT_ACCEPTABLE(406),
         CONFLICT(409),
         GONE(410),
+        TEA_POT(418),
         TOO_MANY_REQUESTS(429);
 
         public final int status;
@@ -49,6 +50,10 @@ public class ClientError extends ResponseBuilder {
 
     public static ClientError gone() {
         return new ClientError(Kind.GONE);
+    }
+
+    public static ClientError teaPot() {
+        return new ClientError(Kind.TEA_POT);
     }
 
     public static ClientError tooManyRequest() {
