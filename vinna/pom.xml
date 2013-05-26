@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>3.1.3.RELEASE</version>
+            <version>3.2.3.RELEASE</version>
             <optional>true</optional>
         </dependency>
 
@@ -131,9 +131,10 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.5.9.201207300726</version>
+                <version>0.6.2.201302030002</version>
                 <configuration>
                     <detail>true</detail>
+                    <check/>
                 </configuration>
                 <executions>
                     <execution>
