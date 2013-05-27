@@ -5,7 +5,9 @@ public class Success extends ResponseBuilder {
         OK(200),
         CREATED(201),
         ACCEPTED(202),
+        NON_AUTHORITATIVE_INFORMATION(203),
         NO_CONTENT(204),
+        RESET_CONTENT(205),
         PARTIAL_CONTENT(206);
 
         public final int status;
@@ -27,8 +29,16 @@ public class Success extends ResponseBuilder {
         return new Success(Kind.ACCEPTED);
     }
 
+    public static Success nonAuthoritativeInformation() {
+        return new Success(Kind.NON_AUTHORITATIVE_INFORMATION);
+    }
+
     public static Success noContent() {
         return new Success(Kind.NO_CONTENT);
+    }
+
+    public static Success resetContent() {
+        return new Success(Kind.RESET_CONTENT);
     }
 
     public static Success partialContent() {
